@@ -10,8 +10,10 @@ datasource db {
 
 model User {
   id          String        @id @default(uuid())
-  name        String        @db.VarChar(100) @unique
+  name        String        @unique @db.VarChar(100)
   email       String        @db.VarChar(100)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   event       Event[]
   participate Participate[]
 }
