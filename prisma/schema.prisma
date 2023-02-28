@@ -11,8 +11,8 @@ datasource db {
 model User {
   id          String        @id @default(uuid())
   email       String        @db.VarChar(100)
-  Event       Event?
-  Participant Participant[]
+  event       Event?
+  participant Participant[]
 }
 
 model Event {
@@ -21,7 +21,9 @@ model Event {
   owner       User          @relation(fields: [ownerID], references: [id])
   ownerID     String        @unique
   address     String
-  Participant Participant[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  participant Participant[]
 }
 
 model Participant {
