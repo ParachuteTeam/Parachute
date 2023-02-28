@@ -9,15 +9,29 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @db.VarChar(100)
-  name  String? @db.VarChar(100)
+  id          String        @id @default(uuid())
+  email       String        @db.VarChar(100)
+  Event       Event?
+  Participant Participant[]
 }
 
 model Event {
-  id Int @id @default(autoincrement())
+  id          String        @id @default(uuid())
+  occuringAt  DateTime
+  owner       User          @relation(fields: [ownerID], references: [id])
+  ownerID     String        @unique
+  address     String
+  Participant Participant[]
 }
 
-model asdf {
-  id Int @id @default(autoincrement())
+model Participant {
+  event     Event  @relation(fields: [eventID], references: [id])
+  eventID   String
+  user      User   @relation(fields: [userID], references: [id])
+  userID    String
+  timeSlots Json
+
+  @@id([eventID, userID])
+  @@index([eventID])
+  @@index([userID])
 }
