@@ -1,21 +1,19 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
-export const exampleRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+
+export const userRouter = createTRPCRouter({
+  // create a new user
+  userCreate: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation((req) => {
+      return prisma.user.create({
+        data: {
+          email: req.input.email,
+        },
+      });
     }),
-
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
-  }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
 });
