@@ -38,6 +38,15 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
+  deleteUser: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation((req) => {
+      return prisma.user.delete({
+        where: {
+          email: req.input.email,
+        },
+      });
+    }),
   // WARNING: REMOVE THIS IN PRODUCTION
   getAllUsers: publicProcedure.query(() => {
     return prisma.user.findMany();
