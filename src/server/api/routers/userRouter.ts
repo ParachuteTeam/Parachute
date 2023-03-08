@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export const userRouter = createTRPCRouter({
   // create a new user
-  userCreate: publicProcedure
+  createUser: publicProcedure
     .input(z.object({ email: z.string().email(), name: z.string() }))
     .mutation((req) => {
       return prisma.user.create({
