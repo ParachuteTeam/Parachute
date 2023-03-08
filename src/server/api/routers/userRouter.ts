@@ -26,6 +26,18 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
+  updateUser: publicProcedure
+    .input(z.object({ email: z.string().email(), name: z.string() }))
+    .mutation((req) => {
+      return prisma.user.update({
+        where: {
+          email: req.input.email,
+        },
+        data: {
+          name: req.input.name,
+        },
+      });
+    }),
   // WARNING: REMOVE THIS IN PRODUCTION
   getAllUsers: publicProcedure.query(() => {
     return prisma.user.findMany();
