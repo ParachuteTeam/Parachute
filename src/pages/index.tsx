@@ -13,6 +13,8 @@ const Home: NextPage = () => {
 
   const createUser = api.users.createUser.useMutation();
 
+  const allUsers = api.users.getAllUsers.useQuery();
+
   return (
     <>
       <Head>
@@ -25,11 +27,17 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
           </h1>
+          <h2 className="text-center text-white">
+            <p className="bg-slate-500 text-3xl">
+              U need to refrsh to see new users
+            </p>
+            {allUsers.data?.map((user) => user.name).join(", ")}
+          </h2>
           <button
             className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
             onClick={() =>
               createUser.mutate({
-                name: "test",
+                name: randomBytes(10).toString("hex"),
                 email: randomBytes(10).toString("hex") + "@aer.com",
               })
             }

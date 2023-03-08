@@ -26,4 +26,8 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
+  // WARNING: REMOVE THIS IN PRODUCTION
+  getAllUsers: publicProcedure.query(() => {
+    return prisma.user.findMany();
+  }),
 });
