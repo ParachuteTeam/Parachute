@@ -11,7 +11,7 @@ datasource db {
 model User {
   id          String        @id @default(uuid())
   name        String        @db.VarChar(100)
-  email       String        @unique @db.VarChar(100)
+  email       String        @db.VarChar(100) @unique
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   event       Event[]
@@ -21,20 +21,20 @@ model User {
 model Event {
   id          String        @id @default(uuid())
   occuringAt  DateTime
+  owner       User          @relation(fields: [ownerID], references: [id])
   ownerID     String        @unique
   address     String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  owner       User          @relation(fields: [ownerID], references: [id])
   participant Participate[]
 }
 
 model Participate {
+  event     Event  @relation(fields: [eventID], references: [id])
   eventID   String
+  user      User   @relation(fields: [userID], references: [id])
   userID    String
   timeSlots Json
-  event     Event  @relation(fields: [eventID], references: [id])
-  user      User   @relation(fields: [userID], references: [id])
 
   @@id([eventID, userID])
   @@index([eventID])
