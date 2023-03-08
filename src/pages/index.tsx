@@ -3,10 +3,15 @@ import Head from "next/head";
 // import Link from "next/link";
 // import { signIn, signOut, useSession } from "next-auth/react";
 
-// import { api } from "../utils/api";
+import { api } from "../utils/api";
+import { randomBytes } from "crypto";
 
 const Home: NextPage = () => {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const user = api.users.getUser.useQuery({
+    email: "test@aer.com",
+  });
+
+  const createUser = api.users.createUser.useMutation();
 
   return (
     <>
@@ -20,6 +25,20 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
           </h1>
+          <button
+            className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+            onClick={() =>
+              createUser.mutate({
+                name: "test",
+                email: randomBytes(10).toString("hex") + "@aer.com",
+              })
+            }
+          >
+            <a>Create a randomized user</a>
+          </button>
+          <h3 className="text-5xl text-white">{`This email belongs to ${
+            user.data?.name ?? "no user found"
+          }`}</h3>
         </div>
       </main>
     </>
