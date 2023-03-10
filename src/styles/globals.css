@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .text-orange-elevated {
+        background: linear-gradient(91.68deg, #ff9646 40%, #ffba24 90%);
+        @apply bg-clip-text text-transparent;
+        filter: drop-shadow(7px 8px 12px rgba(0, 0, 0, 0.25));
+    }
+
+    .bg-colorful {
+        background-image: linear-gradient(129.21deg, #0038FF -13.13%, rgba(160, 0, 236, 0.630208) 24.84%, rgba(231, 9, 198, 0.382793) 68.14%, rgba(255, 146, 18, 0.41) 114.78%);
+    }
+
+    .drop-shadow-pink {
+        filter: drop-shadow(0px 4px 20px rgba(173, 0, 255, 0.25));
+    }
+}
