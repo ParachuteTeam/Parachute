@@ -1,7 +1,6 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@auth0/auth0-react': ^2.0.1
   '@next-auth/prisma-adapter': ^1.0.5
   '@prisma/client': ^4.9.0
   '@tanstack/react-query': ^4.20.0
@@ -32,7 +31,6 @@ specifiers:
   zod: ^3.20.2
 
 dependencies:
-  '@auth0/auth0-react': 2.0.1_biqbaboplfbrettd7655fr4n2y
   '@next-auth/prisma-adapter': 1.0.5_qpmskah7lm3ildf4stmwh4q42u
   '@prisma/client': 4.10.1_prisma@4.10.1
   '@tanstack/react-query': 4.24.6_biqbaboplfbrettd7655fr4n2y
@@ -65,21 +63,6 @@ devDependencies:
   typescript: 4.9.5
 
 packages:
-
-  /@auth0/auth0-react/2.0.1_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-7Rla3del7inUloaWMsECs0JvBpDEj9lgfy+BQE/Z75zs9tveNvxab+xFdfrBC0GPN0eoiq1PeHcc++YjLnti+g==}
-    peerDependencies:
-      react: ^16.11.0 || ^17 || ^18
-      react-dom: ^16.11.0 || ^17 || ^18
-    dependencies:
-      '@auth0/auth0-spa-js': 2.0.4
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-    dev: false
-
-  /@auth0/auth0-spa-js/2.0.4:
-    resolution: {integrity: sha512-NgD6Fkm5Xnbned1VjhEW8irm1/Y8AWtdSLexgLXNwwBVgfnYicCVBu8w75m2t+4QljXkTcI7IXVEFhVmxMuxaA==}
-    dev: false
 
   /@babel/runtime/7.20.13:
     resolution: {integrity: sha512-gt3PKXs0DBoL9xCvOIIZ2NEqAGZqHjAnmVbfQtB620V0uReIQutpel14KcneZuer7UioY8ALKZ7iocavvzTNFA==}
