@@ -6,11 +6,14 @@ import { PrismaClient } from "@prisma/client";
 import Email from "next-auth/providers/email";
 
 const prisma = new PrismaClient();
-// const moment = require('moment');
-// const mysql_datetime = 'YYYY-MM-DD hh:mm:ss';
-
 
 export const eventRouter = createTRPCRouter({
+    /*
+        async function that creates a new event.
+        First check existance of user according to the email.
+        Then, create new event, participate and update event list.
+        Finally return the updated host of event.
+    */
     createEvent: protectedProcedure
         .input(
             z.object({
@@ -31,7 +34,7 @@ export const eventRouter = createTRPCRouter({
             if (!userCheck) {
                 throw new Error("User does not exist");
             }
-            const newEvent = prisma.event.create({
+            const newEvent = await prisma.event.create({
                 data: {
                     occuringAt: req.input.occuringAt,
                     owner: req.input.owner,
@@ -40,7 +43,7 @@ export const eventRouter = createTRPCRouter({
                     participant: req.input.participant,
                 },
             });
-            const newParticipate = prisma.Participate.create({
+            const newParticipate = await prisma.Participate.create({
                 data: {
                     event: newEvent,
                     eventID: newEvent.id,
@@ -49,7 +52,7 @@ export const eventRouter = createTRPCRouter({
                     timeSlots: {} = {},
                 },
             });
-            return prisma.user.update({
+            return await prisma.user.update({
                 where: {
                     email: req.input.email,
                 },
@@ -64,6 +67,10 @@ export const eventRouter = createTRPCRouter({
                 },
               });
         }),
+    /*
+        async function that get whole event list of an user.
+        First check the existance of user, then return the list of event objects. 
+    */
     getEventList: protectedProcedure
         .input(z.object({ email: z.string().email() }))
         .query(async (req) => {
@@ -75,44 +82,52 @@ export const eventRouter = createTRPCRouter({
             if (!userCheck) {
                 throw new Error("User does not exist");
             }
-            return prisma.user.findUnique({
+            return await prisma.user.findUnique({
                 where: { email: req.input.email },
-                select: { id: true, event: true },
+                // select: { id: true, event: true },
             });
         }),
-    getEvent: protectedProcedure
-        .input(z.object({ 
-            email: z.string().email(),
-            eventId: z.string()
-        }))
-        .query(async (req) => {
-            const userCheck = await prisma.User.findUnique({
-                where: {
-                    email: req.input.email,
-                },
-            });
-            if (!userCheck) {
-                throw new Error("User does not exist");
-            }
-            const eventCheck = await prisma.Event.findUnique({
-                where: {
-                    id: req.input.eventId,
-                },
-            });
-            if (!eventCheck) {
-                throw new Error("Event does not exist");
-            }
-            const participantCheck = await prisma.Participate.findUnique({
-                where: {
-                    userID: userCheck.id,
-                    eventID: eventCheck.id,
-                },
-            });
-            if (!participantCheck) {
-                throw new Error("User is not qualified");
-            }
-            return eventCheck;
-        }),
+        
+    // getEvent: protectedProcedure
+    //     .input(z.object({ 
+    //         email: z.string().email(),
+    //         eventId: z.string()
+    //     }))
+    //     .query(async (req) => {
+    //         const userCheck = await prisma.User.findUnique({
+    //             where: {
+    //                 email: req.input.email,
+    //             },
+    //         });
+    //         if (!userCheck) {
+    //             throw new Error("User does not exist");
+    //         }
+    //         const eventCheck = await prisma.Event.findUnique({
+    //             where: {
+    //                 id: req.input.eventId,
+    //             },
+    //         });
+    //         if (!eventCheck) {
+    //             throw new Error("Event does not exist");
+    //         }
+    //         const participantCheck = await prisma.Participate.findUnique({
+    //             where: {
+    //                 userID: userCheck.id,
+    //                 eventID: eventCheck.id,
+    //             },
+    //         });
+    //         if (!participantCheck) {
+    //             throw new Error("User is not qualified");
+    //         }
+    //         return eventCheck;
+    //     }),
+
+    /*
+        Update the participate list of a event. Add a user in the end of participate list.
+        Check whether the event and user exists and only host of event can add participant.
+        Also update lists in user, event and create new participate object.
+        Finally return the event.
+    */
     updateEvent_list: protectedProcedure
         .input(z.object({ 
             host_email: z.string().email(),
@@ -147,7 +162,7 @@ export const eventRouter = createTRPCRouter({
             if (userCheck.id != eventCheck.ownerID) {
                 throw new Error("not qualified");
             }
-            const newParticipate = prisma.Participate.create({
+            const newParticipate = await prisma.Participate.create({
                 data: {
                     event: eventCheck,
                     eventID: eventCheck.id,
@@ -156,7 +171,7 @@ export const eventRouter = createTRPCRouter({
                     timeSlots: {} = {},
                 },
             });
-            const event_update = prisma.event.update({
+            const event_update = await prisma.event.update({
                 where: {
                     id: req.input.eventId,
                 },
@@ -166,7 +181,7 @@ export const eventRouter = createTRPCRouter({
                     },
                 },
             });
-            prisma.user.update({
+            await prisma.user.update({
                 where: {
                     id: userCheck.id,
                 },
@@ -181,6 +196,10 @@ export const eventRouter = createTRPCRouter({
             });
             return event_update;
         }),
+    /**
+     * Verify the status of event host and check the existance of event. 
+     * Then update event address.
+     */
     updateEvent_addresss: protectedProcedure
         .input(z.object({
             host_email: z.string().email(),
@@ -204,7 +223,7 @@ export const eventRouter = createTRPCRouter({
             if (userCheck.id != eventCheck.ownerID ) {
                 throw new Error("not qualified");
             };
-            return prisma.event.update({
+            return await prisma.event.update({
                 where: {
                     id: req.input.eventId,
                 },
@@ -213,6 +232,10 @@ export const eventRouter = createTRPCRouter({
                 },
             });
         }),
+
+    /**
+     * After varifying the existance of the event and and the host of event, delete the event. 
+     */
     deleteEvent: protectedProcedure
         .input(z.object({
             host_email: z.string().email(),
@@ -236,10 +259,11 @@ export const eventRouter = createTRPCRouter({
             if (userCheck.id != eventCheck.ownerID ) {
                 throw new Error("not qualified");
             };
-            return prisma.user.delete({
+            return await prisma.user.delete({
                 where: {
                     id: req.input.eventId,
                 },
             });
         }),
+
 });
