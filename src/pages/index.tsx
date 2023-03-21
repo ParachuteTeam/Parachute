@@ -1,15 +1,66 @@
-import { useSession, signIn, signOut } from "next-auth/react"
+import { type NextPage } from "next";
+import Head from "next/head";
+import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
+import axios from "axios";
 
-export default function Component() {
-  const { data: session } = useSession()
-  if(session) {
-    return <>
-      Signed in as {session.user.email} <br/>
-      <button onClick={() => signOut()}>Sign out</button>
-    </>
+import { api } from "../utils/api";
+
+const Home: NextPage = () => {
+  const { data: session } = useSession();
+  if (session) {
+
+    axios
+      .post("/api/user", {
+        name: session.user.name,
+        email: session.user.email,
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    return (
+      <>
+        Signed in as {session.user.email} <br />
+        <button onClick={() => signOut()}>Sign out</button>
+      </>
+    );
   }
-  return <>
-    Not signed in <br/>
-    <button onClick={() => signIn()}>Sign in</button>
-  </>
-}
+  return (
+    <>
+      Not signed in <br />
+      <button onClick={() => signIn()}>Sign in</button>
+    </>
+  );
+};
+
+export default Home;
+
+const AuthShowcase: React.FC = () => {
+  const { data: sessionData } = useSession();
+
+  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
+    undefined, // no input
+    { enabled: sessionData?.user !== undefined },
+  );
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-4">
+      <p className="text-center text-2xl text-white">
+        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
+        {secretMessage && <span> - {secretMessage}</span>}
+      </p>
+      <button
+        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+        onClick={sessionData ? () => void signOut() : () => void signIn()}
+      >
+        {sessionData ? "Sign out" : "Sign in"}
+      </button>
+    </div>
+  );
+};
+
+
