@@ -6,7 +6,7 @@
     .text-orange-elevated {
         background: linear-gradient(91.68deg, #ff9646 40%, #ffba24 90%);
         @apply bg-clip-text text-transparent;
-        filter: drop-shadow(7px 8px 12px rgba(0, 0, 0, 0.25));
+        filter: drop-shadow(7px 8px 4px rgba(0, 0, 0, 0.25));
     }
 
     .bg-colorful {
