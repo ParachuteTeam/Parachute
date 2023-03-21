@@ -1,8 +1,11 @@
 import { type NextPage } from "next";
 import Navbar from "../components/Navbar";
 import React from "react";
+import { useElementMouseRelativeAngle } from "../utils/hooks";
 
 const Home: NextPage = () => {
+  const { angle, ref } = useElementMouseRelativeAngle();
+
   return (
     <>
       <Navbar />
@@ -21,7 +24,13 @@ const Home: NextPage = () => {
             Open-source, easy-to-use, free forever
           </div>
         </div>
-        <div className="w-full sm:max-w-[350px] h-[250px] bg-colorful rounded-[8px] p-[2px] drop-shadow-pink">
+        <div
+          ref={ref}
+          className="w-full sm:max-w-[350px] h-[250px] bg-colorful rounded-[8px] p-[2px] drop-shadow-pink"
+          style={{
+            "--colorful-bg-degree": `${angle - 90}deg`,
+          } as React.CSSProperties}
+        >
           <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-[6px] p-8 gap-4">
             <div className="text-sm text-gray-500 mb-2">
               Try Parachute right now
