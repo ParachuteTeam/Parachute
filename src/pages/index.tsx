@@ -2,10 +2,10 @@ import { type NextPage } from "next";
 import Navbar from "../components/Navbar";
 import React from "react";
 import { useElementMouseRelativeAngle } from "../utils/hooks";
+import { signIn, signOut } from "next-auth/react";
 
 const Home: NextPage = () => {
   const { angle, ref } = useElementMouseRelativeAngle();
-
   return (
     <>
       <Navbar />
@@ -34,12 +34,12 @@ const Home: NextPage = () => {
           <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-[6px] p-8 gap-4">
             <div className="text-sm text-gray-500 mb-2">
               Try Parachute right now
-            </div>
-            <button className="bg-black text-white text-center font-semibold rounded-lg w-full p-3">
-              Sign in with Google
+            </div>            
+            <button onClick={() => void signIn()} className="bg-black text-white text-center font-semibold rounded-lg w-full p-3">
+              Sign in with Google/Auth0
             </button>
-            <button className="border text-center font-semibold rounded-lg w-full p-3">
-              Sign in with OAuth
+            <button onClick={() => void signOut()} className="border text-center font-semibold rounded-lg w-full p-3">
+              Sign out
             </button>
           </div>
         </div>
