@@ -35,8 +35,11 @@ const Home: NextPage = () => {
             <div className="text-sm text-gray-500 mb-2">
               Try Parachute right now
             </div>            
-            <button onClick={() => void signIn()} className="bg-black text-white text-center font-semibold rounded-lg w-full p-3">
-              Sign in with Google/Auth0
+            <button onClick={() => void signIn("google")} className="bg-black text-white text-center font-semibold rounded-lg w-full p-3">
+              Sign in with Google
+            </button>
+            <button onClick={() => void signIn("auth0")} className="border text-center font-semibold rounded-lg w-full p-3">
+              Sign in with Auth0
             </button>
             <button onClick={() => void signOut()} className="border text-center font-semibold rounded-lg w-full p-3">
               Sign out
