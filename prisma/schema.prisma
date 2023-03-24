@@ -11,30 +11,50 @@ datasource db {
 model User {
   id          String        @id @default(uuid())
   name        String        @db.VarChar(100)
-  email       String        @db.VarChar(100) @unique
+  email       String        @unique @db.VarChar(100)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   event       Event[]
+  account     Account[]
   participate Participate[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@unique([provider, providerAccountId])
 }
 
 model Event {
   id          String        @id @default(uuid())
   occuringAt  DateTime
-  owner       User          @relation(fields: [ownerID], references: [id])
   ownerID     String        @unique
   address     String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  owner       User          @relation(fields: [ownerID], references: [id])
   participant Participate[]
 }
 
 model Participate {
-  event     Event  @relation(fields: [eventID], references: [id])
   eventID   String
-  user      User   @relation(fields: [userID], references: [id])
   userID    String
   timeSlots Json
+  event     Event  @relation(fields: [eventID], references: [id])
+  user      User   @relation(fields: [userID], references: [id])
 
   @@id([eventID, userID])
   @@index([eventID])
