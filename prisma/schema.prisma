@@ -9,14 +9,17 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(uuid())
-  name        String        @db.VarChar(100)
-  email       String        @unique @db.VarChar(100)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  event       Event[]
-  account     Account[]
-  participate Participate[]
+  id            String        @id @default(uuid())
+  name          String        @db.VarChar(100)
+  email         String        @unique @db.VarChar(100)
+  emailVerified DateTime?     @map("email_verified")
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  event         Event[]
+  account       Account[]
+  participate   Participate[]
+  Session       Session[]
 }
 
 model Account {
@@ -32,10 +35,10 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Event {
@@ -59,4 +62,22 @@ model Participate {
   @@id([eventID, userID])
   @@index([eventID])
   @@index([userID])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
