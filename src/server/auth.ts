@@ -62,12 +62,12 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      **/
     GoogleProvider({
-        clientId: process.env.GOOGLE_ID as string,
-        clientSecret: process.env.GOOGLE_SECRET as string
+        clientId: env.GOOGLE_ID,
+        clientSecret: env.GOOGLE_SECRET,
     }),
     Auth0Provider({
-      clientId: process.env.AUTH0_CLIENT_ID as string,
-      clientSecret: process.env.AUTH0_CLIENT_SECRET as string,
+      clientId: env.AUTH0_CLIENT_ID,
+      clientSecret: env.AUTH0_CLIENT_SECRET,
       issuer: process.env.AUTH0_ISSUER
     }),
   ],
