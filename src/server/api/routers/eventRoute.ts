@@ -80,7 +80,7 @@ export const eventRouter = createTRPCRouter({
     getEventList: protectedProcedure
         .input(z.object({ email: z.string().email() }))
         .query(async (req) => {
-            const userCheck : User | null = await prisma.user.findUnique({
+            const userCheck : User = await prisma.user.findUnique({
                 where: {
                     email: req.input.email,
                 },
@@ -94,9 +94,7 @@ export const eventRouter = createTRPCRouter({
             return await prisma.event.findMany({
                 where: { ownerID: userCheck.id },
                 select: { id: true, occuringAt: true},
-                orderBy: {
-                    occuringAt: { sort: 'asc', nulls: 'last' },
-                  },
+                orderBy: { occuringAt: { asc: true, nullsLast: true } },
             });
         }),
         
@@ -105,7 +103,7 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .query(async (req) => {
-            const eventCheck : Event | null = await prisma.event.findUnique({
+            const eventCheck : Event = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
@@ -130,7 +128,7 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .mutation(async (req) => {
-            const eventCheck : Event | null = await prisma.event.findUnique({
+            const eventCheck : Event = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
@@ -178,7 +176,7 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .mutation(async (req) => {
-            const eventCheck : Event | null = await prisma.event.findUnique({
+            const eventCheck : Event = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
@@ -189,7 +187,7 @@ export const eventRouter = createTRPCRouter({
                     message: 'Event does not exist',
                 });
             }
-            const userCheck : User | null = await prisma.user.findUnique({
+            const userCheck : User = await prisma.user.findUnique({
                 where: {
                     email: req.input.host_email,
                 },
