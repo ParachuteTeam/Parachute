@@ -8,28 +8,28 @@ import { TRPCError, initTRPC } from '@trpc/server';
 const prisma = new PrismaClient();
 
 interface User {
-    id: string
-    name: string
-    email: string
-    emailVerified: Date
-    image: string
-    createdAt: Date
-    updatedAt: Date
+    id: string;
+    name: string;
+    email: string;
+    emailVerified: Date | null;
+    image: string;
+    createdAt: Date;
+    updatedAt: Date;
   }
 
 interface Event {
-    id: string
-    occuringAt: Date
-    ownerID: string
-    address: string
-    createdAt: Date
-    updatedAt: Date
+    id: string;
+    occuringAt: Date;
+    ownerID: string;
+    address: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 interface Participate {
-    eventID: string
-    userID: Date
-    timeSlots: JSON
+    eventID: string;
+    userID: Date;
+    timeSlots: JSON;
 }
 
 export const eventRouter = createTRPCRouter({
@@ -46,7 +46,7 @@ export const eventRouter = createTRPCRouter({
             })
         )
         .mutation(async (req) => {
-            const userCheck : User | null = await prisma.user.findUnique({
+            const userCheck : User = await prisma.user.findUnique({
                 where: {
                     email: req.input.email,
                 },
@@ -64,7 +64,7 @@ export const eventRouter = createTRPCRouter({
                     address: req.input.address,
                 },
             });
-            const newParticipate : Participate = await prisma.participate.create({
+            await prisma.participate.create({
                 data: {
                     eventID: newEvent.id,
                     userID: userCheck.id,
@@ -141,7 +141,7 @@ export const eventRouter = createTRPCRouter({
                     message: 'Event does not exist',
                 });
             }
-            const userCheck : User | null = await prisma.user.findUnique({
+            const userCheck : User = await prisma.user.findUnique({
                 where: {
                     email: req.input.host_email,
                 },
