@@ -46,7 +46,7 @@ export const eventRouter = createTRPCRouter({
             })
         )
         .mutation(async (req) => {
-            const userCheck : User = await prisma.user.findUnique({
+            const userCheck = await prisma.user.findUnique({
                 where: {
                     email: req.input.email,
                 },
@@ -57,7 +57,7 @@ export const eventRouter = createTRPCRouter({
                     message: 'User does not exist',
                   });
             }
-            const newEvent : Event = await prisma.event.create({
+            const newEvent = await prisma.event.create({
                 data: {
                     occuringAt: new Date(), //"2020-01-01T00:00:00Z"
                     ownerID: userCheck.id,
@@ -80,7 +80,7 @@ export const eventRouter = createTRPCRouter({
     getEventList: protectedProcedure
         .input(z.object({ email: z.string().email() }))
         .query(async (req) => {
-            const userCheck : User = await prisma.user.findUnique({
+            const userCheck = await prisma.user.findUnique({
                 where: {
                     email: req.input.email,
                 },
@@ -94,7 +94,7 @@ export const eventRouter = createTRPCRouter({
             return await prisma.event.findMany({
                 where: { ownerID: userCheck.id },
                 select: { id: true, occuringAt: true},
-                orderBy: { occuringAt: { asc: true, nullsLast: true } },
+                orderBy: { occuringAt: 'asc' }
             });
         }),
         
@@ -103,7 +103,7 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .query(async (req) => {
-            const eventCheck : Event = await prisma.event.findUnique({
+            const eventCheck = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
@@ -128,7 +128,7 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .mutation(async (req) => {
-            const eventCheck : Event = await prisma.event.findUnique({
+            const eventCheck = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
@@ -139,7 +139,7 @@ export const eventRouter = createTRPCRouter({
                     message: 'Event does not exist',
                 });
             }
-            const userCheck : User = await prisma.user.findUnique({
+            const userCheck = await prisma.user.findUnique({
                 where: {
                     email: req.input.host_email,
                 },
@@ -155,7 +155,7 @@ export const eventRouter = createTRPCRouter({
                     code: 'UNAUTHORIZED',
                     message: 'User is not event holder',
                 });
-            };
+            }
             return await prisma.event.update({
                 where: {
                     id: req.input.eventId,
@@ -176,7 +176,7 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .mutation(async (req) => {
-            const eventCheck : Event = await prisma.event.findUnique({
+            const eventCheck = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
@@ -187,7 +187,7 @@ export const eventRouter = createTRPCRouter({
                     message: 'Event does not exist',
                 });
             }
-            const userCheck : User = await prisma.user.findUnique({
+            const userCheck = await prisma.user.findUnique({
                 where: {
                     email: req.input.host_email,
                 },
@@ -203,7 +203,7 @@ export const eventRouter = createTRPCRouter({
                     code: 'UNAUTHORIZED',
                     message: 'User is not event holder',
                 });
-            };
+            }
             return await prisma.user.delete({
                 where: {
                     id: req.input.eventId,
