@@ -7,7 +7,7 @@ import { TRPCError, initTRPC } from '@trpc/server';
 
 const prisma = new PrismaClient();
 
-type User = {
+interface User {
     id: string
     name: string
     email: string
@@ -17,7 +17,7 @@ type User = {
     updatedAt: Date
   }
 
-type Event = {
+interface Event {
     id: string
     occuringAt: Date
     ownerID: string
@@ -26,7 +26,7 @@ type Event = {
     updatedAt: Date
 }
 
-type Participate = {
+interface Participate {
     eventID: string
     userID: Date
     timeSlots: JSON
@@ -53,7 +53,7 @@ export const eventRouter = createTRPCRouter({
             });
             if (!userCheck) {
                 throw new TRPCError({
-                    code: 'FORBIDDEN',
+                    code: 'NOT_FOUND',
                     message: 'User does not exist',
                   });
             }
@@ -64,7 +64,7 @@ export const eventRouter = createTRPCRouter({
                     address: req.input.address,
                 },
             });
-            const newParticipate : Participate = await prisma.Participate.create({
+            const newParticipate : Participate = await prisma.participate.create({
                 data: {
                     eventID: newEvent.id,
                     userID: userCheck.id,
@@ -80,20 +80,23 @@ export const eventRouter = createTRPCRouter({
     getEventList: protectedProcedure
         .input(z.object({ email: z.string().email() }))
         .query(async (req) => {
-            const userCheck : User | null = await prisma.User.findUnique({
+            const userCheck : User | null = await prisma.user.findUnique({
                 where: {
                     email: req.input.email,
                 },
             });
             if (!userCheck) {
                 throw new TRPCError({
-                    code: 'FORBIDDEN',
+                    code: 'NOT_FOUND',
                     message: 'User does not exist',
                 });
             }
-            return await prisma.Event.findMany({
+            return await prisma.event.findMany({
                 where: { ownerID: userCheck.id },
-                select: { id: true },
+                select: { id: true, occuringAt: true},
+                orderBy: {
+                    occuringAt: { sort: 'asc', nulls: 'last' },
+                  },
             });
         }),
         
@@ -102,14 +105,14 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .query(async (req) => {
-            const eventCheck : Event | null = await prisma.Event.findUnique({
+            const eventCheck : Event | null = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
             });
             if (!eventCheck) {
                 throw new TRPCError({
-                    code: 'FORBIDDEN',
+                    code: 'NOT_FOUND',
                     message: 'Event does not exist',
                 });
             }
@@ -127,25 +130,25 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .mutation(async (req) => {
-            const eventCheck : Event | null = await prisma.Event.findUnique({
+            const eventCheck : Event | null = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
             });
             if (!eventCheck) {
                 throw new TRPCError({
-                    code: 'FORBIDDEN',
+                    code: 'NOT_FOUND',
                     message: 'Event does not exist',
                 });
             }
-            const userCheck : User | null = await prisma.User.findUnique({
+            const userCheck : User | null = await prisma.user.findUnique({
                 where: {
                     email: req.input.host_email,
                 },
             });
             if (!userCheck) {
                 throw new TRPCError({
-                    code: 'FORBIDDEN',
+                    code: 'NOT_FOUND',
                     message: 'User does not exist',
                 });
             }
@@ -175,18 +178,18 @@ export const eventRouter = createTRPCRouter({
             eventId: z.string()
         }))
         .mutation(async (req) => {
-            const eventCheck : Event | null = await prisma.Event.findUnique({
+            const eventCheck : Event | null = await prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
             });
             if (!eventCheck) {
                 throw new TRPCError({
-                    code: 'FORBIDDEN',
+                    code: 'NOT_FOUND',
                     message: 'Event does not exist',
                 });
             }
-            const userCheck : User | null = await prisma.User.findUnique({
+            const userCheck : User | null = await prisma.user.findUnique({
                 where: {
                     email: req.input.host_email,
                 },
