@@ -7,30 +7,30 @@ import { TRPCError, initTRPC } from '@trpc/server';
 
 const prisma = new PrismaClient();
 
-interface User {
-    id: string;
-    name: string;
-    email: string;
-    emailVerified: Date;
-    image: string;
-    createdAt: Date;
-    updatedAt: Date;
-  }
-
-interface Event {
-    id: string;
-    occuringAt: Date;
-    ownerID: string;
-    address: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-interface Participate {
-    eventID: string;
-    userID: Date;
-    timeSlots: JSON;
-}
+// interface User {
+//     id: string;
+//     name: string;
+//     email: string;
+//     emailVerified: Date;
+//     image: string;
+//     createdAt: Date;
+//     updatedAt: Date;
+//   }
+//
+// interface Event {
+//     id: string;
+//     occuringAt: Date;
+//     ownerID: string;
+//     address: string;
+//     createdAt: Date;
+//     updatedAt: Date;
+// }
+//
+// interface Participate {
+//     eventID: string;
+//     userID: Date;
+//     timeSlots: JSON;
+// }
 
 export const eventRouter = createTRPCRouter({
     /*
@@ -43,6 +43,7 @@ export const eventRouter = createTRPCRouter({
             z.object({
                 email: z.string().email(),
                 address: z.string(),
+                occuringAt: z.string().datetime(),
             })
         )
         .mutation(async (req) => {
@@ -59,7 +60,7 @@ export const eventRouter = createTRPCRouter({
             }
             const newEvent = await prisma.event.create({
                 data: {
-                    occuringAt: new Date(), //"2020-01-01T00:00:00Z"
+                    occuringAt: req.input.occuringAt,
                     ownerID: userCheck.id,
                     address: req.input.address,
                 },
@@ -102,19 +103,19 @@ export const eventRouter = createTRPCRouter({
         .input(z.object({ 
             eventId: z.string()
         }))
-        .query(async (req) => {
-            const eventCheck = await prisma.event.findUnique({
+        .query((req) => {
+            return prisma.event.findUnique({
                 where: {
                     id: req.input.eventId,
                 },
             });
-            if (!eventCheck) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'Event does not exist',
-                });
-            }
-            return eventCheck;
+            // if (!eventCheck) {
+            //     throw new TRPCError({
+            //         code: 'NOT_FOUND',
+            //         message: 'Event does not exist',
+            //     });
+            // }
+            // return eventCheck;
         }),
 
     /**
@@ -172,8 +173,7 @@ export const eventRouter = createTRPCRouter({
     deleteEvent: protectedProcedure
         .input(z.object({
             host_email: z.string().email(),
-            address: z.string(),
-            eventId: z.string()
+            eventId: z.string(),
         }))
         .mutation(async (req) => {
             const eventCheck = await prisma.event.findUnique({
@@ -204,7 +204,7 @@ export const eventRouter = createTRPCRouter({
                     message: 'User is not event holder',
                 });
             }
-            return await prisma.user.delete({
+            return await prisma.event.delete({
                 where: {
                     id: req.input.eventId,
                 },
