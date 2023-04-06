@@ -17,4 +17,36 @@
     .drop-shadow-pink {
         filter: drop-shadow(0px 4px 20px rgba(173, 0, 255, 0.25));
     }
+
+    .card {
+        @apply rounded-md bg-white shadow-sm;
+    }
+
+    .rounded-input {
+        @apply bg-white rounded-md border border-gray-300 p-3;
+    }
+
+    .input-field {
+        @apply flex flex-col gap-1;
+    }
+
+    .input-field label {
+        @apply text-sm font-semibold;
+    }
+
+    .input-field text {
+        @apply text-sm text-gray-500;
+    }
+
+    .input-field input {
+        @apply rounded-input;
+    }
+
+    .input-field button {
+        @apply rounded-input;
+    }
+
+    .primary-button {
+        @apply bg-black text-white font-semibold py-2 px-4 rounded-md;
+    }
 }
