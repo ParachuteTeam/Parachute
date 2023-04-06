@@ -42,22 +42,27 @@ model Account {
 }
 
 model Event {
-  id          String        @id @default(uuid())
-  occuringAt  DateTime
-  ownerID     String        @unique
-  address     String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  owner       User          @relation(fields: [ownerID], references: [id])
-  participant Participate[]
+  id           String        @id @default(uuid())
+  occuringDays String
+  begins       DateTime
+  ends         DateTime
+  type         eventType
+  ownerID      String
+  address      String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  owner        User          @relation(fields: [ownerID], references: [id])
+  participant  Participate[]
+
+  @@index([ownerID])
 }
 
 model Participate {
   eventID   String
   userID    String
-  timeSlots Json
-  event     Event  @relation(fields: [eventID], references: [id])
-  user      User   @relation(fields: [userID], references: [id])
+  timeSlots TimeSlots[]
+  event     Event       @relation(fields: [eventID], references: [id])
+  user      User        @relation(fields: [userID], references: [id])
 
   @@id([eventID, userID])
   @@index([eventID])
@@ -80,4 +85,21 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model TimeSlots {
+  id                 String       @id @default(cuid())
+  date               DateTime
+  begins             DateTime
+  ends               DateTime
+  participate        Participate? @relation(fields: [participateEventID, participateUserID], references: [eventID, userID])
+  participateEventID String?
+  participateUserID  String?
+
+  @@index([participateEventID, participateUserID])
+}
+
+enum eventType {
+  DAYSOFWEEK
+  DATES
 }
