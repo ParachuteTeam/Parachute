@@ -26,6 +26,14 @@
         @apply bg-white rounded-md border border-gray-300 p-3;
     }
 
+    .rounded-button {
+        @apply rounded-md border border-gray-300 py-2 px-4 hover:bg-gray-100;
+    }
+
+    .danger-button {
+        @apply bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600;
+    }
+
     .input-field {
         @apply flex flex-col gap-1;
     }
