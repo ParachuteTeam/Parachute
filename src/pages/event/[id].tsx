@@ -1,9 +1,13 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Navbar from "../../components/Navbar";
-import { MdOutlineAccessTime, MdOutlineCalendarToday } from "react-icons/md";
+import {
+  MdOutlineAccessTime,
+  MdOutlineCalendarToday,
+  MdOutlineEditCalendar,
+} from "react-icons/md";
 import { EventTypeTag } from "../../components/Tag";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { RoundedListbox } from "../../components/Input";
 
@@ -64,8 +68,74 @@ const OperationCardTab: React.FC<
   );
 };
 
-const AvailibilityZone: React.FC = () => {
-  return <div className="h-[500px]"></div>;
+type MouseState = "up" | "select" | "deselect";
+
+interface AvailabilitySlotProps {
+  mouseState?: MouseState;
+  setMouseState?: (state: MouseState) => void;
+}
+
+const AvailabilitySlot: React.FC<AvailabilitySlotProps> = ({
+  mouseState,
+  setMouseState,
+}) => {
+  const [selected, setSelected] = useState(false);
+  return (
+    <div
+      className={`mt-[-1px] h-4 w-16 border border-black ${
+        selected ? "bg-black" : ""
+      }`}
+      onMouseDown={(event) => {
+        event.preventDefault?.();
+        setMouseState?.(selected ? "deselect" : "select");
+        setSelected(!selected);
+        return false;
+      }}
+      onMouseUp={() => {
+        setMouseState?.("up");
+      }}
+      onMouseEnter={() => {
+        if (mouseState === "select") {
+          setSelected(true);
+        }
+        if (mouseState === "deselect") {
+          setSelected(false);
+        }
+      }}
+    />
+  );
+};
+
+const AvailabilityColumn: React.FC = () => {
+  const range = Array.from(Array(48).keys());
+  const [mouseState, setMouseState] = useState<MouseState>("up");
+  return (
+    <div className="flex w-16 flex-col items-center">
+      <div className="text-xs">Apr 5</div>
+      <div className="mt-[-4px] text-lg font-bold">Sun</div>
+      {range.map((hour, index) => (
+        <AvailabilitySlot
+          key={index}
+          mouseState={mouseState}
+          setMouseState={setMouseState}
+        />
+      ))}
+    </div>
+  );
+};
+
+const MyAvailabilityZone: React.FC = () => {
+  return (
+    <div className="relative flex h-[500px]">
+      <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
+        <MdOutlineEditCalendar className="text-md" />
+        Click or drag to select available time slots
+      </div>
+      <div className="h-full w-full flex-row items-center overflow-scroll px-40 py-40">
+        <AvailabilityColumn />
+      </div>
+    </div>
+  );
 };
 
 const OperationCard: React.FC = () => {
@@ -83,7 +153,7 @@ const OperationCard: React.FC = () => {
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel>
-              <AvailibilityZone />
+              <MyAvailabilityZone />
               <div className="flex flex-row gap-2 border-t border-gray-300 px-6 py-4 text-sm">
                 <div className="flex grow flex-col gap-1">
                   <p className="font-semibold">My timezone</p>
@@ -102,7 +172,7 @@ const OperationCard: React.FC = () => {
               </div>
             </Tab.Panel>
             <Tab.Panel>
-              <AvailibilityZone />
+              <MyAvailabilityZone />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
