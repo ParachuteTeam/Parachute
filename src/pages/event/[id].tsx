@@ -10,6 +10,8 @@ import { EventTypeTag } from "../../components/Tag";
 import React, { Fragment, useState } from "react";
 import { Tab } from "@headlessui/react";
 import { RoundedListbox } from "../../components/Input";
+import ScheduleSelector from "react-schedule-selector";
+import { format } from "date-fns";
 
 const EventInfoHeader: React.FC = () => {
   return (
@@ -68,71 +70,54 @@ const OperationCardTab: React.FC<
   );
 };
 
-type MouseState = "up" | "select" | "deselect";
-
-interface AvailabilitySlotProps {
-  mouseState?: MouseState;
-  setMouseState?: (state: MouseState) => void;
-}
-
-const AvailabilitySlot: React.FC<AvailabilitySlotProps> = ({
-  mouseState,
-  setMouseState,
-}) => {
-  const [selected, setSelected] = useState(false);
-  return (
-    <div
-      className={`mt-[-1px] h-4 w-16 border border-black ${
-        selected ? "bg-black" : ""
-      }`}
-      onMouseDown={(event) => {
-        event.preventDefault?.();
-        setMouseState?.(selected ? "deselect" : "select");
-        setSelected(!selected);
-        return false;
-      }}
-      onMouseUp={() => {
-        setMouseState?.("up");
-      }}
-      onMouseEnter={() => {
-        if (mouseState === "select") {
-          setSelected(true);
-        }
-        if (mouseState === "deselect") {
-          setSelected(false);
-        }
-      }}
-    />
-  );
-};
-
-const AvailabilityColumn: React.FC = () => {
-  const range = Array.from(Array(48).keys());
-  const [mouseState, setMouseState] = useState<MouseState>("up");
-  return (
-    <div className="flex w-16 flex-col items-center">
-      <div className="text-xs">Apr 5</div>
-      <div className="mt-[-4px] text-lg font-bold">Sun</div>
-      {range.map((hour, index) => (
-        <AvailabilitySlot
-          key={index}
-          mouseState={mouseState}
-          setMouseState={setMouseState}
-        />
-      ))}
-    </div>
-  );
-};
-
 const MyAvailabilityZone: React.FC = () => {
+  const [schedule, setSchedule] = useState<Date[]>([]);
+  console.log(schedule);
   return (
     <div className="relative flex h-[500px]">
       <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineEditCalendar className="text-md" />
         Click or drag to select available time slots
       </div>
-      <div className="h-full w-full flex-row items-center overflow-scroll px-40 py-40">
-        <AvailabilityColumn />
+      <div className="h-full w-full flex-row items-center overflow-scroll px-32 py-20">
+        <div className="w-fit">
+          <ScheduleSelector
+            selection={schedule}
+            numDays={5}
+            minTime={8}
+            maxTime={22}
+            hourlyChunks={4}
+            rowGap="0px"
+            columnGap="10px"
+            renderTimeLabel={(time) => {
+              return (
+                <div className="relative bottom-[9px] w-16 text-right text-xs text-gray-500">
+                  {time.getMinutes() % 30 == 0 ? format(time, "p") : ""}
+                </div>
+              );
+            }}
+            renderDateLabel={(datetime) => {
+              return (
+                <div className="flex w-20 flex-col items-center border-b border-black pb-1">
+                  <div className="text-xs">{format(datetime, "MMM d")}</div>
+                  <div className="mt-[-4px] text-lg font-bold">
+                    {format(datetime, "EEE")}
+                  </div>
+                </div>
+              );
+            }}
+            renderDateCell={(datetime, selected) => {
+              return (
+                <div
+                  className={`h-6 w-20 border border-t-0 border-black ${
+                    selected ? "bg-black" : ""
+                  }`}
+                />
+              );
+            }}
+            onChange={setSchedule}
+          />
+        </div>
       </div>
     </div>
   );
