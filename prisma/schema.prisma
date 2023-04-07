@@ -43,7 +43,11 @@ model Account {
 
 model Event {
   id           String        @id @default(uuid())
+<<<<<<< HEAD
   joinCode     String        @db.VarChar(6) @unique
+=======
+  short_id     String        @db.VarChar(6) @unique
+>>>>>>> 7ebaa746ca802d9a191f66eabb41912441b13a86
   occuringDays String
   begins       DateTime
   ends         DateTime
