@@ -43,6 +43,7 @@ model Account {
 
 model Event {
   id           String        @id @default(uuid())
+  short_id     String        @db.VarChar(6) @unique
   occuringDays String
   begins       DateTime
   ends         DateTime
