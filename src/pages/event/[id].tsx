@@ -5,6 +5,7 @@ import {
   MdOutlineAccessTime,
   MdOutlineCalendarToday,
   MdOutlineEditCalendar,
+  MdOutlineFileDownloadDone,
 } from "react-icons/md";
 import { EventTypeTag } from "../../components/Tag";
 import React, { Fragment, useState } from "react";
@@ -79,7 +80,16 @@ const MyAvailabilityZone: React.FC = () => {
         <MdOutlineEditCalendar className="text-md" />
         Click or drag to select available time slots
       </div>
-      <div className="h-full w-full flex-row items-center overflow-scroll px-32 py-20">
+      <div className="absolute right-8 flex h-full flex-row items-center">
+        <div className="card flex h-36 w-64 flex-col items-center justify-center shadow-lg">
+          <MdOutlineFileDownloadDone className="text-5xl text-gray-500" />
+          <div className="mt-1 text-lg font-bold">File Saved</div>
+          <div className="text-[12px] font-light text-gray-500">
+            Availability is up to date
+          </div>
+        </div>
+      </div>
+      <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <div className="w-fit">
           <ScheduleSelector
             selection={schedule}
@@ -169,6 +179,7 @@ const OperationCard: React.FC = () => {
 const EventPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  void id;
   return (
     <div className="min-h-screen w-screen bg-gray-100">
       <Navbar />
