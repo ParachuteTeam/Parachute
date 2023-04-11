@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import Navbar from "../components/Navbar";
 import React from "react";
 import { useElementMouseRelativeAngle } from "../utils/hooks";
-import { signIn, signOut } from "next-auth/react";
+import { signIn} from "next-auth/react";
 // import { useRouter } from 'next/router';
 
 const Home: NextPage = () => {
@@ -46,9 +46,6 @@ const Home: NextPage = () => {
                           callbackUrl: `${window.location.origin}/dashboard`,
                   })} className="border text-center font-semibold rounded-lg w-full p-3">
               Sign in with Auth0
-            </button>
-            <button onClick={() => void signOut()} className="border text-center font-semibold rounded-lg w-full p-3">
-              Sign out
             </button>
           </div>
         </div>
