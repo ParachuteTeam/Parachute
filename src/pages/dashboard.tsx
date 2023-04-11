@@ -131,7 +131,7 @@ const Dashboard: NextPage = () => {
           </div>
           <div className="flex h-full flex-col">
             <div className="mb-6 text-2xl font-bold">Add Event</div>
-            <NewEventCard></NewEventCard>
+            <NewEventCard />
           </div>
         </div>
       </div>
