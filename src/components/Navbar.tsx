@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
+import Image from "next/image";
 
 const Navbar = () => {
   const router = useRouter();
@@ -35,11 +36,13 @@ const Navbar = () => {
         </div>
         {session && (
           <div className="relative">
-            <img
+            <Image
               onClick={toggleDropdown}
-              className="h-10 w-10 cursor-pointer rounded-full"
+              className="cursor-pointer rounded-full"
               src={image}
               alt="User dropdown"
+              width={40}
+              height={40}
             />
             {dropdownVisible && (
               <div
