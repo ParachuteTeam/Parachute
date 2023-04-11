@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
+import { Popover } from "@headlessui/react";
 
 const Navbar = () => {
   const router = useRouter();
@@ -9,12 +10,6 @@ const Navbar = () => {
   const image = session?.user.image as string;
   const name = session?.user.name;
   const email = session?.user.email;
-
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
 
   const onClickSignOut = async () => {
     await signOut({
@@ -35,20 +30,18 @@ const Navbar = () => {
           </div>
         </div>
         {session && (
-          <div className="relative">
-            <Image
-              onClick={toggleDropdown}
-              className="cursor-pointer rounded-full"
-              src={image}
-              alt="User dropdown"
-              width={40}
-              height={40}
-            />
-            {dropdownVisible && (
-              <div
-                id="userDropdown"
-                className="w-50 absolute right-0 top-[48px] z-10 divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700"
-              >
+          <Popover className="relative">
+            <Popover.Button className="focus:outline-none">
+              <Image
+                className="cursor-pointer rounded-full"
+                src={image}
+                alt="User dropdown"
+                width={40}
+                height={40}
+              />
+            </Popover.Button>
+            <Popover.Panel>
+              <div className="w-50 absolute right-0 top-[48px] z-10 divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700">
                 <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
                   <div> {name} </div>
                   <div className="truncate font-medium"> {email} </div>
@@ -88,8 +81,8 @@ const Navbar = () => {
                   </a>
                 </div>
               </div>
-            )}
-          </div>
+            </Popover.Panel>
+          </Popover>
         )}
       </div>
     </div>
