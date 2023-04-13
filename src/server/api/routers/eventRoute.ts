@@ -61,10 +61,10 @@ async function generateUniqueJoinCode(): Promise<string> {
 }
 
 export const eventRouter = createTRPCRouter({
-    /*
-        async function that creates a new event.
-        First check existence of user according to the email.
-        Then, create new event, participate.
+    /**
+        Create a new Event.
+        Note that begins and ends are datetime value.
+        And type should be either 'DAYSOFWEEK' or 'DATES'.
     */
     createEvent: protectedProcedure
       .input(
@@ -110,9 +110,10 @@ export const eventRouter = createTRPCRouter({
           });
           return newEvent;
       }),
-    /*
-        async function that get whole event list of an user.
-        First check the existance of user, then return the list of event objects.
+    /**
+        This function gets all events that this person own.
+        This function returns eventId, begin time of event(begin), and joinCode(6-digit number in string type).
+        The function that get all event this person participate are in participateRoute.ts
     */
     getEventList: protectedProcedure
       .input(z.object({ email: z.string().email() }))
@@ -135,6 +136,10 @@ export const eventRouter = createTRPCRouter({
           });
       }),
 
+    /**
+        This function get all information of a event.
+        You need to use eventId as input.
+    */
     getEvent: protectedProcedure
       .input(z.object({
           eventId: z.string()
@@ -156,7 +161,8 @@ export const eventRouter = createTRPCRouter({
 
     /**
      * Verify the status of event host and check the existance of event.
-     * Then update event address.
+     * Then update event address. The email should be email address of the eventOwner.
+     * Then this function return the updated event.
      */
     updateEvent_addresss: protectedProcedure
       .input(z.object({
@@ -204,7 +210,7 @@ export const eventRouter = createTRPCRouter({
       }),
 
     /**
-     * After varifying the existance of the event and and the host of event, delete the event.
+     * Delete the event. The email should be email address of the eventOwner.
      */
     deleteEvent: protectedProcedure
       .input(z.object({
