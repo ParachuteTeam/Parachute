@@ -235,7 +235,7 @@ const EventPage: NextPage = () => {
 
   console.log(session);
 
-  if (session) {
+  if (!session) {
     return (
       <div className="min-h-screen w-screen">
         <Navbar />
