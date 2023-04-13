@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 import { PrismaClient } from "@prisma/client";
 import { TRPCError } from '@trpc/server';
@@ -36,7 +36,7 @@ export const timesloteRouter = createTRPCRouter({
           code: 'NOT_FOUND',
           message: 'This user is not participants of this event',
         });
-      };
+      }
       return await prisma.timeSlots.create({
         data: {
           participateEventID: req.input.eventID,
