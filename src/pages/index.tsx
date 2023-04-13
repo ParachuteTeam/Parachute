@@ -2,12 +2,16 @@ import { type NextPage } from "next";
 import Navbar from "../components/Navbar";
 import React from "react";
 import { useElementMouseRelativeAngle } from "../utils/hooks";
-import { signIn} from "next-auth/react";
-// import { useRouter } from 'next/router';
+import {signIn, useSession} from "next-auth/react";
+import { useRouter} from 'next/router';
 
 const Home: NextPage = () => {
   const { angle, ref } = useElementMouseRelativeAngle();
-  // const router = useRouter();
+  const router = useRouter();
+  const { data: session } = useSession();
+  if (session) {
+    void router.push('/dashboard')
+  }
   return (
     <>
       <Navbar />
