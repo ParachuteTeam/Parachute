@@ -2,7 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
-import { Popover } from "@headlessui/react";
+import OnHover from "./OnHover";
 
 const Navbar = () => {
   const router = useRouter();
@@ -30,18 +30,9 @@ const Navbar = () => {
           </div>
         </div>
         {session && (
-          <Popover className="relative">
-            <Popover.Button className="focus:outline-none">
-              <Image
-                className="cursor-pointer rounded-full"
-                src={image}
-                alt="User dropdown"
-                width={40}
-                height={40}
-              />
-            </Popover.Button>
-            <Popover.Panel>
-              <div className="w-50 absolute right-0 top-[48px] z-10 divide-y divide-gray-100 rounded-lg bg-white shadow dark:divide-gray-600 dark:bg-gray-700">
+          <OnHover
+            content={
+              <div className="w-50 absolute right-0 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-gray-600 dark:bg-gray-700">
                 <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
                   <div> {name} </div>
                   <div className="truncate font-medium"> {email} </div>
@@ -81,8 +72,16 @@ const Navbar = () => {
                   </a>
                 </div>
               </div>
-            </Popover.Panel>
-          </Popover>
+            }
+          >
+            <Image
+              className="cursor-pointer rounded-full"
+              src={image}
+              alt="User dropdown"
+              width={40}
+              height={40}
+            />
+          </OnHover>
         )}
       </div>
     </div>
