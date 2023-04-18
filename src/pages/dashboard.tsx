@@ -15,7 +15,7 @@ const EventCard = () => {
   return (
     <Link
       className="card mb-4 flex flex-col gap-1 p-5 hover:ring-2 hover:ring-gray-300"
-      href="/dashboard"
+      href="/event/1"
     >
       <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
         <MdOutlineCalendarToday />
