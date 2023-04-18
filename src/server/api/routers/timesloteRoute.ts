@@ -70,7 +70,7 @@ export const timesloteRouter = createTRPCRouter({
   /**
    Delete one timeslot.
    */
-  deleteParticipate: protectedProcedure
+  deleteTimeslot: protectedProcedure
     .input(
       z.object({
         userID: z.string(),
