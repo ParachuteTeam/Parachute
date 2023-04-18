@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import OnHover from "./OnHover";
+import Link from "next/link";
 
 const Navbar = () => {
   const router = useRouter();
@@ -19,7 +20,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky top-0 flex w-full justify-center bg-white py-4 px-12">
+    <div className="sticky top-0 flex w-full justify-center bg-white px-12 py-4">
       <div className="mx-auto flex max-w-[1200px] grow cursor-pointer text-3xl font-bold">
         <div className="grow cursor-pointer text-3xl font-bold">
           <div
@@ -42,28 +43,28 @@ const Navbar = () => {
                   aria-labelledby="avatarButton"
                 >
                   <li>
-                    <a
-                      href="#"
+                    <Link
+                      href="/dashboard"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                       Dashboard
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                       Settings
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a
+                    <Link
                       href="#"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                       Earnings
-                    </a>
+                    </Link>
                   </li>
                 </ul>
                 <div onClick={() => void onClickSignOut()} className="py-1">

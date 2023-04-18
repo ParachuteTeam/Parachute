@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import React from "react";
 import {
@@ -43,17 +44,41 @@ const selectDaysOptions: ListboxOption[] = [
   },
 ];
 
+const generateRandomEventId = () => {
+  // Replace this with your preferred method for generating a random event ID.
+  return Math.floor(Math.random() * 1000000).toString();
+};
+
 const StartNewEventSection = () => {
+  const router = useRouter();
+  const [eventName, setEventName] = React.useState("");
+  const [timezone, setTimezone] = React.useState("");
+  const [timespanStart, setTimespanStart] = React.useState("");
+  const [timespanEnd, setTimespanEnd] = React.useState("");
   const [selectDaysType, setSelectDaysType] = React.useState("days-of-week");
+
+  const handleCreateEvent = async () => {
+    const eventId = generateRandomEventId();
+    // Save the event details to the database, and update the Event model.
+
+    // Redirect to the event page with the generated event ID.
+    await router.push(
+      `/event/${eventId}?eventTitle=${encodeURIComponent(eventName)}`
+    );
+  };
   return (
     <>
       <div className="input-field">
         <label>Event name</label>
-        <input placeholder="New Meeting" />
+        <input
+          placeholder="New Meeting"
+          value={eventName}
+          onChange={(e) => setEventName(e.target.value)}
+        />
       </div>
       <div className="input-field">
         <label>Timezone</label>
-        <input />
+        <input value={timezone} onChange={(e) => setTimezone(e.target.value)} />
       </div>
       <div className="input-field">
         <label>Select days</label>
@@ -66,11 +91,24 @@ const StartNewEventSection = () => {
       <div className="input-field">
         <label>Timespan</label>
         <div className="flex flex-row gap-2">
-          <input className="w-[50%]" />
-          <input className="w-[50%]" />
+          <input
+            className="w-[50%]"
+            value={timespanStart}
+            onChange={(e) => setTimespanStart(e.target.value)}
+          />
+          <input
+            className="w-[50%]"
+            value={timespanEnd}
+            onChange={(e) => setTimespanEnd(e.target.value)}
+          />
         </div>
       </div>
-      <button className="primary-button mt-3 py-3">Create Event</button>
+      <button
+        className="primary-button mt-3 py-3"
+        onClick={() => void handleCreateEvent()}
+      >
+        Create Event
+      </button>
       <div className="text-center text-xs text-gray-400">
         Timezone, days and time span cannot be <br />
         changed after the event is created
@@ -114,7 +152,7 @@ const Dashboard: NextPage = () => {
   return (
     <div className="min-h-screen w-screen bg-gray-100">
       <Navbar />
-      <div className="flex justify-center py-8 px-12">
+      <div className="flex justify-center px-12 py-8">
         <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
           <div className="flex h-full flex-grow flex-col">
             <div className="mb-6 text-2xl font-bold">Recent Events</div>

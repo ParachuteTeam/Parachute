@@ -43,7 +43,6 @@ model Account {
 
 model Event {
   id           String        @id @default(uuid())
-  joinCode     String        @db.VarChar(6) @unique
   occuringDays String
   begins       DateTime
   ends         DateTime
@@ -52,6 +51,7 @@ model Event {
   address      String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  joinCode     String        @unique @db.VarChar(6)
   owner        User          @relation(fields: [ownerID], references: [id])
   participant  Participate[]
 
