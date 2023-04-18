@@ -10,6 +10,10 @@
 const config = {
   reactStrictMode: true,
 
+  images: {
+    domains: ["lh3.googleusercontent.com", 's.gravatar.com'],
+  },
+
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
    * must comment the below `i18n` config out.

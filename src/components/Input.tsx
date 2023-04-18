@@ -21,7 +21,7 @@ export const Selector: React.FC<SelectorProps> = ({
         className ?? ""
       }`}
     >
-      {options.map((option, index) => (
+      {options.map((option: string, index: number) => (
         <button
           key={index}
           className={`w-full ${

@@ -93,9 +93,9 @@ model TimeSlots {
   date               DateTime
   begins             DateTime
   ends               DateTime
-  participate        Participate? @relation(fields: [participateEventID, participateUserID], references: [eventID, userID])
   participateEventID String?
   participateUserID  String?
+  participate        Participate? @relation(fields: [participateEventID, participateUserID], references: [eventID, userID])
 
   @@index([participateEventID, participateUserID])
 }
