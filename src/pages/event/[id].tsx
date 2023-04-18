@@ -180,9 +180,9 @@ const OperationCard: React.FC = () => {
 
 const LogInCard: React.FC = () => {
   return (
-    <div className="flex h-full w-full flex-row justify-center p-6">
-      <div className="fixed top-1/2 left-1/2 flex h-[65vh] w-[65vw] flex-1 -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-lg border-[1px] border-gray-300">
-        <div className="my-10 flex h-full w-full flex-col border-b-2 border-gray-300">
+    <div className="flex h-full w-full flex-row justify-center p-6 pt-16">
+      <div className="flex h-[65vh] max-w-[50vw] flex-1 items-center justify-center rounded-lg border-[1px] border-gray-300">
+        <div className="my-10 flex h-full w-full flex-col">
           <div className="flex w-full flex-col border-b-[1px] border-gray-300 p-5">
             <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
               <MdOutlineCalendarToday />
