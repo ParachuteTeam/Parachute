@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 import { PrismaClient } from "@prisma/client";
-import { TRPCError } from '@trpc/server';
+import { TRPCError } from "@trpc/server";
 
 const prisma = new PrismaClient();
 
@@ -27,8 +27,8 @@ export const participateRouter = createTRPCRouter({
       });
       if (!eventCheck) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Joincode is invalid!',
+          code: "NOT_FOUND",
+          message: "Joincode is invalid!",
         });
       }
       return await prisma.participate.create({
@@ -47,7 +47,7 @@ export const participateRouter = createTRPCRouter({
     .query(async (req) => {
       return await prisma.participate.findMany({
         where: { userID: req.input.userID },
-        select: { eventID: true},
+        select: { eventID: true },
       });
     }),
 
