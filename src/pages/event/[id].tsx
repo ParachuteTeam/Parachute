@@ -231,9 +231,11 @@ const EventPage: NextPage = () => {
   const { id } = router.query;
   void id;
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  console.log(session);
+  if (status === "loading") {
+    return <></>;
+  }
 
   if (!session) {
     return (
