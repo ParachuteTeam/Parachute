@@ -44,6 +44,7 @@ model Account {
 model Event {
   id           String        @id @default(uuid())
   joinCode     String        @db.VarChar(6) @unique
+  name         String        @db.VarChar(100)
   occuringDays String
   begins       DateTime
   ends         DateTime
@@ -61,6 +62,7 @@ model Event {
 model Participate {
   eventID   String
   userID    String
+  timeZone  timeZoneList
   timeSlots TimeSlots[]
   event     Event       @relation(fields: [eventID], references: [id])
   user      User        @relation(fields: [userID], references: [id])
@@ -103,4 +105,44 @@ model TimeSlots {
 enum eventType {
   DAYSOFWEEK
   DATES
+}
+
+enum timeZoneList {
+    UTC-12:00
+    UTC-11:00
+    UTC-10:00
+    UTC-09:30
+    UTC-09:00
+    UTC-08:00
+    UTC-07:00
+    UTC-06:00
+    UTC-05:00
+    UTC-04:00
+    UTC-03:00
+    UTC-02:00
+    UTC-01:00
+    UTC±00:00
+    UTC+01:00
+    UTC+02:00
+    UTC+03:00
+    UTC+03:30
+    UTC+04:00
+    UTC+04:30
+    UTC+05:00
+    UTC+05:30
+    UTC+05:45
+    UTC+06:00
+    UTC+06:30
+    UTC+07:00
+    UTC+08:00
+    UTC+08:45
+    UTC+09:00
+    UTC+09:30
+    UTC+10:00
+    UTC+10:30
+    UTC+11:00
+    UTC+12:00
+    UTC+12:45
+    UTC+13:00
+    UTC+14:00
 }
