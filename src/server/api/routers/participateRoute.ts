@@ -16,6 +16,7 @@ export const participateRouter = createTRPCRouter({
     .input(
       z.object({
         userID: z.string(),
+        timeZone: z.string(),
         joinCode: z.string(),
       })
     )
@@ -35,6 +36,7 @@ export const participateRouter = createTRPCRouter({
         data: {
           eventID: eventCheck.id,
           userID: req.input.userID,
+          timeZone: req.input.timeZone,
         },
       });
     }),
