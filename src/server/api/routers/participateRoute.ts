@@ -54,6 +54,30 @@ export const participateRouter = createTRPCRouter({
     }),
 
   /**
+   This function are used to update the timeZone of a participation
+   */
+  updateTimeZone: protectedProcedure
+    .input(z.object({
+      userID: z.string(),
+      eventID: z.string(),
+      timeZone: z.string(),
+    }))
+    .mutation(async (req) => {
+      return await prisma.participate.update({
+        where: {
+          eventID_userID: {
+            eventID: req.input.eventID,
+            userID: req.input.userID,
+          },
+        },
+        data: {
+          timeZone: req.input.timeZone,
+        },
+      });
+    }),
+
+
+  /**
    Delete a participate according to userID and eventID
    */
   deleteParticipate: protectedProcedure
