@@ -70,11 +70,13 @@ export const eventRouter = createTRPCRouter({
       .input(
         z.object({
             occuringDays: z.string(),
+            name: z.string(),
             begins: z.string().datetime(),
             ends: z.string().datetime(),
             type: z.enum(VALUES),
             email: z.string().email(),
             address: z.string(),
+            timeZone: z.string(),
         })
       )
       .mutation(async (req) => {
@@ -94,6 +96,7 @@ export const eventRouter = createTRPCRouter({
               data: {
                   occuringDays: req.input.occuringDays,
                   joinCode: randomSixDigitString,
+                  name: req.input.name,
                   begins: req.input.begins,
                   ends: req.input.ends,
                   type: req.input.type,
@@ -105,6 +108,7 @@ export const eventRouter = createTRPCRouter({
               data: {
                   eventID: newEvent.id,
                   userID: userCheck.id,
+                  timeZone: req.input.timeZone,
                   timeSlots: {} = {},
               },
           });

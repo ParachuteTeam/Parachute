@@ -1,19 +1,16 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Navbar from "../../components/Navbar";
-import {
-  MdOutlineAccessTime,
-  MdOutlineCalendarToday,
-  MdOutlineEditCalendar,
-  MdOutlineFileDownloadDone,
-} from "react-icons/md";
+import { MdOutlineAccessTime, MdOutlineCalendarToday } from "react-icons/md";
 import { HiOutlineGlobe } from "react-icons/hi";
 import { EventTypeTag } from "../../components/Tag";
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import { Tab } from "@headlessui/react";
 import { RoundedListbox } from "../../components/Input";
-import ScheduleSelector from "react-schedule-selector";
-import { format } from "date-fns";
+import {
+  GroupAvailabilityZone,
+  MyAvailabilityZone,
+} from "../../components/AvailabilityZone";
 import { useSession } from "next-auth/react";
 import {
   Auth0LoginButton,
@@ -77,68 +74,6 @@ const OperationCardTab: React.FC<
   );
 };
 
-const MyAvailabilityZone: React.FC = () => {
-  const [schedule, setSchedule] = useState<Date[]>([]);
-  console.log(schedule);
-  return (
-    <div className="relative flex h-[500px]">
-      <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
-        <MdOutlineEditCalendar className="text-md" />
-        Click or drag to select available time slots
-      </div>
-      <div className="absolute right-8 flex h-full flex-row items-center">
-        <div className="card flex h-36 w-64 flex-col items-center justify-center shadow-lg">
-          <MdOutlineFileDownloadDone className="text-5xl text-gray-500" />
-          <div className="mt-1 text-lg font-bold">File Saved</div>
-          <div className="text-[12px] font-light text-gray-500">
-            Availability is up to date
-          </div>
-        </div>
-      </div>
-      <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
-        <div className="w-fit">
-          <ScheduleSelector
-            selection={schedule}
-            numDays={5}
-            minTime={8}
-            maxTime={22}
-            hourlyChunks={4}
-            rowGap="0px"
-            columnGap="10px"
-            renderTimeLabel={(time) => {
-              return (
-                <div className="relative bottom-[9px] w-16 text-right text-xs text-gray-500">
-                  {time.getMinutes() % 30 == 0 ? format(time, "p") : ""}
-                </div>
-              );
-            }}
-            renderDateLabel={(datetime) => {
-              return (
-                <div className="flex w-20 flex-col items-center border-b border-black pb-1">
-                  <div className="text-xs">{format(datetime, "MMM d")}</div>
-                  <div className="mt-[-4px] text-lg font-bold">
-                    {format(datetime, "EEE")}
-                  </div>
-                </div>
-              );
-            }}
-            renderDateCell={(datetime, selected) => {
-              return (
-                <div
-                  className={`h-6 w-20 border border-t-0 border-black ${
-                    selected ? "bg-black" : ""
-                  }`}
-                />
-              );
-            }}
-            onChange={setSchedule}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const OperationCard: React.FC = () => {
   return (
     <div className="flex flex-row justify-center p-6">
@@ -155,27 +90,27 @@ const OperationCard: React.FC = () => {
           <Tab.Panels>
             <Tab.Panel>
               <MyAvailabilityZone />
-              <div className="flex flex-row gap-2 border-t border-gray-300 px-6 py-4 text-sm">
-                <div className="flex grow flex-col gap-1">
-                  <p className="font-semibold">My timezone</p>
-                  <p className="font-light">
-                    All time and availability information are displayed for this
-                    timezone
-                  </p>
-                </div>
-                <RoundedListbox
-                  className="rounded-input w-[300px] text-sm"
-                  direction="up"
-                  options={[{ label: "Chicago (GMT-8)", value: "gmt-8" }]}
-                  value="gmt-8"
-                  onChange={() => void 1}
-                />
-              </div>
             </Tab.Panel>
             <Tab.Panel>
-              <MyAvailabilityZone />
+              <GroupAvailabilityZone />
             </Tab.Panel>
           </Tab.Panels>
+          <div className="flex w-full flex-row gap-2 rounded-b-md border-t border-gray-300 bg-white px-6 py-4 text-sm">
+            <div className="flex grow flex-col gap-1">
+              <p className="font-semibold">My timezone</p>
+              <p className="font-light">
+                All time and availability information are displayed for this
+                timezone
+              </p>
+            </div>
+            <RoundedListbox
+              className="rounded-input w-[300px] text-sm"
+              direction="up"
+              options={[{ label: "Chicago (GMT-8)", value: "gmt-8" }]}
+              value="gmt-8"
+              onChange={() => void 1}
+            />
+          </div>
         </Tab.Group>
       </div>
     </div>
