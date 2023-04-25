@@ -2,11 +2,15 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import React from "react";
+import { api } from "../utils/api";
 import {
   MdOutlineAccessTime,
   MdOutlineCalendarToday,
   MdOutlineSearch,
 } from "react-icons/md";
+import { MyAvailabilityZone } from "../components/AvailabilityZone";
+import { format } from "date-fns";
+import { useSession } from "next-auth/react";
 import { EventTypeTag } from "../components/Tag";
 import type { ListboxOption } from "../components/Input";
 import { RoundedListbox, Selector } from "../components/Input";
@@ -36,11 +40,11 @@ const EventCard = () => {
 const selectDaysOptions: ListboxOption[] = [
   {
     label: "Days of week",
-    value: "days-of-week",
+    value: "DAYSOFWEEK",
   },
   {
     label: "Specific days",
-    value: "specific-days",
+    value: "DATES",
   },
 ];
 
@@ -55,16 +59,31 @@ const StartNewEventSection = () => {
   const [timezone, setTimezone] = React.useState("");
   const [timespanStart, setTimespanStart] = React.useState("");
   const [timespanEnd, setTimespanEnd] = React.useState("");
-  const [selectDaysType, setSelectDaysType] = React.useState("days-of-week");
+  const [selectDaysType, setSelectDaysType] = React.useState<
+    "DAYSOFWEEK" | "DATES"
+  >("DAYSOFWEEK");
+
+  const { data: session } = useSession();
+  const email = session?.user.email as string;
+  const mutation = api.events.createEvent.useMutation();
 
   const handleCreateEvent = async () => {
     const eventId = generateRandomEventId();
     // Save the event details to the database, and update the Event model.
 
+    const newEvent = mutation.mutate({
+      occuringDays: "",
+      name: eventName,
+      begins: new Date().toISOString(),
+      ends: new Date().toISOString(),
+      type: selectDaysType,
+      email: email,
+      address: "",
+      timeZone: timezone,
+    });
+
     // Redirect to the event page with the generated event ID.
-    await router.push(
-      `/event/${eventId}?eventTitle=${encodeURIComponent(eventName)}`
-    );
+    await router.push(`/event/${eventId}`);
   };
   return (
     <>

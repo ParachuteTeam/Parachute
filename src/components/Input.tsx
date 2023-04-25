@@ -17,7 +17,7 @@ export const Selector: React.FC<SelectorProps> = ({
 }) => {
   return (
     <div
-      className={`rounded-input justify-stretch flex flex-row gap-1 p-0.5 text-sm ${
+      className={`rounded-input flex flex-row justify-stretch gap-1 p-0.5 text-sm ${
         className ?? ""
       }`}
     >
@@ -27,7 +27,7 @@ export const Selector: React.FC<SelectorProps> = ({
           className={`w-full ${
             selectedIndex === index
               ? "primary-button"
-              : "text-semibold py-2 px-4"
+              : "text-semibold px-4 py-2"
           }`}
           onClick={() => onChange(index)}
         >
@@ -39,16 +39,16 @@ export const Selector: React.FC<SelectorProps> = ({
 };
 
 export interface ListboxOption {
-  label: string;
-  value: string;
+  label: "Days of week" | "Specific days";
+  value: "DAYSOFWEEK" | "DATES";
 }
 
 export interface RoundedListboxProps {
   className?: string;
   direction?: "up" | "down";
   options: ListboxOption[];
-  value: string;
-  onChange: (value: string) => void;
+  value: "DAYSOFWEEK" | "DATES";
+  onChange: (value: "DAYSOFWEEK" | "DATES") => void;
 }
 
 export const RoundedListbox: React.FC<RoundedListboxProps> = ({
