@@ -2,10 +2,9 @@ import { type NextPage } from "next";
 import Navbar from "../components/Navbar";
 import React from "react";
 import { useElementMouseRelativeAngle } from "../utils/hooks";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import LoginButton from "../components/LoginButton";
-import { FcGoogle } from "react-icons/fc";
+import { Auth0LoginButton, GoogleLoginButton } from "../components/LoginButton";
 
 const Home: NextPage = () => {
   const { angle, ref } = useElementMouseRelativeAngle();
@@ -41,24 +40,8 @@ const Home: NextPage = () => {
             <div className="mb-2 text-sm text-gray-500">
               Try Parachute right now
             </div>
-            <LoginButton
-              onClick={() =>
-                void signIn("google", {
-                  callbackUrl: `${window.location.origin}/dashboard`,
-                })
-              }
-              buttonText="Sign in with Google"
-              isBlack
-            />
-            <LoginButton
-              onClick={() =>
-                void signIn("auth0", {
-                  callbackUrl: `${window.location.origin}/dashboard`,
-                })
-              }
-              buttonText="Sign in with Auth0"
-              isBlack={false}
-            />
+            <GoogleLoginButton />
+            <Auth0LoginButton />
           </div>
         </div>
       </div>

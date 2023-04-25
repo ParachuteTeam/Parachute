@@ -1,3 +1,5 @@
+import React from "react";
+import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { SiAuth0 } from "react-icons/si";
 
@@ -30,4 +32,30 @@ const LoginButton: React.FC<ButtonProps> = ({
   );
 };
 
-export default LoginButton;
+export const GoogleLoginButton = () => {
+  return (
+    <LoginButton
+      onClick={() =>
+        void signIn("google", {
+          callbackUrl: `${window.location.origin}/dashboard`,
+        })
+      }
+      buttonText="Sign in with Google"
+      isBlack
+    />
+  );
+};
+
+export const Auth0LoginButton = () => {
+  return (
+    <LoginButton
+      onClick={() =>
+        void signIn("auth0", {
+          callbackUrl: `${window.location.origin}/dashboard`,
+        })
+      }
+      buttonText="Sign in with Auth0"
+      isBlack={false}
+    />
+  );
+};

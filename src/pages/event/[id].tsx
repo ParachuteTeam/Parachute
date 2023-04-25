@@ -15,6 +15,10 @@ import { RoundedListbox } from "../../components/Input";
 import ScheduleSelector from "react-schedule-selector";
 import { format } from "date-fns";
 import { signIn, useSession } from "next-auth/react";
+import {
+  Auth0LoginButton,
+  GoogleLoginButton,
+} from "../../components/LoginButton";
 
 const EventInfoHeader: React.FC = () => {
   return (
@@ -205,18 +209,8 @@ const LogInCard: React.FC = () => {
                 <div className="text-sm font-light text-gray-600">
                   Sign in to join event
                 </div>
-                <button
-                  onClick={() => void signIn("google")}
-                  className="w-full rounded-lg bg-black p-3 px-10 text-center font-semibold text-white"
-                >
-                  Sign in with Google
-                </button>
-                <button
-                  onClick={() => void signIn("auth0")}
-                  className="w-full rounded-lg border p-3 px-10 text-center font-semibold"
-                >
-                  Sign in with Auth0
-                </button>
+                <GoogleLoginButton />
+                <Auth0LoginButton />
               </div>
             </div>
           </div>
