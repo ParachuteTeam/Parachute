@@ -14,7 +14,7 @@ import { Tab } from "@headlessui/react";
 import { RoundedListbox } from "../../components/Input";
 import ScheduleSelector from "react-schedule-selector";
 import { format } from "date-fns";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import {
   Auth0LoginButton,
   GoogleLoginButton,
