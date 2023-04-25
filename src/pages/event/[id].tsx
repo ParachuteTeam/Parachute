@@ -12,8 +12,13 @@ import {
   MyAvailabilityZone,
 } from "../../components/AvailabilityZone";
 import { signIn, useSession } from "next-auth/react";
+import { api } from "../../utils/api";
 
 const EventInfoHeader: React.FC = () => {
+  const router = useRouter();
+  const eventId = router.query.id as string;
+  const event = api.events.getEvent.useQuery({ eventId });
+  console.log(event);
   return (
     <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
       <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
