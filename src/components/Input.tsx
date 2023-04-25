@@ -39,15 +39,15 @@ export const Selector: React.FC<SelectorProps> = ({
 };
 
 export interface ListboxOption {
-  label: "Days of week" | "Specific days";
-  value: "DAYSOFWEEK" | "DATES";
+  label: string;
+  value: string;
 }
 
 export interface RoundedListboxProps {
   className?: string;
   direction?: "up" | "down";
   options: ListboxOption[];
-  value: "DAYSOFWEEK" | "DATES";
+  value: string;
   onChange: (value: "DAYSOFWEEK" | "DATES") => void;
 }
 

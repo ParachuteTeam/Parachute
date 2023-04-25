@@ -8,8 +8,6 @@ import {
   MdOutlineCalendarToday,
   MdOutlineSearch,
 } from "react-icons/md";
-import { MyAvailabilityZone } from "../components/AvailabilityZone";
-import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import { EventTypeTag } from "../components/Tag";
 import type { ListboxOption } from "../components/Input";
@@ -48,11 +46,6 @@ const selectDaysOptions: ListboxOption[] = [
   },
 ];
 
-const generateRandomEventId = () => {
-  // Replace this with your preferred method for generating a random event ID.
-  return Math.floor(Math.random() * 1000000).toString();
-};
-
 const StartNewEventSection = () => {
   const router = useRouter();
   const [eventName, setEventName] = React.useState("");
@@ -67,23 +60,30 @@ const StartNewEventSection = () => {
   const email = session?.user.email as string;
   const mutation = api.events.createEvent.useMutation();
 
-  const handleCreateEvent = async () => {
-    const eventId = generateRandomEventId();
+  const handleCreateEvent = () => {
     // Save the event details to the database, and update the Event model.
 
-    const newEvent = mutation.mutate({
-      occuringDays: "",
-      name: eventName,
-      begins: new Date().toISOString(),
-      ends: new Date().toISOString(),
-      type: selectDaysType,
-      email: email,
-      address: "",
-      timeZone: timezone,
-    });
-
+    const newEvent = mutation.mutate(
+      {
+        occuringDays: "",
+        name: eventName,
+        begins: new Date().toISOString(),
+        ends: new Date().toISOString(),
+        type: selectDaysType,
+        email: email,
+        address: "",
+        timeZone: timezone,
+      },
+      {
+        onSuccess: (data) => {
+          const joinCode = data.joinCode; // Extract joinCode from the data object
+          void router.push(`/event/${joinCode}`).then(() => {
+            // Additional logic can be placed here, if required.
+          });
+        },
+      }
+    );
     // Redirect to the event page with the generated event ID.
-    await router.push(`/event/${eventId}`);
   };
   return (
     <>
