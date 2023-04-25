@@ -167,7 +167,6 @@ export const eventRouter = createTRPCRouter({
       // return eventCheck;
     }),
 
-<<<<<<< HEAD
   /**
    * Verify the status of event host and check the existance of event.
    * Then update event address. The email should be email address of the eventOwner.
@@ -216,6 +215,58 @@ export const eventRouter = createTRPCRouter({
         },
         data: {
           address: req.input.address,
+        },
+      });
+    }),
+
+  /**
+   * Verify the status of event host and check the existance of event.
+   * Then update event name. The email should be email address of the eventOwner.
+   * Then this function return the updated event.
+   */
+  updateEvent_name: protectedProcedure
+    .input(
+      z.object({
+        host_email: z.string().email(),
+        name: z.string(),
+        eventId: z.string(),
+      })
+    )
+    .mutation(async (req) => {
+      const eventCheck = await prisma.event.findUnique({
+        where: {
+          id: req.input.eventId,
+        },
+      });
+      if (!eventCheck) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Event does not exist",
+        });
+      }
+      const userCheck = await prisma.user.findUnique({
+        where: {
+          email: req.input.host_email,
+        },
+      });
+      if (!userCheck) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User does not exist",
+        });
+      }
+      if (userCheck.id != eventCheck.ownerID) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User is not event holder",
+        });
+      }
+      return await prisma.event.update({
+        where: {
+          id: req.input.eventId,
+        },
+        data: {
+          name: req.input.name,
         },
       });
     }),
@@ -270,188 +321,42 @@ export const eventRouter = createTRPCRouter({
         },
       });
     }),
-=======
-    /**
-     * Verify the status of event host and check the existance of event.
-     * Then update event address. The email should be email address of the eventOwner.
-     * Then this function return the updated event.
-     */
-    updateEvent_addresss: protectedProcedure
-      .input(z.object({
-          host_email: z.string().email(),
-          address: z.string(),
-          eventId: z.string()
-      }))
-      .mutation(async (req) => {
-          const eventCheck = await prisma.event.findUnique({
-              where: {
-                  id: req.input.eventId,
-              },
-          });
-          if (!eventCheck) {
-              throw new TRPCError({
-                  code: 'NOT_FOUND',
-                  message: 'Event does not exist',
-              });
-          }
-          const userCheck = await prisma.user.findUnique({
-              where: {
-                  email: req.input.host_email,
-              },
-          });
-          if (!userCheck) {
-              throw new TRPCError({
-                  code: 'NOT_FOUND',
-                  message: 'User does not exist',
-              });
-          }
-          if (userCheck.id != eventCheck.ownerID ) {
-              throw new TRPCError({
-                  code: 'UNAUTHORIZED',
-                  message: 'User is not event holder',
-              });
-          }
-          return await prisma.event.update({
-              where: {
-                  id: req.input.eventId,
-              },
-              data: {
-                  address: req.input.address,
-              },
-          });
-      }),
 
-    /**
-     * Verify the status of event host and check the existance of event.
-     * Then update event name. The email should be email address of the eventOwner.
-     * Then this function return the updated event.
-     */
-    updateEvent_name: protectedProcedure
-      .input(z.object({
-          host_email: z.string().email(),
-          name: z.string(),
-          eventId: z.string()
-      }))
-      .mutation(async (req) => {
-          const eventCheck = await prisma.event.findUnique({
-              where: {
-                  id: req.input.eventId,
-              },
-          });
-          if (!eventCheck) {
-              throw new TRPCError({
-                  code: 'NOT_FOUND',
-                  message: 'Event does not exist',
-              });
-          }
-          const userCheck = await prisma.user.findUnique({
-              where: {
-                  email: req.input.host_email,
-              },
-          });
-          if (!userCheck) {
-              throw new TRPCError({
-                  code: 'NOT_FOUND',
-                  message: 'User does not exist',
-              });
-          }
-          if (userCheck.id != eventCheck.ownerID ) {
-              throw new TRPCError({
-                  code: 'UNAUTHORIZED',
-                  message: 'User is not event holder',
-              });
-          }
-          return await prisma.event.update({
-              where: {
-                  id: req.input.eventId,
-              },
-              data: {
-                  name: req.input.name,
-              },
-          });
-      }),
+  /**
+   * This function returns all participants of given event.
+   *
+   */
+  getAllParticipants: publicProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+      })
+    )
+    .query((req) => {
+      return prisma.participate.findMany({
+        where: {
+          eventID: req.input.eventId,
+        },
+        select: { userID: true, timeZone: true },
+      });
+    }),
 
-    /**
-     * Delete the event. The email should be email address of the eventOwner.
-     */
-    deleteEvent: protectedProcedure
-      .input(z.object({
-          host_email: z.string().email(),
-          eventId: z.string(),
-      }))
-      .mutation(async (req) => {
-          const eventCheck = await prisma.event.findUnique({
-              where: {
-                  id: req.input.eventId,
-              },
-          });
-          if (!eventCheck) {
-              throw new TRPCError({
-                  code: 'NOT_FOUND',
-                  message: 'Event does not exist',
-              });
-          }
-          const userCheck = await prisma.user.findUnique({
-              where: {
-                  email: req.input.host_email,
-              },
-          });
-          if (!userCheck) {
-              throw new TRPCError({
-                  code: 'FORBIDDEN',
-                  message: 'User does not exist',
-              });
-          }
-          if (userCheck.id != eventCheck.ownerID ) {
-              throw new TRPCError({
-                  code: 'UNAUTHORIZED',
-                  message: 'User is not event holder',
-              });
-          }
-          await prisma.participate.deleteMany({
-              where: {
-                  eventID: req.input.eventId,
-              },
-          })
-          return await prisma.event.delete({
-              where: {
-                  id: req.input.eventId,
-              },
-          });
-      }),
-
-    /**
-     * This function returns all participants of given event.
-     *
-     */
-    getAllParticipants: publicProcedure
-      .input(z.object({
-          eventId: z.string()
-      }))
-      .query((req) => {
-          return prisma.participate.findMany({
-              where: {
-                  eventID: req.input.eventId,
-              },
-              select: { userID: true, timeZone: true},
-          });
-      }),
-
-    /**
-     * This function returns all available timeslots of given event.
-     *
-     */
-    getAllTimeSlots: publicProcedure
-      .input(z.object({
-          eventId: z.string()
-      }))
-      .query((req) => {
-          return prisma.participate.findMany({
-              where: {
-                  eventID: req.input.eventId,
-              },
-              select: {timeZone: true},
-          });
-      }),
->>>>>>> main
+  /**
+   * This function returns all available timeslots of given event.
+   *
+   */
+  getAllTimeSlots: publicProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+      })
+    )
+    .query((req) => {
+      return prisma.participate.findMany({
+        where: {
+          eventID: req.input.eventId,
+        },
+        select: { timeZone: true },
+      });
+    }),
 });
