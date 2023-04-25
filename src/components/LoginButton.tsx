@@ -18,8 +18,10 @@ const LoginButton: React.FC<ButtonProps> = ({
     <button
       onClick={onClick}
       className={
-        "flex w-full flex-row items-center justify-center gap-5 rounded-lg p-3 text-center font-semibold" +
-        (isBlack ? " bg-black text-white" : " border-2 border-gray-300")
+        "flex w-full flex-row items-center justify-center gap-5 rounded-lg border-2 p-3 text-left font-semibold" +
+        (isBlack
+          ? " border-transparent bg-black text-white"
+          : " border-gray-300")
       }
     >
       {isBlack ? (
@@ -27,7 +29,7 @@ const LoginButton: React.FC<ButtonProps> = ({
       ) : (
         <SiAuth0 className="h-8 w-8" />
       )}
-      {buttonText}
+      <div className="w-[150px]">{buttonText}</div>
     </button>
   );
 };
