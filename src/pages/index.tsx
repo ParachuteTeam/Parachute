@@ -5,6 +5,7 @@ import { useElementMouseRelativeAngle } from "../utils/hooks";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import LoginButton from "../components/LoginButton";
+import { FcGoogle } from "react-icons/fc";
 
 const Home: NextPage = () => {
   const { angle, ref } = useElementMouseRelativeAngle();
