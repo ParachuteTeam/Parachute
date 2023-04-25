@@ -143,6 +143,24 @@ export const eventRouter = createTRPCRouter({
     }),
 
   /**
+      This function get all information of a event.
+      You need to use joinCode as input.
+    */
+  getEventjoinCode: protectedProcedure
+    .input(
+      z.object({
+        joinCode: z.string(),
+      })
+    )
+    .query((req) => {
+      return prisma.event.findUnique({
+        where: {
+          joinCode: req.input.joinCode,
+        },
+      });
+    }),
+
+  /**
         This function get all information of a event.
         You need to use eventId as input.
     */
