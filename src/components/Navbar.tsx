@@ -1,4 +1,3 @@
-import React from "react";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
@@ -34,37 +33,14 @@ const Navbar = () => {
             content={
               <div className="w-50 absolute right-0 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-gray-600 dark:bg-gray-700">
                 <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                  <div> {name} </div>
-                  <div className="truncate font-medium"> {email} </div>
+                  <div>{name}</div>
+                  <div className="truncate font-medium">{email}</div>
                 </div>
                 <ul
                   className="py-2 text-sm text-gray-700 dark:text-gray-200"
                   aria-labelledby="avatarButton"
                 >
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Dashboard
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Settings
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Earnings
-                    </a>
-                  </li>
+                  <NavLink href="/dashboard" linkName="Dashboard" />
                 </ul>
                 <div onClick={() => void onClickSignOut()} className="py-1">
                   <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
@@ -89,3 +65,20 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+interface NavLinkProps {
+  href: string;
+  linkName: string;
+}
+const NavLink: React.FC<NavLinkProps> = ({ href, linkName }) => {
+  return (
+    <li>
+      <a
+        href={href}
+        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+      >
+        {linkName}
+      </a>
+    </li>
+  );
+};

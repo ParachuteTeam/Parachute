@@ -10,6 +10,7 @@ import { EventTypeTag } from "../components/Tag";
 import type { ListboxOption } from "../components/Input";
 import { RoundedListbox, Selector } from "../components/Input";
 import Link from "next/link";
+import { DateSelect } from "../components/DateSelect";
 
 const EventCard = () => {
   return (
@@ -45,6 +46,7 @@ const selectDaysOptions: ListboxOption[] = [
 
 const StartNewEventSection = () => {
   const [selectDaysType, setSelectDaysType] = React.useState("days-of-week");
+  const [selectedDays, setSelectedDays] = React.useState<Date[]>([]);
   return (
     <>
       <div className="input-field">
@@ -60,9 +62,30 @@ const StartNewEventSection = () => {
         <RoundedListbox
           options={selectDaysOptions}
           value={selectDaysType}
-          onChange={setSelectDaysType}
+          onChange={(value) => {
+            setSelectedDays([]);
+            setSelectDaysType(value);
+          }}
         />
       </div>
+      {selectDaysType === "days-of-week" && (
+        <>
+          <div className="input-field">
+            <label>Days of week</label>
+            <text>Click or drag on days to select</text>
+          </div>
+          <DateSelect week value={selectedDays} onChange={setSelectedDays} />
+        </>
+      )}
+      {selectDaysType === "specific-days" && (
+        <>
+          <div className="input-field">
+            <label>Dates</label>
+            <text>Click or drag on dates to select</text>
+          </div>
+          <DateSelect value={selectedDays} onChange={setSelectedDays} />
+        </>
+      )}
       <div className="input-field">
         <label>Timespan</label>
         <div className="flex flex-row gap-2">
