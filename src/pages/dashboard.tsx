@@ -62,14 +62,26 @@ const StartNewEventSection = () => {
         <RoundedListbox
           options={selectDaysOptions}
           value={selectDaysType}
-          onChange={setSelectDaysType}
+          onChange={(value) => {
+            setSelectedDays([]);
+            setSelectDaysType(value);
+          }}
         />
       </div>
+      {selectDaysType === "days-of-week" && (
+        <>
+          <div className="input-field">
+            <label>Days of week</label>
+            <text>Click or drag on days to select</text>
+          </div>
+          <DateSelect week value={selectedDays} onChange={setSelectedDays} />
+        </>
+      )}
       {selectDaysType === "specific-days" && (
         <>
           <div className="input-field">
             <label>Dates</label>
-            <text>Click on dates to select</text>
+            <text>Click or drag on dates to select</text>
           </div>
           <DateSelect value={selectedDays} onChange={setSelectedDays} />
         </>

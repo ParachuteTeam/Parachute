@@ -39,15 +39,21 @@ const iterateDaysBetween = (
 };
 
 interface DateSelectProps {
+  week?: boolean;
   value?: Date[];
   onChange?: (value: Date[]) => void;
 }
 
-export const DateSelect: React.FC<DateSelectProps> = ({ value, onChange }) => {
+export const DateSelect: React.FC<DateSelectProps> = ({
+  week,
+  value,
+  onChange,
+}) => {
   const [currentDate, setCurrentDate] = React.useState(new Date());
 
-  const firstDay = addDays(currentDate, -currentDate.getDay() - 14);
-  const lastDay = addDays(currentDate, 6 - currentDate.getDay() + 14);
+  const firstDayOfWeek = addDays(currentDate, -currentDate.getDay());
+  const firstDay = addDays(firstDayOfWeek, -14);
+  const lastDay = addDays(firstDayOfWeek, 20);
 
   const valueCopy = useMemo(() => value?.slice() ?? [], [value]);
 
@@ -105,6 +111,57 @@ export const DateSelect: React.FC<DateSelectProps> = ({ value, onChange }) => {
     setSelectionStart(null);
     setSelectionEnd(null);
   }, [selectionStart, selectionEnd, selectionMode, valueCopy, onChange]);
+
+  if (week) {
+    return (
+      <div className="grid select-none grid-cols-7" onMouseLeave={endSelection}>
+        {Array.from({ length: 7 })
+          .map((_, i) => addDays(firstDayOfWeek, i))
+          .map((date) => {
+            const appearSelected = shouldAppearSelected(date);
+            const prevSelected =
+              date.getDay() !== 0 && prevShouldAppearSelected(date);
+            const nextSelected =
+              date.getDay() !== 6 && nextShouldAppearSelected(date);
+            return (
+              <div
+                key={date.toISOString()}
+                className="py-0.5"
+                onMouseDown={() => {
+                  setSelectionStart(date);
+                  setSelectionEnd(date);
+                  setSelectionMode(
+                    valueCopy.some((d) => isEqual(d, date))
+                      ? "deselect"
+                      : "select"
+                  );
+                }}
+                onMouseUp={endSelection}
+                onMouseEnter={() => {
+                  if (selectionStart) {
+                    setSelectionEnd(date);
+                  }
+                }}
+              >
+                <div
+                  className={`flex aspect-square flex-col justify-center text-center ${
+                    appearSelected ? "rounded-full bg-black" : ""
+                  } ${prevSelected ? "rounded-l-none" : ""} ${
+                    nextSelected ? "rounded-r-none" : ""
+                  }`}
+                >
+                  {appearSelected ? (
+                    <div className="text-white">{format(date, "EEE")}</div>
+                  ) : (
+                    <div>{format(date, "EEE")}</div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+      </div>
+    );
+  }
 
   return (
     <div
