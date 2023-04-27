@@ -28,7 +28,9 @@ const EventInfoHeader: React.FC = () => {
             <MdOutlineAccessTime className="ml-1" />
             <div>12:00 PM - 1:00 PM</div>
           </div>
-          <div className="text-3xl font-semibold">CS 222 Group Meeting</div>
+          <div className="mb-0.5 text-3xl font-semibold">
+            CS 222 Group Meeting
+          </div>
           <div className="flex flex-row items-center gap-2 text-sm">
             <EventTypeTag>My Event</EventTypeTag>
             <p>No one filled yet</p>

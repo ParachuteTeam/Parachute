@@ -15,7 +15,7 @@ import { DateSelect } from "../components/DateSelect";
 const EventCard = () => {
   return (
     <Link
-      className="card mb-4 flex flex-col gap-1 p-5 hover:ring-2 hover:ring-gray-300"
+      className="card mb-4 flex flex-col gap-1.5 p-5 hover:ring-2 hover:ring-gray-300"
       href="/event/1"
     >
       <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
@@ -24,7 +24,7 @@ const EventCard = () => {
         <MdOutlineAccessTime className="ml-1" />
         <div>12:00 PM - 1:00 PM</div>
       </div>
-      <div className="text-2xl font-semibold">CS 222 Group Meeting</div>
+      <div className="mb-0.5 text-2xl font-semibold">CS 222 Group Meeting</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         <EventTypeTag>My Event</EventTypeTag>
         <div>No one filled yet</div>
@@ -49,15 +49,15 @@ const StartNewEventSection = () => {
   const [selectedDays, setSelectedDays] = React.useState<Date[]>([]);
   return (
     <>
-      <div className="input-field">
+      <div className="input-field text-sm">
         <label>Event name</label>
         <input placeholder="New Meeting" />
       </div>
-      <div className="input-field">
+      <div className="input-field text-sm">
         <label>Timezone</label>
         <input />
       </div>
-      <div className="input-field">
+      <div className="input-field text-sm">
         <label>Select days</label>
         <RoundedListbox
           options={selectDaysOptions}
@@ -88,12 +88,12 @@ const StartNewEventSection = () => {
       )}
       <div className="input-field">
         <label>Timespan</label>
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 text-sm">
           <input className="w-[50%]" />
           <input className="w-[50%]" />
         </div>
       </div>
-      <button className="primary-button mt-3 py-3">Create Event</button>
+      <button className="primary-button mt-3 py-3 text-sm">Create Event</button>
       <div className="text-center text-xs text-gray-400">
         Timezone, days and time span cannot be <br />
         changed after the event is created
@@ -110,7 +110,7 @@ const JoinExistingEventSection = () => {
         <text>Ask the host to provide the 6-digit event code</text>
         <input placeholder="xxxxxx" />
       </div>
-      <button className="primary-button mt-3 py-3">Join Event</button>
+      <button className="primary-button mt-3 py-3 text-sm">Join Event</button>
     </>
   );
 };

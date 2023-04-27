@@ -17,7 +17,7 @@ export const Selector: React.FC<SelectorProps> = ({
 }) => {
   return (
     <div
-      className={`rounded-input justify-stretch flex flex-row gap-1 p-0.5 text-sm ${
+      className={`rounded-input justify-stretch flex flex-row gap-1 rounded-lg p-0.5 text-sm ${
         className ?? ""
       }`}
     >
@@ -87,7 +87,7 @@ export const RoundedListbox: React.FC<RoundedListboxProps> = ({
                 z-[1] mt-1 max-h-60 w-full py-1 ${
                   direction === "up" ? "bottom-[45px]" : ""
                 }
-                overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5
+                overflow-auto rounded-md bg-white text-sm shadow-lg ring-1 ring-black ring-opacity-5
                 focus:outline-none
               `}
             >
