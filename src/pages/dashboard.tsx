@@ -8,9 +8,14 @@ import {
 } from "react-icons/md";
 import { EventTypeTag } from "../components/Tag";
 import type { ListboxOption } from "../components/Input";
-import { RoundedListbox, Selector } from "../components/Input";
+import {
+  RoundedListbox,
+  Selector,
+  RoundedTimezoneInput,
+} from "../components/Input";
 import Link from "next/link";
 import { DateSelect } from "../components/DateSelect";
+import { currentTimezone } from "../utils/timezone";
 
 const EventCard = () => {
   return (
@@ -47,19 +52,25 @@ const selectDaysOptions: ListboxOption[] = [
 const StartNewEventSection = () => {
   const [selectDaysType, setSelectDaysType] = React.useState("days-of-week");
   const [selectedDays, setSelectedDays] = React.useState<Date[]>([]);
+  const [timezone, setTimezone] = React.useState(currentTimezone);
   return (
     <>
       <div className="input-field text-sm">
         <label>Event name</label>
-        <input placeholder="New Meeting" />
+        <input className="rounded-input" placeholder="New Meeting" />
       </div>
       <div className="input-field text-sm">
         <label>Timezone</label>
-        <input />
+        <RoundedTimezoneInput
+          className="px-0 text-sm"
+          value={timezone}
+          onChange={setTimezone}
+        />
       </div>
       <div className="input-field text-sm">
         <label>Select days</label>
         <RoundedListbox
+          className="px-0 text-sm"
           options={selectDaysOptions}
           value={selectDaysType}
           onChange={(value) => {
@@ -89,8 +100,8 @@ const StartNewEventSection = () => {
       <div className="input-field">
         <label>Timespan</label>
         <div className="flex flex-row gap-2 text-sm">
-          <input className="w-[50%]" />
-          <input className="w-[50%]" />
+          <input className="rounded-input w-[50%]" />
+          <input className="rounded-input w-[50%]" />
         </div>
       </div>
       <button className="primary-button mt-3 py-3 text-sm">Create Event</button>
@@ -108,7 +119,7 @@ const JoinExistingEventSection = () => {
       <div className="input-field">
         <label>Event code</label>
         <text>Ask the host to provide the 6-digit event code</text>
-        <input placeholder="xxxxxx" />
+        <input className="rounded-input" placeholder="xxxxxx" />
       </div>
       <button className="primary-button mt-3 py-3 text-sm">Join Event</button>
     </>

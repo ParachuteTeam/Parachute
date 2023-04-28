@@ -46,14 +46,6 @@
         @apply text-sm text-gray-500;
     }
 
-    .input-field input {
-        @apply rounded-input;
-    }
-
-    .input-field button {
-        @apply rounded-input;
-    }
-
     .primary-button {
         @apply bg-black text-white font-semibold py-2 px-4 rounded-md;
     }
