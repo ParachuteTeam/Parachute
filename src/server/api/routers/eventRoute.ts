@@ -164,6 +164,29 @@ export const eventRouter = createTRPCRouter({
       }),
 
     /**
+     This function get all information of a event.
+     You need to use joinCode as input.
+     */
+    getEventjoinCode: protectedProcedure
+      .input(z.object({
+          joinCode: z.string()
+      }))
+      .query((req) => {
+          return prisma.event.findUnique({
+              where: {
+                  joinCode: req.input.joinCode,
+              },
+          });
+          // if (!eventCheck) {
+          //     throw new TRPCError({
+          //         code: 'NOT_FOUND',
+          //         message: 'Event does not exist',
+          //     });
+          // }
+          // return eventCheck;
+      }),
+
+    /**
      * Verify the status of event host and check the existance of event.
      * Then update event address. The email should be email address of the eventOwner.
      * Then this function return the updated event.
