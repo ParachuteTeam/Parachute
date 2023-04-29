@@ -39,7 +39,7 @@ const TimeLabel: React.FC<{ time: Date }> = ({ time }) => {
 
 export const MyAvailabilityZone: React.FC = () => {
   const [schedule, setSchedule] = useState<Date[]>([]);
-  console.log(schedule);
+  console.log(schedule.sort());
   return (
     <div className="relative h-[500px]">
       <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
@@ -61,12 +61,9 @@ export const MyAvailabilityZone: React.FC = () => {
             occuringDates={[
               new Date(2022, 8, 30),
               new Date(2022, 9, 2),
-              new Date(2022, 9, 3),
-              new Date(2022, 9, 4),
               new Date(2022, 9, 6),
               new Date(2022, 9, 10),
               new Date(2022, 9, 11),
-              new Date(2022, 9, 12),
             ]}
             startTime={8}
             endTime={20}
@@ -98,16 +95,13 @@ const Parachute_ScheduleSelector: React.FC<{
     ) {
       console.log(date);
       acc.push(index);
-    } else if (index == arr.length - 1) {
-      acc.push(index + 1);
     }
     return acc;
   }, [] as number[]);
-  console.log("asd", consecutiveDates);
-
   return (
     <>
       {consecutiveDates.map((dateIndex, index, arr) => {
+        const length = occuringDates.length;
         return (
           <ScheduleSelector
             key={index}
@@ -115,7 +109,11 @@ const Parachute_ScheduleSelector: React.FC<{
             startDate={
               dateIndex == 0 ? occuringDates[0] : occuringDates[dateIndex]
             }
-            numDays={index == arr.length - 1 ? 1 : arr[index + 1] - dateIndex}
+            numDays={
+              index == arr.length - 1
+                ? length - dateIndex
+                : (arr[index + 1] ?? length) - dateIndex
+            }
             minTime={startTime}
             maxTime={endTime}
             hourlyChunks={4}
@@ -125,7 +123,7 @@ const Parachute_ScheduleSelector: React.FC<{
               return dateIndex == 0 ? (
                 <TimeLabel time={time} />
               ) : (
-                <TimeLabel time={new Date()} />
+                <TimeLabel time={new Date("")} />
               );
             }}
             renderDateLabel={(datetime) => {
