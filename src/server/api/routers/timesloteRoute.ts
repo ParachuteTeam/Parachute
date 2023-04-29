@@ -4,7 +4,6 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 import { PrismaClient } from "@prisma/client";
 import { TRPCError } from '@trpc/server';
-
 const prisma = new PrismaClient();
 
 export const timesloteRouter = createTRPCRouter({
@@ -67,6 +66,23 @@ export const timesloteRouter = createTRPCRouter({
       });
     }),
 
+    /**
+     This function return all timeslots of given eventId.
+     The function return the several days, begins, ends in ascending order.
+     */
+    getAllTimeSlots_Event: protectedProcedure
+      .input(z.object({
+        eventID: z.string(),
+      }))
+      .query(async (req) => {
+        return await prisma.timeSlots.findMany({
+          where: {
+            participateEventID: req.input.eventID,
+          },
+          orderBy: { begins: 'asc' },
+        });
+      }),
+
   /**
    Delete one timeslot.
    */
@@ -87,6 +103,29 @@ export const timesloteRouter = createTRPCRouter({
             eventID: req.input.eventID,
             userID: req.input.userID,
           },
+          date: req.input.date,
+          begins: req.input.begins,
+          ends: req.input.ends,
+        },
+      });
+    }),
+
+  /**
+   Delete timeslots of whole event.
+   */
+  deleteTimeslotEvent: protectedProcedure
+    .input(
+      z.object({
+        eventID: z.string(),
+        date: z.string().datetime(),
+        begins: z.string().datetime(),
+        ends: z.string().datetime(),
+      })
+    )
+    .mutation(async (req) => {
+      return await prisma.timeSlots.deleteMany({
+        where: {
+          participateEventID: req.input.eventID,
           date: req.input.date,
           begins: req.input.begins,
           ends: req.input.ends,
