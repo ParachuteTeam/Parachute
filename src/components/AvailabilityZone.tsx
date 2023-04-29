@@ -56,17 +56,77 @@ export const MyAvailabilityZone: React.FC = () => {
         </div>
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
-        <div className="w-fit">
+        <div className="flex w-fit flex-row">
+          <Parachute_ScheduleSelector
+            occuringDates={[
+              new Date(2022, 8, 30),
+              new Date(2022, 9, 2),
+              new Date(2022, 9, 3),
+              new Date(2022, 9, 4),
+              new Date(2022, 9, 6),
+              new Date(2022, 9, 10),
+              new Date(2022, 9, 11),
+              new Date(2022, 9, 12),
+            ]}
+            startTime={8}
+            endTime={20}
+            schedule={schedule}
+            setSchedule={setSchedule}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Parachute_ScheduleSelector: React.FC<{
+  occuringDates: Date[];
+  startTime: number;
+  endTime: number;
+  schedule: Date[];
+  setSchedule: React.Dispatch<React.SetStateAction<Date[]>>;
+}> = ({ occuringDates, startTime, endTime, schedule, setSchedule }) => {
+  // find index of consecutive dates
+  const consecutiveDates = occuringDates.reduce((acc, date, index, arr) => {
+    if (index == 0) {
+      acc.push(index);
+      return acc;
+    }
+    // checks for consecutive index
+    if (
+      add(arr[index - 1] ?? new Date(), { days: 1 }).getDate() != date.getDate()
+    ) {
+      console.log(date);
+      acc.push(index);
+    } else if (index == arr.length - 1) {
+      acc.push(index + 1);
+    }
+    return acc;
+  }, [] as number[]);
+  console.log("asd", consecutiveDates);
+
+  return (
+    <>
+      {consecutiveDates.map((dateIndex, index, arr) => {
+        return (
           <ScheduleSelector
+            key={index}
             selection={schedule}
-            numDays={5}
-            minTime={8}
-            maxTime={22}
+            startDate={
+              dateIndex == 0 ? occuringDates[0] : occuringDates[dateIndex]
+            }
+            numDays={index == arr.length - 1 ? 1 : arr[index + 1] - dateIndex}
+            minTime={startTime}
+            maxTime={endTime}
             hourlyChunks={4}
             rowGap="0px"
             columnGap="10px"
             renderTimeLabel={(time) => {
-              return <TimeLabel time={time} />;
+              return dateIndex == 0 ? (
+                <TimeLabel time={time} />
+              ) : (
+                <TimeLabel time={new Date()} />
+              );
             }}
             renderDateLabel={(datetime) => {
               return <DateLabel datetime={datetime} />;
@@ -76,9 +136,9 @@ export const MyAvailabilityZone: React.FC = () => {
             }}
             onChange={setSchedule}
           />
-        </div>
-      </div>
-    </div>
+        );
+      })}
+    </>
   );
 };
 
