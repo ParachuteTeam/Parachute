@@ -11,7 +11,7 @@ const Home: NextPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
   if (session) {
-    void router.push("/dashboard");
+    void router.replace("/dashboard");
   }
   return (
     <>
