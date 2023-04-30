@@ -29,10 +29,18 @@ const DateLabel: React.FC<{ datetime: Date }> = ({ datetime }) => {
   );
 };
 
-const TimeLabel: React.FC<{ time: Date }> = ({ time }) => {
+const TimeLabel: React.FC<{ time: Date; showTime: boolean }> = ({
+  time,
+  showTime,
+}) => {
   return (
-    <div className="relative bottom-[9px] w-16 text-right text-xs text-gray-500">
-      {time.getMinutes() % 30 == 0 ? format(time, "p") : ""}
+    <div
+      className={
+        "relative bottom-[9px] text-right text-xs text-gray-500 " +
+        (showTime ? "w-16" : "w-10")
+      }
+    >
+      {showTime && (time.getMinutes() % 30 == 0 ? format(time, "p") : "")}
     </div>
   );
 };
@@ -120,11 +128,7 @@ const Parachute_ScheduleSelector: React.FC<{
             rowGap="0px"
             columnGap="10px"
             renderTimeLabel={(time) => {
-              return dateIndex == 0 ? (
-                <TimeLabel time={time} />
-              ) : (
-                <TimeLabel time={new Date("")} />
-              );
+              return <TimeLabel time={time} showTime={dateIndex == 0} />;
             }}
             renderDateLabel={(datetime) => {
               return <DateLabel datetime={datetime} />;
