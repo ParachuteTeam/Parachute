@@ -165,14 +165,14 @@ const StartNewEventSection = () => {
 const JoinExistingEventSection = () => {
   const router = useRouter();
   const [joinCode, setJoinCode] = React.useState("");
+  const event = api.events.getEventjoinCode.useQuery({ joinCode });
+
   const handleJoinEvent = () => {
-    if (joinCode) {
-      const event = api.events.getEventjoinCode.useQuery({ joinCode });
-      const eventId = event.data?.id as string;
+    const eventId = event?.data?.id || ("" as string);
+    if (eventId)
       void router.push(`/event/${eventId}`).then(() => {
         // Additional logic can be placed here, if required.
       });
-    }
   };
   return (
     <>
