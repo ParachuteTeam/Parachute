@@ -6,7 +6,7 @@ import { HiOutlineGlobe } from "react-icons/hi";
 import { EventTypeTag } from "../../components/Tag";
 import React, { Fragment } from "react";
 import { Tab } from "@headlessui/react";
-import { RoundedListbox } from "../../components/Input";
+import { RoundedTimezoneInput } from "../../components/Input";
 import {
   GroupAvailabilityZone,
   MyAvailabilityZone,
@@ -17,13 +17,15 @@ import {
   Auth0LoginButton,
   GoogleLoginButton,
 } from "../../components/LoginButton";
+import { currentTimezone } from "../../utils/timezone";
 
 const EventInfoHeader: React.FC = () => {
   const router = useRouter();
-  const joinCode = router.query.id as string;
-  const event = api.events.getEventjoinCode.useQuery({ joinCode });
+  const eventId = router.query.id as string;
+  const event = api.events.getEvent.useQuery({ eventId });
   const eventName = event.data?.name;
   const occuringDays = event.data?.occuringDays;
+  const joinCode = event.data?.joinCode;
   return (
     <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
       <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
@@ -43,7 +45,7 @@ const EventInfoHeader: React.FC = () => {
             </p>
             <p>
               <span className="font-bold">Link:</span>{" "}
-              https://parachute.fyi/event/{joinCode}
+              https://parachute.fyi/event/{eventId}
             </p>
           </div>
         </div>
@@ -81,6 +83,7 @@ const OperationCardTab: React.FC<
 };
 
 const OperationCard: React.FC = () => {
+  const [timezone, setTimezone] = React.useState(currentTimezone);
   return (
     <div className="flex flex-row justify-center p-6">
       <div className="card max-w-[1248px] flex-1 p-0">
@@ -109,12 +112,11 @@ const OperationCard: React.FC = () => {
                 timezone
               </p>
             </div>
-            <RoundedListbox
-              className="rounded-input w-[300px] text-sm"
+            <RoundedTimezoneInput
+              className="w-[300px] px-0"
               direction="up"
-              options={[{ label: "Chicago (GMT-8)", value: "gmt-8" }]}
-              value="gmt-8"
-              onChange={() => void 1}
+              value={timezone}
+              onChange={setTimezone}
             />
           </div>
         </Tab.Group>

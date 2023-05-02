@@ -11,9 +11,14 @@ import {
 import { useSession } from "next-auth/react";
 import { EventTypeTag } from "../components/Tag";
 import type { ListboxOption } from "../components/Input";
-import { RoundedListbox, Selector } from "../components/Input";
+import {
+  RoundedListbox,
+  Selector,
+  RoundedTimezoneInput,
+} from "../components/Input";
 import Link from "next/link";
 import { DateSelect } from "../components/DateSelect";
+import { currentTimezone } from "../utils/timezone";
 
 const EventCard = () => {
   return (
@@ -27,7 +32,7 @@ const EventCard = () => {
         <MdOutlineAccessTime className="ml-1" />
         <div>12:00 PM - 1:00 PM</div>
       </div>
-      <div className="text-2xl font-semibold">CS 222 Group Meeting</div>
+      <div className="mb-0.5 text-xl font-semibold">CS 222 Group Meeting</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         <EventTypeTag>My Event</EventTypeTag>
         <div>No one filled yet</div>
@@ -50,7 +55,7 @@ const selectDaysOptions: ListboxOption[] = [
 const StartNewEventSection = () => {
   const router = useRouter();
   const [eventName, setEventName] = React.useState("");
-  const [timezone, setTimezone] = React.useState("");
+  const [timezone, setTimezone] = React.useState(currentTimezone);
   const [timespanStart, setTimespanStart] = React.useState("");
   const [timespanEnd, setTimespanEnd] = React.useState("");
   const [selectDaysType, setSelectDaysType] = React.useState<
@@ -78,8 +83,8 @@ const StartNewEventSection = () => {
       },
       {
         onSuccess: (data) => {
-          const joinCode = data.joinCode; // Extract joinCode from the data object
-          void router.push(`/event/${joinCode}`).then(() => {
+          const eventId = data.id; // Extract joinCode from the data object
+          void router.push(`/event/${eventId}`).then(() => {
             // Additional logic can be placed here, if required.
           });
         },
@@ -90,21 +95,26 @@ const StartNewEventSection = () => {
 
   return (
     <>
-      <div className="input-field">
+      <div className="input-field text-sm">
         <label>Event name</label>
         <input
+          className="rounded-input"
           placeholder="New Meeting"
-          value={eventName}
           onChange={(e) => setEventName(e.target.value)}
         />
       </div>
-      <div className="input-field">
+      <div className="input-field text-sm">
         <label>Timezone</label>
-        <input value={timezone} onChange={(e) => setTimezone(e.target.value)} />
+        <RoundedTimezoneInput
+          className="px-0 text-sm"
+          value={timezone}
+          onChange={setTimezone}
+        />
       </div>
-      <div className="input-field">
+      <div className="input-field text-sm">
         <label>Select days</label>
         <RoundedListbox
+          className="px-0 text-sm"
           options={selectDaysOptions}
           value={selectDaysType}
           onChange={(value) => {
@@ -133,21 +143,13 @@ const StartNewEventSection = () => {
       )}
       <div className="input-field">
         <label>Timespan</label>
-        <div className="flex flex-row gap-2">
-          <input
-            className="w-[50%]"
-            value={timespanStart}
-            onChange={(e) => setTimespanStart(e.target.value)}
-          />
-          <input
-            className="w-[50%]"
-            value={timespanEnd}
-            onChange={(e) => setTimespanEnd(e.target.value)}
-          />
+        <div className="flex flex-row gap-2 text-sm">
+          <input className="rounded-input w-[50%]" />
+          <input className="rounded-input w-[50%]" />
         </div>
       </div>
       <button
-        className="primary-button mt-3 py-3"
+        className="primary-button mt-3 py-3 text-sm"
         onClick={() => void handleCreateEvent()}
       >
         Create Event
@@ -161,14 +163,35 @@ const StartNewEventSection = () => {
 };
 
 const JoinExistingEventSection = () => {
+  const router = useRouter();
+  const [joinCode, setJoinCode] = React.useState("");
+  const handleJoinEvent = () => {
+    if (joinCode) {
+      const event = api.events.getEventjoinCode.useQuery({ joinCode });
+      const eventId = event.data?.id as string;
+      void router.push(`/event/${eventId}`).then(() => {
+        // Additional logic can be placed here, if required.
+      });
+    }
+  };
   return (
     <>
       <div className="input-field">
         <label>Event code</label>
         <text>Ask the host to provide the 6-digit event code</text>
-        <input placeholder="xxxxxx" />
+        <input
+          className="rounded-input"
+          placeholder="xxxxxx"
+          value={joinCode}
+          onChange={(e) => setJoinCode(e.target.value)}
+        />
       </div>
-      <button className="primary-button mt-3 py-3">Join Event</button>
+      <button
+        className="primary-button mt-3 py-3 text-sm"
+        onClick={handleJoinEvent}
+      >
+        Join Event
+      </button>
     </>
   );
 };
