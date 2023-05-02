@@ -104,7 +104,9 @@ const StartNewEventSection = () => {
           <input className="rounded-input w-[50%]" />
         </div>
       </div>
-      <button className="primary-button mt-3 py-3 text-sm">Create Event</button>
+      <button className="primary-button-with-hover mt-3 py-3 text-sm">
+        Create Event
+      </button>
       <div className="text-center text-xs text-gray-400">
         Timezone, days and time span cannot be <br />
         changed after the event is created
@@ -121,7 +123,9 @@ const JoinExistingEventSection = () => {
         <text>Ask the host to provide the 6-digit event code</text>
         <input className="rounded-input" placeholder="xxxxxx" />
       </div>
-      <button className="primary-button mt-3 py-3 text-sm">Join Event</button>
+      <button className="primary-button-with-hover mt-3 py-3 text-sm">
+        Join Event
+      </button>
     </>
   );
 };
