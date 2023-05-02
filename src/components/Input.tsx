@@ -1,6 +1,7 @@
-import React, { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
+import React, { Fragment, useMemo, useState } from "react";
+import { Combobox, Listbox, Transition } from "@headlessui/react";
 import { HiCheck, HiChevronUpDown } from "react-icons/hi2";
+import { availableTimezones } from "../utils/timezone";
 
 interface SelectorProps {
   className?: string;
@@ -17,7 +18,7 @@ export const Selector: React.FC<SelectorProps> = ({
 }) => {
   return (
     <div
-      className={`rounded-input justify-stretch flex flex-row gap-1 p-0.5 text-sm ${
+      className={`rounded-input justify-stretch flex flex-row gap-1 rounded-lg p-0.5 text-sm ${
         className ?? ""
       }`}
     >
@@ -64,7 +65,7 @@ export const RoundedListbox: React.FC<RoundedListboxProps> = ({
       <div className={className}>
         <div className="relative">
           <div>
-            <Listbox.Button className="w-full">
+            <Listbox.Button className="rounded-input w-full px-3">
               <div className="flex items-center">
                 <div className="block grow truncate text-left">
                   <span>{selected?.label}</span>
@@ -87,7 +88,7 @@ export const RoundedListbox: React.FC<RoundedListboxProps> = ({
                 z-[1] mt-1 max-h-60 w-full py-1 ${
                   direction === "up" ? "bottom-[45px]" : ""
                 }
-                overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5
+                overflow-auto rounded-md bg-white text-sm shadow-lg ring-1 ring-black ring-opacity-5
                 focus:outline-none
               `}
             >
@@ -124,5 +125,141 @@ export const RoundedListbox: React.FC<RoundedListboxProps> = ({
         </div>
       </div>
     </Listbox>
+  );
+};
+
+export interface ComboboxOption {
+  label: string;
+  value: string;
+}
+
+export interface RoundedComboboxProps {
+  className?: string;
+  direction?: "up" | "down";
+  options: ListboxOption[];
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export const RoundedCombobox: React.FC<RoundedComboboxProps> = ({
+  className,
+  direction,
+  options,
+  value,
+  onChange,
+}) => {
+  const selected = options.find((option) => option.value === value);
+  const [query, setQuery] = useState("");
+
+  const filteredOptions = useMemo(
+    () =>
+      query === ""
+        ? options
+        : options.filter((option) => {
+            return option.label
+              .toLowerCase()
+              .includes(query?.toLowerCase() ?? "");
+          }),
+    [query, options]
+  );
+
+  return (
+    <Combobox value={value} onChange={onChange}>
+      <div className={className}>
+        <div className="relative">
+          <div className="rounded-input relative pl-3">
+            <Combobox.Input
+              className="border-none focus:outline-none"
+              displayValue={() => selected?.label ?? ""}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+            <Combobox.Button className="absolute inset-y-0 right-3 flex items-center">
+              <HiChevronUpDown className="h-5 w-5" aria-hidden="true" />
+            </Combobox.Button>
+          </div>
+          <Transition
+            as={Fragment}
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            afterLeave={() => setQuery("")}
+          >
+            <Combobox.Options
+              className={`
+                absolute
+                z-[1] mt-1 max-h-60 w-full py-1 ${
+                  direction === "up" ? "bottom-[50px]" : ""
+                }
+                overflow-auto rounded-md bg-white text-sm shadow-lg ring-1 ring-black ring-opacity-5
+                focus:outline-none
+              `}
+            >
+              {filteredOptions.length === 0 && query !== "" ? (
+                <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
+                  Nothing found.
+                </div>
+              ) : (
+                filteredOptions.map(({ value, label }) => (
+                  <Combobox.Option
+                    key={value}
+                    className={({ active }) =>
+                      `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                        active ? "bg-amber-100 text-amber-900" : "text-gray-900"
+                      }`
+                    }
+                    value={value}
+                  >
+                    {({ selected }) => (
+                      <>
+                        <span
+                          className={`block truncate ${
+                            selected ? "font-medium" : "font-normal"
+                          }`}
+                        >
+                          {label}
+                        </span>
+                        {selected ? (
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                            <HiCheck className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                  </Combobox.Option>
+                ))
+              )}
+            </Combobox.Options>
+          </Transition>
+        </div>
+      </div>
+    </Combobox>
+  );
+};
+
+interface TimezoneInputProps {
+  className?: string;
+  direction?: "up" | "down";
+  value: string;
+  onChange: (value: string) => void;
+}
+
+const timezoneOptions: ComboboxOption[] = availableTimezones.map(
+  (tz: string) => ({ label: tz, value: tz })
+);
+
+export const RoundedTimezoneInput: React.FC<TimezoneInputProps> = ({
+  className,
+  direction,
+  value,
+  onChange,
+}) => {
+  return (
+    <RoundedCombobox
+      className={className}
+      direction={direction}
+      options={timezoneOptions}
+      value={value}
+      onChange={onChange}
+    />
   );
 };

@@ -19,8 +19,8 @@ const Navbar = () => {
 
   return (
     <div className="sticky top-0 flex w-full justify-center bg-white py-4 px-12">
-      <div className="mx-auto flex max-w-[1200px] grow cursor-pointer text-3xl font-bold">
-        <div className="grow cursor-pointer text-3xl font-bold">
+      <div className="mx-auto flex max-w-[1200px] grow text-3xl font-bold">
+        <div className="grow text-3xl font-bold">
           <div
             className="max-w-[140px] grow cursor-pointer text-3xl font-bold"
             onClick={() => void router.push("/")}

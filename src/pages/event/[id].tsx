@@ -6,7 +6,7 @@ import { HiOutlineGlobe } from "react-icons/hi";
 import { EventTypeTag } from "../../components/Tag";
 import React, { Fragment } from "react";
 import { Tab } from "@headlessui/react";
-import { RoundedListbox } from "../../components/Input";
+import { RoundedTimezoneInput } from "../../components/Input";
 import {
   GroupAvailabilityZone,
   MyAvailabilityZone,
@@ -16,6 +16,7 @@ import {
   Auth0LoginButton,
   GoogleLoginButton,
 } from "../../components/LoginButton";
+import { currentTimezone } from "../../utils/timezone";
 
 const EventInfoHeader: React.FC = () => {
   return (
@@ -28,7 +29,9 @@ const EventInfoHeader: React.FC = () => {
             <MdOutlineAccessTime className="ml-1" />
             <div>12:00 PM - 1:00 PM</div>
           </div>
-          <div className="text-3xl font-semibold">CS 222 Group Meeting</div>
+          <div className="mb-0.5 text-3xl font-semibold">
+            CS 222 Group Meeting
+          </div>
           <div className="flex flex-row items-center gap-2 text-sm">
             <EventTypeTag>My Event</EventTypeTag>
             <p>No one filled yet</p>
@@ -75,6 +78,7 @@ const OperationCardTab: React.FC<
 };
 
 const OperationCard: React.FC = () => {
+  const [timezone, setTimezone] = React.useState(currentTimezone);
   return (
     <div className="flex flex-row justify-center p-6">
       <div className="card max-w-[1248px] flex-1 p-0">
@@ -103,12 +107,11 @@ const OperationCard: React.FC = () => {
                 timezone
               </p>
             </div>
-            <RoundedListbox
-              className="rounded-input w-[300px] text-sm"
+            <RoundedTimezoneInput
+              className="w-[300px] px-0"
               direction="up"
-              options={[{ label: "Chicago (GMT-8)", value: "gmt-8" }]}
-              value="gmt-8"
-              onChange={() => void 1}
+              value={timezone}
+              onChange={setTimezone}
             />
           </div>
         </Tab.Group>

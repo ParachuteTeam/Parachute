@@ -144,7 +144,7 @@ export const DateSelect: React.FC<DateSelectProps> = ({
                 }}
               >
                 <div
-                  className={`flex aspect-square flex-col justify-center text-center ${
+                  className={`flex aspect-square flex-col justify-center text-center text-sm ${
                     appearSelected ? "rounded-full bg-black" : ""
                   } ${prevSelected ? "rounded-l-none" : ""} ${
                     nextSelected ? "rounded-r-none" : ""
