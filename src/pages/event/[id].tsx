@@ -23,13 +23,14 @@ const EventInfoHeader: React.FC = () => {
   const joinCode = router.query.id as string;
   const event = api.events.getEventjoinCode.useQuery({ joinCode });
   const eventName = event.data?.name;
+  const occuringDays = event.data?.occuringDays;
   return (
     <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
       <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
         <div className="flex flex-1 flex-col gap-2">
           <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
             <MdOutlineCalendarToday />
-            <div>Sun, Wed, Thu</div>
+            <div>{occuringDays}</div>
             <MdOutlineAccessTime className="ml-1" />
             <div>12:00 PM - 1:00 PM</div>
           </div>

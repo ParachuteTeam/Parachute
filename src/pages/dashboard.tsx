@@ -67,7 +67,7 @@ const StartNewEventSection = () => {
 
     const newEvent = mutation.mutate(
       {
-        occuringDays: "",
+        occuringDays: selectedDays.toString(),
         name: eventName,
         begins: new Date().toISOString(),
         ends: new Date().toISOString(),
