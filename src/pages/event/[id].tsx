@@ -24,17 +24,56 @@ const EventInfoHeader: React.FC = () => {
   const eventId = router.query.id as string;
   const event = api.events.getEvent.useQuery({ eventId });
   const eventName = event.data?.name;
-  const occuringDays = event.data?.occuringDays;
+  const occuringDaysArray = event.data?.occuringDays?.split(",");
   const joinCode = event.data?.joinCode;
+  const startTime = event.data?.begins;
+  const endTime = event.data?.ends;
+
+  // Convert the Date objects to the desired format
+  const formatTime = (date: Date) => {
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
+  };
+
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    }).format(date);
+  };
+
+  let formattedStartTime = "Not available";
+  let formattedEndTime = "Not available";
+  let formattedOccuringDays = "Not available";
+
+  // Format the start and end times
+  if (startTime !== undefined && endTime !== undefined) {
+    formattedStartTime = formatTime(new Date(startTime));
+    formattedEndTime = formatTime(new Date(endTime));
+  }
+
+  if (occuringDaysArray !== undefined) {
+    formattedOccuringDays = occuringDaysArray
+      .map((day: string) => formatDate(new Date(day.trim())))
+      .join("; ");
+  }
+
   return (
     <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
       <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
         <div className="flex flex-1 flex-col gap-2">
           <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
             <MdOutlineCalendarToday />
-            <div>{occuringDays}</div>
+            <div>{formattedOccuringDays}</div>
             <MdOutlineAccessTime className="ml-1" />
-            <div>12:00 PM - 1:00 PM</div>
+            <div>
+              {formattedStartTime} - {formattedEndTime}
+            </div>
           </div>
           <div className="text-3xl font-semibold">{eventName}</div>
           <div className="flex flex-row items-center gap-2 text-sm">
