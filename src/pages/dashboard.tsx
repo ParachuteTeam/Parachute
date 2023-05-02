@@ -12,6 +12,7 @@ import {
   RoundedListbox,
   Selector,
   RoundedTimezoneInput,
+  TimespanSelector,
 } from "../components/Input";
 import Link from "next/link";
 import { DateSelect } from "../components/DateSelect";
@@ -53,6 +54,12 @@ const StartNewEventSection = () => {
   const [selectDaysType, setSelectDaysType] = React.useState("days-of-week");
   const [selectedDays, setSelectedDays] = React.useState<Date[]>([]);
   const [timezone, setTimezone] = React.useState(currentTimezone);
+  const [startTime, setStartTime] = React.useState<Date>(
+    new Date(0, 0, 1, 8, 0, 0)
+  );
+  const [endTime, setEndTime] = React.useState<Date>(
+    new Date(0, 0, 1, 22, 0, 0)
+  );
   return (
     <>
       <div className="input-field text-sm">
@@ -99,10 +106,12 @@ const StartNewEventSection = () => {
       )}
       <div className="input-field">
         <label>Timespan</label>
-        <div className="flex flex-row gap-2 text-sm">
-          <input className="rounded-input w-[50%]" />
-          <input className="rounded-input w-[50%]" />
-        </div>
+        <TimespanSelector
+          start={startTime}
+          end={endTime}
+          onChangeStart={setStartTime}
+          onChangeEnd={setEndTime}
+        />
       </div>
       <button className="primary-button mt-3 py-3 text-sm">Create Event</button>
       <div className="text-center text-xs text-gray-400">
