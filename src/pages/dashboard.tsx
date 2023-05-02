@@ -20,7 +20,7 @@ import { currentTimezone } from "../utils/timezone";
 const EventCard = () => {
   return (
     <Link
-      className="card mb-4 flex flex-col gap-1.5 p-5 hover:ring-2 hover:ring-gray-300"
+      className="card mb-4 flex flex-col gap-1 p-5 hover:ring-2 hover:ring-gray-300"
       href="/event/1"
     >
       <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
@@ -29,7 +29,7 @@ const EventCard = () => {
         <MdOutlineAccessTime className="ml-1" />
         <div>12:00 PM - 1:00 PM</div>
       </div>
-      <div className="mb-0.5 text-2xl font-semibold">CS 222 Group Meeting</div>
+      <div className="mb-0.5 text-xl font-semibold">CS 222 Group Meeting</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         <EventTypeTag>My Event</EventTypeTag>
         <div>No one filled yet</div>
