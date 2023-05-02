@@ -66,6 +66,7 @@ export const MyAvailabilityZone: React.FC = () => {
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <div className="flex w-fit flex-row">
           <Parachute_ScheduleSelector
+            isInteractable
             occuringDates={[
               new Date(2022, 8, 30),
               new Date(2022, 9, 2),
@@ -77,6 +78,7 @@ export const MyAvailabilityZone: React.FC = () => {
             endTime={20}
             schedule={schedule}
             setSchedule={setSchedule}
+            setHoveredTime={() => void 0}
           />
         </div>
       </div>
@@ -89,8 +91,18 @@ const Parachute_ScheduleSelector: React.FC<{
   startTime: number;
   endTime: number;
   schedule: Date[];
-  setSchedule: React.Dispatch<React.SetStateAction<Date[]>>;
-}> = ({ occuringDates, startTime, endTime, schedule, setSchedule }) => {
+  setSchedule?: React.Dispatch<React.SetStateAction<Date[]>>;
+  setHoveredTime: React.Dispatch<React.SetStateAction<Date | null>>;
+  isInteractable: boolean;
+}> = ({
+  occuringDates,
+  startTime,
+  endTime,
+  schedule,
+  setSchedule,
+  setHoveredTime,
+  isInteractable,
+}) => {
   // find index of consecutive dates
   const consecutiveDates = occuringDates.reduce((acc, date, index, arr) => {
     if (index == 0) {
@@ -133,10 +145,19 @@ const Parachute_ScheduleSelector: React.FC<{
             renderDateLabel={(datetime) => {
               return <DateLabel datetime={datetime} />;
             }}
-            renderDateCell={(_, selected) => {
-              return <TimeslotBlock selected={selected} />;
+            renderDateCell={(datetime, selected) => {
+              return isInteractable ? (
+                <TimeslotBlock selected={selected} />
+              ) : (
+                <div
+                  onMouseEnter={() => setHoveredTime(datetime)}
+                  onMouseLeave={() => setHoveredTime(null)}
+                >
+                  <TimeslotBlock selected={false} />
+                </div>
+              );
             }}
-            onChange={setSchedule}
+            onChange={isInteractable ? setSchedule : () => void 0}
           />
         );
       })}
@@ -188,32 +209,20 @@ export const GroupAvailabilityZone: React.FC = () => {
         </div>
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
-        <div className="w-fit">
-          <ScheduleSelector
-            selection={[]}
-            numDays={5}
-            minTime={8}
-            maxTime={22}
-            hourlyChunks={4}
-            rowGap="0px"
-            columnGap="10px"
-            renderTimeLabel={(time) => {
-              return <TimeLabel time={time} />;
-            }}
-            renderDateLabel={(datetime) => {
-              return <DateLabel datetime={datetime} />;
-            }}
-            renderDateCell={(datetime) => {
-              return (
-                <div
-                  onMouseEnter={() => setHoveredTime(datetime)}
-                  onMouseLeave={() => setHoveredTime(null)}
-                >
-                  <TimeslotBlock selected={false} />
-                </div>
-              );
-            }}
-            onChange={() => void 0}
+        <div className="flex w-fit flex-row">
+          <Parachute_ScheduleSelector
+            isInteractable={false}
+            occuringDates={[
+              new Date(2022, 8, 30),
+              new Date(2022, 9, 2),
+              new Date(2022, 9, 6),
+              new Date(2022, 9, 10),
+              new Date(2022, 9, 11),
+            ]}
+            startTime={8}
+            endTime={20}
+            schedule={[]}
+            setHoveredTime={setHoveredTime}
           />
         </div>
       </div>
