@@ -17,12 +17,20 @@ const TimeslotBlock: React.FC<{ selected: boolean; datetime: Date }> = ({
     // returns div with whole hours thicker than half hours, make half hours dotted
     <div
       className={`h-4 w-20 border border-t-0 border-black ${
-        !selected || datetime.getMinutes() == 45
+        !selected && datetime.getMinutes() == 45
           ? "border-black"
-          : !selected || datetime.getMinutes() == 15
+          : !selected && datetime.getMinutes() == 15
           ? "border-b-gray-500"
           : "border-b-gray-300"
-      } ${selected ? "border-black bg-[#79ffe1]" : ""}`}
+      } ${
+        selected
+          ? datetime.getMinutes() == 45
+            ? "border-b-black bg-[#79ffe1]"
+            : datetime.getMinutes() == 15
+            ? "border-b-gray-500 bg-[#79ffe1]"
+            : "border-b-gray-300 bg-[#79ffe1]"
+          : ""
+      }`}
     />
   );
 };
