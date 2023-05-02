@@ -8,12 +8,21 @@ import {
 import ScheduleSelector from "react-schedule-selector";
 import { IoEarthSharp } from "react-icons/io5";
 
-const TimeslotBlock: React.FC<{ selected: boolean }> = ({ selected }) => {
+const TimeslotBlock: React.FC<{ selected: boolean; datetime: Date }> = ({
+  selected,
+  datetime,
+}) => {
+  console.log(datetime.getMinutes());
   return (
+    // returns div with whole hours thicker than half hours, make half hours dotted
     <div
       className={`h-4 w-20 border border-t-0 border-black ${
-        selected ? "bg-black" : ""
-      }`}
+        !selected || datetime.getMinutes() == 45
+          ? "border-black"
+          : !selected || datetime.getMinutes() == 15
+          ? "border-b-gray-500"
+          : "border-b-gray-300"
+      } ${selected ? "border-black bg-[#79ffe1]" : ""}`}
     />
   );
 };
@@ -146,14 +155,15 @@ const Parachute_ScheduleSelector: React.FC<{
               return <DateLabel datetime={datetime} />;
             }}
             renderDateCell={(datetime, selected) => {
+              console.log("asdfasdfasdfasf", datetime);
               return isInteractable ? (
-                <TimeslotBlock selected={selected} />
+                <TimeslotBlock selected={selected} datetime={datetime} />
               ) : (
                 <div
                   onMouseEnter={() => setHoveredTime(datetime)}
                   onMouseLeave={() => setHoveredTime(null)}
                 >
-                  <TimeslotBlock selected={false} />
+                  <TimeslotBlock selected={false} datetime={datetime} />
                 </div>
               );
             }}
