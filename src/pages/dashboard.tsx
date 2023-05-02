@@ -20,25 +20,106 @@ import {
 import Link from "next/link";
 import { DateSelect } from "../components/DateSelect";
 import { currentTimezone } from "../utils/timezone";
+import { id } from "date-fns/locale";
+interface Event {
+  id: string;
+  name?: string;
+  occuringDays?: string;
+  joinCode: string;
+  begins?: Date;
+  ends?: Date;
+  // Add other properties as needed
+}
+interface EventCardProps {
+  event: Event;
+}
 
-const EventCard = () => {
+const EventCard: React.FC<EventCardProps> = ({ event }) => {
+  console.log("Event data:", event);
+  const eventId = event.id;
+  const eventName = event.name;
+  const occuringDaysArray = event.occuringDays?.split(",");
+  const startTime = event.begins;
+  const endTime = event.ends;
+
+  // Convert the Date objects to the desired format
+  const formatTime = (date: Date) => {
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }).format(date);
+    } catch (error) {
+      console.error("Invalid time value:", date, error);
+      return "Invalid time";
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }).format(date);
+    } catch (error) {
+      console.error("Invalid date value:", date, error);
+      return "Invalid date";
+    }
+  };
+
+  let formattedStartTime = "Not available";
+  let formattedEndTime = "Not available";
+  let formattedOccuringDays = "Not available";
+
+  // Format the start and end times
+  if (startTime !== undefined && endTime !== undefined) {
+    formattedStartTime = formatTime(new Date(startTime));
+    formattedEndTime = formatTime(new Date(endTime));
+  }
+
+  if (occuringDaysArray !== undefined) {
+    formattedOccuringDays = occuringDaysArray
+      .map((day: string) => formatDate(new Date(day.trim())))
+      .join("; ");
+  }
+
   return (
     <Link
       className="card mb-4 flex flex-col gap-1 p-5 hover:ring-2 hover:ring-gray-300"
-      href="/event/1"
+      href={`/event/${eventId}`}
     >
       <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
         <MdOutlineCalendarToday />
-        <div>Sun, Wed, Thu</div>
+        <div>{formattedOccuringDays}</div>
         <MdOutlineAccessTime className="ml-1" />
-        <div>12:00 PM - 1:00 PM</div>
+        <div>
+          {formattedStartTime} - {formattedEndTime}
+        </div>
       </div>
-      <div className="mb-0.5 text-xl font-semibold">CS 222 Group Meeting</div>
+      <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         <EventTypeTag>My Event</EventTypeTag>
         <div>No one filled yet</div>
       </div>
     </Link>
+  );
+};
+
+const EventList = () => {
+  const { data: session } = useSession();
+  const email = session?.user.email as string;
+  const { data: events } = api.events.getEventList.useQuery({ email });
+  console.log(events);
+
+  return (
+    <div className="event-list-container">
+      {events?.map((event) => (
+        <EventCard key={event.id} event={event} />
+      ))}
+    </div>
   );
 };
 
@@ -63,8 +144,6 @@ const StartNewEventSection = () => {
   const [endTime, setEndTime] = React.useState<Date>(
     new Date(0, 0, 1, 22, 0, 0)
   );
-  const [timespanStart, setTimespanStart] = React.useState("");
-  const [timespanEnd, setTimespanEnd] = React.useState("");
   const [selectDaysType, setSelectDaysType] = React.useState<
     "DAYSOFWEEK" | "DATES"
   >("DAYSOFWEEK");
@@ -237,9 +316,7 @@ const Dashboard: NextPage = () => {
                 placeholder="Search for an event name..."
               />
             </div>
-            <EventCard />
-            <EventCard />
-            <EventCard />
+            <EventList />
           </div>
           <div className="flex h-full flex-col">
             <div className="mb-6 text-2xl font-bold">Add Event</div>

@@ -137,7 +137,14 @@ export const eventRouter = createTRPCRouter({
       }
       return await prisma.event.findMany({
         where: { ownerID: userCheck.id },
-        select: { id: true, begins: true, joinCode: true },
+        select: {
+          id: true,
+          name: true,
+          begins: true,
+          ends: true,
+          joinCode: true,
+          occuringDays: true,
+        },
         orderBy: { begins: "asc" },
       });
     }),

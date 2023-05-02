@@ -31,20 +31,30 @@ const EventInfoHeader: React.FC = () => {
 
   // Convert the Date objects to the desired format
   const formatTime = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    }).format(date);
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }).format(date);
+    } catch (error) {
+      console.error("Invalid time value:", date, error);
+      return "Invalid time";
+    }
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    }).format(date);
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }).format(date);
+    } catch (error) {
+      console.error("Invalid date value:", date, error);
+      return "Invalid date";
+    }
   };
 
   let formattedStartTime = "Not available";
