@@ -284,8 +284,8 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
 }) => {
   const availableTimes = useMemo(() => {
     const times = [];
-    const start = timeStart ?? new Date(0, 0, 0, 0, 0, 0);
-    const end = timeEnd ?? new Date(0, 0, 0, 24, 0, 0);
+    const start = timeStart ?? new Date(0, 0, 1, 0, 0, 0);
+    const end = timeEnd ?? new Date(0, 0, 2, 0, 0, 0);
     const gap = timeGapMinutes ?? 30;
     for (let time = start; time <= end; time = addMinutes(time, gap)) {
       times.push(time);
@@ -298,11 +298,11 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
       className={className}
       direction={direction}
       options={availableTimes.map((time) => ({
-        label: format(time, "p"),
-        value: format(time, "HH:mm"),
+        label: format(time, "hh:mm aa") + (time.getDay() === 2 ? " (+1d)" : ""),
+        value: format(time, "dd:HH:mm"),
       }))}
-      value={format(value, "HH:mm")}
-      onChange={(value) => onChange?.(parse(value, "HH:mm", new Date()))}
+      value={format(value, "dd:HH:mm")}
+      onChange={(value) => onChange?.(parse(value, "dd:HH:mm", new Date()))}
     />
   );
 };

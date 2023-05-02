@@ -55,10 +55,10 @@ const StartNewEventSection = () => {
   const [selectedDays, setSelectedDays] = React.useState<Date[]>([]);
   const [timezone, setTimezone] = React.useState(currentTimezone);
   const [startTime, setStartTime] = React.useState<Date>(
-    new Date(0, 0, 0, 8, 0, 0)
+    new Date(0, 0, 1, 8, 0, 0)
   );
   const [endTime, setEndTime] = React.useState<Date>(
-    new Date(0, 0, 0, 22, 0, 0)
+    new Date(0, 0, 1, 22, 0, 0)
   );
   return (
     <>
