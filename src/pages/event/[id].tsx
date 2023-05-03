@@ -12,15 +12,15 @@ import {
   MyAvailabilityZone,
 } from "../../components/AvailabilityZone";
 import { useSession } from "next-auth/react";
+import { api } from "../../utils/api";
 import {
   Auth0LoginButton,
   GoogleLoginButton,
 } from "../../components/LoginButton";
 import { currentTimezone } from "../../utils/timezone";
+import { formatOccurring, formatTimespan } from "../../utils/utils";
 import { Dialog, Transition } from "@headlessui/react";
-import { useState } from "react";
-import { api } from "../../utils/api";
-import { useEffect } from 'react'
+import { useState, useEffect } from "react";
 
 interface EditDialogProps {
   isOpen: boolean;
@@ -29,12 +29,18 @@ interface EditDialogProps {
   onSubmit: (eventName: string) => void;
 }
 
+interface EditDialogProps {
+  isOpen: boolean;
+  close: () => void;
+  eventName: string;
+  onSubmit: (eventName: string) => void;
+}
 const EditDialog: React.FC<EditDialogProps> = ({
-  isOpen,
-  close,
-  eventName,
-  onSubmit,
-}) => {
+                                                 isOpen,
+                                                 close,
+                                                 eventName,
+                                                 onSubmit,
+                                               }) => {
   const [newEventName, setNewEventName] = useState(eventName);
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -77,7 +83,7 @@ const EditDialog: React.FC<EditDialogProps> = ({
                 <input
                   type="text"
                   className="rounded-input text-sm"
-                  placeholder="Enter event name here..."
+                  placeholder="Enter your new event name here..."
                   value={newEventName}
                   onChange={(e) => setNewEventName(e.target.value)}
                 />
@@ -124,11 +130,11 @@ interface DeleteDialogProps {
 }
 
 const DeleteDialog: React.FC<DeleteDialogProps> = ({
-  isOpen,
-  close,
-  eventName,
-  onSubmit,
-}) => {
+                                                     isOpen,
+                                                     close,
+                                                     eventName,
+                                                     onSubmit,
+                                                   }) => {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
@@ -197,8 +203,12 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
     </Transition>
   );
 };
-
 const EventInfoHeader: React.FC = () => {
+  const router = useRouter();
+  const eventId = router.query.id as string;
+  const name = router.query.name as string;
+  const { data: event } = api.events.getEvent.useQuery({ eventId });
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -207,6 +217,11 @@ const EventInfoHeader: React.FC = () => {
 
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
+
+
+  const occurringDaysArray = event?.occuringDays
+    .split(",")
+    .map((s) => new Date(s));
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -220,22 +235,32 @@ const EventInfoHeader: React.FC = () => {
         <div className="flex flex-1 flex-col gap-2">
           <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
             <MdOutlineCalendarToday />
-            <div>Sun, Wed, Thu</div>
+            <div>
+              {event
+                ? formatOccurring(
+                  occurringDaysArray ?? [],
+                  event.type === "DAYSOFWEEK"
+                )
+                : "Loading..."}
+            </div>
             <MdOutlineAccessTime className="ml-1" />
-            <div>12:00 PM - 1:00 PM</div>
+            <div>
+              {event ? formatTimespan(event.begins, event.ends) : "Loading..."}
+            </div>
           </div>
-          <div className="mb-0.5 text-3xl font-semibold">
-            CS 222 Group Meeting
+          <div className="text-3xl font-semibold">
+            {event?.name ?? "Loading..."}
           </div>
           <div className="flex flex-row items-center gap-2 text-sm">
             <EventTypeTag>My Event</EventTypeTag>
             <p>No one filled yet</p>
             <p>
-              <span className="font-bold">Event ID:</span> 123456
+              <span className="font-bold">Event ID:</span>{" "}
+              {event?.joinCode ?? ""}
             </p>
             <p>
               <span className="font-bold">Link:</span>{" "}
-              https://parachute.fyi/event/123456
+              https://parachute.fyi/event/{eventId}
             </p>
           </div>
         </div>
@@ -257,25 +282,29 @@ const EventInfoHeader: React.FC = () => {
       <EditDialog
         isOpen={isEditDialogOpen}
         close={() => setIsEditDialogOpen(false)}
-        eventName={"CS 222 Group Meeting"}
+        eventName={""}
         onSubmit={(newEventName) => {
           editEventName.mutate({
-            host_email: "haiyuezhang63@gmail.com",
+            host_email: email,
             name: newEventName,
-            eventId: "568b0bed-63c6-4296-8e98-0c74e30f3391",
+            eventId: eventId,
           });
+          window.location.reload();
         }}
       />
       <DeleteDialog
         isOpen={isDeleteDialogOpen}
         close={() => setIsDeleteDialogOpen(false)}
-        eventName={"CS 222 Group Meeting"}
+        eventName={event?.name ?? "Loading..."}
 
         onSubmit={() => {
-          deleteEvent.mutate({
-            host_email: email,
-            eventId: "568b0bed-63c6-4296-8e98-0c74e30f3391",
-          });
+          void (async () => {
+            deleteEvent.mutate({
+              host_email: email,
+              eventId: eventId,
+            });
+            await router.push('/dashboard');
+          })();
         }}
       />
     </div>
@@ -292,10 +321,10 @@ const OperationCardTab: React.FC<
           className={`
             mb-[-1px] cursor-pointer border-b-2 pb-3 focus:outline-none
             ${
-              selected
-                ? "border-black text-center"
-                : "border-transparent text-center font-light text-gray-500 hover:border-b-2 hover:border-gray-300 hover:text-gray-700"
-            }
+            selected
+              ? "border-black text-center"
+              : "border-transparent text-center font-light text-gray-500 hover:border-b-2 hover:border-gray-300 hover:text-gray-700"
+          }
             ${className ?? ""}
             `}
         >
