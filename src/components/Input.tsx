@@ -3,6 +3,7 @@ import { Combobox, Listbox, Transition } from "@headlessui/react";
 import { HiCheck, HiChevronUpDown } from "react-icons/hi2";
 import { availableTimezones } from "../utils/timezone";
 import { addMinutes, format, isAfter, isBefore, parse } from "date-fns";
+import { formatTime } from "../utils/utils";
 
 interface SelectorProps {
   className?: string;
@@ -19,7 +20,7 @@ export const Selector: React.FC<SelectorProps> = ({
 }) => {
   return (
     <div
-      className={`rounded-input flex flex-row justify-stretch gap-1 rounded-lg p-0.5 text-sm ${
+      className={`rounded-input justify-stretch flex flex-row gap-1 rounded-lg p-0.5 text-sm ${
         className ?? ""
       }`}
     >
@@ -298,7 +299,7 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
       className={className}
       direction={direction}
       options={availableTimes.map((time) => ({
-        label: format(time, "hh:mm aa") + (time.getDay() === 2 ? " (+1d)" : ""),
+        label: formatTime(time),
         value: format(time, "dd:HH:mm"),
       }))}
       value={format(value, "dd:HH:mm")}
