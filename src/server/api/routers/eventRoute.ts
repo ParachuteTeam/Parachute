@@ -144,6 +144,7 @@ export const eventRouter = createTRPCRouter({
           ends: true,
           joinCode: true,
           occuringDays: true,
+          type: true,
         },
         orderBy: { begins: "asc" },
       });
