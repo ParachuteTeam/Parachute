@@ -45,7 +45,7 @@ model Event {
   id           String        @id @default(uuid())
   joinCode     String        @db.VarChar(6) @unique
   name         String        @db.VarChar(100)
-  occuringDays String
+  occuringDays String        @db.Text
   begins       DateTime
   ends         DateTime
   type         eventType
