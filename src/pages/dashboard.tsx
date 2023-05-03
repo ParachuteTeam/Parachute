@@ -118,7 +118,7 @@ const StartNewEventSection = () => {
   const handleCreateEvent = () => {
     // Save the event details to the database, and update the Event model.
 
-    const newEvent = mutation.mutate(
+    mutation.mutate(
       {
         occuringDays: selectedDays.toString(),
         name: eventName,
