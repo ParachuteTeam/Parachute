@@ -20,6 +20,7 @@ import { currentTimezone } from "../../utils/timezone";
 import { Dialog, Transition } from "@headlessui/react";
 import { useState } from "react";
 import { api } from "../../utils/api";
+import { useEffect } from 'react'
 
 interface EditDialogProps {
   isOpen: boolean;
@@ -204,6 +205,15 @@ const EventInfoHeader: React.FC = () => {
   const deleteEvent = api.events.deleteEvent.useMutation();
   const editEventName = api.events.updateEvent_name.useMutation();
 
+  const [email, setEmail] = useState("");
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user?.email) {
+      setEmail(session.user.email);
+    }
+  }, [session]);
+
   return (
     <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
       <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
@@ -260,9 +270,10 @@ const EventInfoHeader: React.FC = () => {
         isOpen={isDeleteDialogOpen}
         close={() => setIsDeleteDialogOpen(false)}
         eventName={"CS 222 Group Meeting"}
+
         onSubmit={() => {
           deleteEvent.mutate({
-            host_email: "haiyuezhang63@gmail.com",
+            host_email: email,
             eventId: "568b0bed-63c6-4296-8e98-0c74e30f3391",
           });
         }}
