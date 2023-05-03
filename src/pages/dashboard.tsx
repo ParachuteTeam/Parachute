@@ -39,7 +39,9 @@ interface EventCardProps {
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const eventId = event.id;
   const eventName = event.name;
-  const occurringDaysArray = event.occuringDays?.split(",");
+  const occurringDaysArray = event.occuringDays
+    ?.split(",")
+    .map((s) => new Date(s));
 
   return (
     <Link
@@ -50,7 +52,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
         <MdOutlineCalendarToday />
         <div>
           {formatOccurring(
-            occurringDaysArray?.map((s) => new Date(s)) ?? [],
+            occurringDaysArray ?? [],
             event.type === "DAYSOFWEEK"
           )}
         </div>

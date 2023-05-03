@@ -25,7 +25,9 @@ const EventInfoHeader: React.FC = () => {
   const eventId = router.query.id as string;
   const { data: event } = api.events.getEvent.useQuery({ eventId });
 
-  const occurringDaysArray = event?.occuringDays.split(",");
+  const occurringDaysArray = event?.occuringDays
+    .split(",")
+    .map((s) => new Date(s));
 
   return (
     <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
@@ -36,7 +38,7 @@ const EventInfoHeader: React.FC = () => {
             <div>
               {event
                 ? formatOccurring(
-                    occurringDaysArray?.map((s) => new Date(s)) ?? [],
+                    occurringDaysArray ?? [],
                     event.type === "DAYSOFWEEK"
                   )
                 : "Loading..."}
