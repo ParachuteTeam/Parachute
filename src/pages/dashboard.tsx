@@ -20,14 +20,16 @@ import {
 import Link from "next/link";
 import { DateSelect } from "../components/DateSelect";
 import { currentTimezone } from "../utils/timezone";
-import { id } from "date-fns/locale";
+import { formatOccurring, formatTime } from "../utils/utils";
+
 interface Event {
   id: string;
   name?: string;
   occuringDays?: string;
   joinCode: string;
-  begins?: Date;
-  ends?: Date;
+  begins: Date;
+  ends: Date;
+  type?: string;
   // Add other properties as needed
 }
 interface EventCardProps {
@@ -35,56 +37,9 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
-  console.log("Event data:", event);
   const eventId = event.id;
   const eventName = event.name;
-  const occuringDaysArray = event.occuringDays?.split(",");
-  const startTime = event.begins;
-  const endTime = event.ends;
-
-  // Convert the Date objects to the desired format
-  const formatTime = (date: Date) => {
-    try {
-      return new Intl.DateTimeFormat("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      }).format(date);
-    } catch (error) {
-      console.error("Invalid time value:", date, error);
-      return "Invalid time";
-    }
-  };
-
-  const formatDate = (date: Date) => {
-    try {
-      return new Intl.DateTimeFormat("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      }).format(date);
-    } catch (error) {
-      console.error("Invalid date value:", date, error);
-      return "Invalid date";
-    }
-  };
-
-  let formattedStartTime = "Not available";
-  let formattedEndTime = "Not available";
-  let formattedOccuringDays = "Not available";
-
-  // Format the start and end times
-  if (startTime !== undefined && endTime !== undefined) {
-    formattedStartTime = formatTime(new Date(startTime));
-    formattedEndTime = formatTime(new Date(endTime));
-  }
-
-  if (occuringDaysArray !== undefined) {
-    formattedOccuringDays = occuringDaysArray
-      .map((day: string) => formatDate(new Date(day.trim())))
-      .join("; ");
-  }
+  const occurringDaysArray = event.occuringDays?.split(",");
 
   return (
     <Link
@@ -93,10 +48,15 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     >
       <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
         <MdOutlineCalendarToday />
-        <div>{formattedOccuringDays}</div>
+        <div>
+          {formatOccurring(
+            occurringDaysArray?.map((s) => new Date(s)) ?? [],
+            event.type === "DAYSOFWEEK"
+          )}
+        </div>
         <MdOutlineAccessTime className="ml-1" />
         <div>
-          {formattedStartTime} - {formattedEndTime}
+          {formatTime(event.begins)} - {formatTime(event.ends)}
         </div>
       </div>
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
