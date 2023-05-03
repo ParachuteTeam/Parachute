@@ -3,6 +3,7 @@ import { Combobox, Listbox, Transition } from "@headlessui/react";
 import { HiCheck, HiChevronUpDown } from "react-icons/hi2";
 import { availableTimezones } from "../utils/timezone";
 import { addMinutes, format, isAfter, isBefore, parse } from "date-fns";
+import { formatTime } from "../utils/utils";
 
 interface SelectorProps {
   className?: string;
@@ -27,7 +28,7 @@ export const Selector: React.FC<SelectorProps> = ({
         <button
           key={index}
           className={`w-full ${
-            selectedIndex === index ? "primary-button" : "py-2 px-4 font-medium"
+            selectedIndex === index ? "primary-button" : "px-4 py-2 font-medium"
           }`}
           onClick={() => onChange(index)}
         >
@@ -48,7 +49,7 @@ export interface RoundedListboxProps {
   direction?: "up" | "down";
   options: ListboxOption[];
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: "DAYSOFWEEK" | "DATES") => void;
 }
 
 export const RoundedListbox: React.FC<RoundedListboxProps> = ({
@@ -194,7 +195,7 @@ export const RoundedCombobox: React.FC<RoundedComboboxProps> = ({
               `}
             >
               {filteredOptions.length === 0 && query !== "" ? (
-                <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
+                <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
                   Nothing found.
                 </div>
               ) : (
@@ -298,7 +299,7 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
       className={className}
       direction={direction}
       options={availableTimes.map((time) => ({
-        label: format(time, "hh:mm aa") + (time.getDay() === 2 ? " (+1d)" : ""),
+        label: formatTime(time),
         value: format(time, "dd:HH:mm"),
       }))}
       value={format(value, "dd:HH:mm")}

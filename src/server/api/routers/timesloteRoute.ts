@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 import { PrismaClient } from "@prisma/client";
-import { TRPCError } from '@trpc/server';
+import { TRPCError } from "@trpc/server";
 
 const prisma = new PrismaClient();
 
@@ -33,8 +33,8 @@ export const timesloteRouter = createTRPCRouter({
       });
       if (!participateCheck) {
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'This user is not participants of this event',
+          code: "NOT_FOUND",
+          message: "This user is not participants of this event",
         });
       }
       return await prisma.timeSlots.create({
@@ -53,23 +53,44 @@ export const timesloteRouter = createTRPCRouter({
    The function return the several days, begins, ends in ascending order.
    */
   getAllTimeSlots: protectedProcedure
-    .input(z.object({
-      userID: z.string(),
-      eventID: z.string(),
-    }))
+    .input(
+      z.object({
+        userID: z.string(),
+        eventID: z.string(),
+      })
+    )
     .query(async (req) => {
       return await prisma.timeSlots.findMany({
         where: {
           participateUserID: req.input.userID,
           participateEventID: req.input.eventID,
         },
-        orderBy: { begins: 'asc' },
+        orderBy: { begins: "asc" },
       });
     }),
 
   /**
-   Delete one timeslot.
-   */
+      This function return all timeslots of given eventId.
+      The function return the several days, begins, ends in ascending order.
+      */
+  getAllTimeSlots_Event: protectedProcedure
+    .input(
+      z.object({
+        eventID: z.string(),
+      })
+    )
+    .query(async (req) => {
+      return await prisma.timeSlots.findMany({
+        where: {
+          participateEventID: req.input.eventID,
+        },
+        orderBy: { begins: "asc" },
+      });
+    }),
+
+  /**
+     Delete one timeslot.
+     */
   deleteTimeslot: protectedProcedure
     .input(
       z.object({
@@ -87,6 +108,29 @@ export const timesloteRouter = createTRPCRouter({
             eventID: req.input.eventID,
             userID: req.input.userID,
           },
+          date: req.input.date,
+          begins: req.input.begins,
+          ends: req.input.ends,
+        },
+      });
+    }),
+
+  /**
+      Delete timeslots of whole event.
+      */
+  deleteTimeslotEvent: protectedProcedure
+    .input(
+      z.object({
+        eventID: z.string(),
+        date: z.string().datetime(),
+        begins: z.string().datetime(),
+        ends: z.string().datetime(),
+      })
+    )
+    .mutation(async (req) => {
+      return await prisma.timeSlots.deleteMany({
+        where: {
+          participateEventID: req.input.eventID,
           date: req.input.date,
           begins: req.input.begins,
           ends: req.input.ends,

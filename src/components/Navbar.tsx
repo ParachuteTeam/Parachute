@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import OnHover from "./OnHover";
+import Link from "next/link";
 
 const Navbar = () => {
   const router = useRouter();
@@ -18,7 +19,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky top-0 flex w-full justify-center bg-white py-4 px-12">
+    <div className="sticky top-0 flex w-full justify-center bg-white px-12 py-4">
       <div className="mx-auto flex max-w-[1200px] grow text-3xl font-bold">
         <div className="grow text-3xl font-bold">
           <div

@@ -12,35 +12,55 @@ import {
   MyAvailabilityZone,
 } from "../../components/AvailabilityZone";
 import { useSession } from "next-auth/react";
+import { api } from "../../utils/api";
 import {
   Auth0LoginButton,
   GoogleLoginButton,
 } from "../../components/LoginButton";
 import { currentTimezone } from "../../utils/timezone";
+import { formatOccurring, formatTimespan } from "../../utils/utils";
 
 const EventInfoHeader: React.FC = () => {
+  const router = useRouter();
+  const eventId = router.query.id as string;
+  const { data: event } = api.events.getEvent.useQuery({ eventId });
+
+  const occurringDaysArray = event?.occuringDays
+    .split(",")
+    .map((s) => new Date(s));
+
   return (
     <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
       <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
         <div className="flex flex-1 flex-col gap-2">
           <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
             <MdOutlineCalendarToday />
-            <div>Sun, Wed, Thu</div>
+            <div>
+              {event
+                ? formatOccurring(
+                    occurringDaysArray ?? [],
+                    event.type === "DAYSOFWEEK"
+                  )
+                : "Loading..."}
+            </div>
             <MdOutlineAccessTime className="ml-1" />
-            <div>12:00 PM - 1:00 PM</div>
+            <div>
+              {event ? formatTimespan(event.begins, event.ends) : "Loading..."}
+            </div>
           </div>
-          <div className="mb-0.5 text-3xl font-semibold">
-            CS 222 Group Meeting
+          <div className="text-3xl font-semibold">
+            {event?.name ?? "Loading..."}
           </div>
           <div className="flex flex-row items-center gap-2 text-sm">
             <EventTypeTag>My Event</EventTypeTag>
             <p>No one filled yet</p>
             <p>
-              <span className="font-bold">Event ID:</span> 123456
+              <span className="font-bold">Event ID:</span>{" "}
+              {event?.joinCode ?? ""}
             </p>
             <p>
               <span className="font-bold">Link:</span>{" "}
-              https://parachute.fyi/event/123456
+              https://parachute.fyi/event/{eventId}
             </p>
           </div>
         </div>

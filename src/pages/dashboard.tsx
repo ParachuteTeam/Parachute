@@ -1,11 +1,14 @@
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import React from "react";
+import { api } from "../utils/api";
 import {
   MdOutlineAccessTime,
   MdOutlineCalendarToday,
   MdOutlineSearch,
 } from "react-icons/md";
+import { useSession } from "next-auth/react";
 import { EventTypeTag } from "../components/Tag";
 import type { ListboxOption } from "../components/Input";
 import {
@@ -17,20 +20,48 @@ import {
 import Link from "next/link";
 import { DateSelect } from "../components/DateSelect";
 import { currentTimezone } from "../utils/timezone";
+import { formatOccurring, formatTime } from "../utils/utils";
 
-const EventCard = () => {
+interface Event {
+  id: string;
+  name?: string;
+  occuringDays?: string;
+  joinCode: string;
+  begins: Date;
+  ends: Date;
+  type?: string;
+  // Add other properties as needed
+}
+interface EventCardProps {
+  event: Event;
+}
+
+const EventCard: React.FC<EventCardProps> = ({ event }) => {
+  const eventId = event.id;
+  const eventName = event.name;
+  const occurringDaysArray = event.occuringDays
+    ?.split(",")
+    .map((s) => new Date(s));
+
   return (
     <Link
       className="card mb-4 flex flex-col gap-1 p-5 hover:ring-2 hover:ring-gray-300"
-      href="/event/1"
+      href={`/event/${eventId}`}
     >
       <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
         <MdOutlineCalendarToday />
-        <div>Sun, Wed, Thu</div>
+        <div>
+          {formatOccurring(
+            occurringDaysArray ?? [],
+            event.type === "DAYSOFWEEK"
+          )}
+        </div>
         <MdOutlineAccessTime className="ml-1" />
-        <div>12:00 PM - 1:00 PM</div>
+        <div>
+          {formatTime(event.begins)} - {formatTime(event.ends)}
+        </div>
       </div>
-      <div className="mb-0.5 text-xl font-semibold">CS 222 Group Meeting</div>
+      <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         <EventTypeTag>My Event</EventTypeTag>
         <div>No one filled yet</div>
@@ -39,20 +70,35 @@ const EventCard = () => {
   );
 };
 
+const EventList = () => {
+  const { data: session } = useSession();
+  const email = session?.user.email as string;
+  const { data: events } = api.events.getEventList.useQuery({ email });
+  console.log(events);
+
+  return (
+    <div className="event-list-container">
+      {events?.map((event) => (
+        <EventCard key={event.id} event={event} />
+      ))}
+    </div>
+  );
+};
+
 const selectDaysOptions: ListboxOption[] = [
   {
     label: "Days of week",
-    value: "days-of-week",
+    value: "DAYSOFWEEK",
   },
   {
     label: "Specific days",
-    value: "specific-days",
+    value: "DATES",
   },
 ];
 
 const StartNewEventSection = () => {
-  const [selectDaysType, setSelectDaysType] = React.useState("days-of-week");
-  const [selectedDays, setSelectedDays] = React.useState<Date[]>([]);
+  const router = useRouter();
+  const [eventName, setEventName] = React.useState("");
   const [timezone, setTimezone] = React.useState(currentTimezone);
   const [startTime, setStartTime] = React.useState<Date>(
     new Date(0, 0, 1, 8, 0, 0)
@@ -60,11 +106,49 @@ const StartNewEventSection = () => {
   const [endTime, setEndTime] = React.useState<Date>(
     new Date(0, 0, 1, 22, 0, 0)
   );
+  const [selectDaysType, setSelectDaysType] = React.useState<
+    "DAYSOFWEEK" | "DATES"
+  >("DAYSOFWEEK");
+  const [selectedDays, setSelectedDays] = React.useState<Date[]>([]);
+
+  const { data: session } = useSession();
+  const email = session?.user.email as string;
+  const mutation = api.events.createEvent.useMutation();
+
+  const handleCreateEvent = () => {
+    // Save the event details to the database, and update the Event model.
+
+    mutation.mutate(
+      {
+        occuringDays: selectedDays.toString(),
+        name: eventName,
+        begins: startTime.toISOString(),
+        ends: endTime.toISOString(),
+        type: selectDaysType,
+        email: email,
+        address: "",
+        timeZone: timezone,
+      },
+      {
+        onSuccess: (data) => {
+          const eventId = data.id; // Extract joinCode from the data object
+          void router.push(`/event/${eventId}`).then(() => {
+            // Additional logic can be placed here, if required.
+          });
+        },
+      }
+    );
+    // Redirect to the event page with the generated event ID.
+  };
   return (
     <>
       <div className="input-field text-sm">
         <label>Event name</label>
-        <input className="rounded-input" placeholder="New Meeting" />
+        <input
+          className="rounded-input"
+          placeholder="New Meeting"
+          onChange={(e) => setEventName(e.target.value)}
+        />
       </div>
       <div className="input-field text-sm">
         <label>Timezone</label>
@@ -86,7 +170,7 @@ const StartNewEventSection = () => {
           }}
         />
       </div>
-      {selectDaysType === "days-of-week" && (
+      {selectDaysType === "DAYSOFWEEK" && (
         <>
           <div className="input-field">
             <label>Days of week</label>
@@ -95,7 +179,7 @@ const StartNewEventSection = () => {
           <DateSelect week value={selectedDays} onChange={setSelectedDays} />
         </>
       )}
-      {selectDaysType === "specific-days" && (
+      {selectDaysType === "DATES" && (
         <>
           <div className="input-field">
             <label>Dates</label>
@@ -113,7 +197,12 @@ const StartNewEventSection = () => {
           onChangeEnd={setEndTime}
         />
       </div>
-      <button className="primary-button mt-3 py-3 text-sm">Create Event</button>
+      <button
+        className="primary-button mt-3 py-3 text-sm"
+        onClick={() => void handleCreateEvent()}
+      >
+        Create Event
+      </button>
       <div className="text-center text-xs text-gray-400">
         Timezone, days and time span cannot be <br />
         changed after the event is created
@@ -123,14 +212,35 @@ const StartNewEventSection = () => {
 };
 
 const JoinExistingEventSection = () => {
+  const router = useRouter();
+  const [joinCode, setJoinCode] = React.useState("");
+  const event = api.events.getEventjoinCode.useQuery({ joinCode });
+
+  const handleJoinEvent = () => {
+    const eventId = event?.data?.id || ("" as string);
+    if (eventId)
+      void router.push(`/event/${eventId}`).then(() => {
+        // Additional logic can be placed here, if required.
+      });
+  };
   return (
     <>
       <div className="input-field">
         <label>Event code</label>
         <text>Ask the host to provide the 6-digit event code</text>
-        <input className="rounded-input" placeholder="xxxxxx" />
+        <input
+          className="rounded-input"
+          placeholder="xxxxxx"
+          value={joinCode}
+          onChange={(e) => setJoinCode(e.target.value)}
+        />
       </div>
-      <button className="primary-button mt-3 py-3 text-sm">Join Event</button>
+      <button
+        className="primary-button mt-3 py-3 text-sm"
+        onClick={handleJoinEvent}
+      >
+        Join Event
+      </button>
     </>
   );
 };
@@ -157,7 +267,7 @@ const Dashboard: NextPage = () => {
   return (
     <div className="min-h-screen w-screen bg-gray-100">
       <Navbar />
-      <div className="flex justify-center py-8 px-12">
+      <div className="flex justify-center px-12 py-8">
         <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
           <div className="flex h-full flex-grow flex-col">
             <div className="mb-6 text-2xl font-bold">Recent Events</div>
@@ -168,9 +278,7 @@ const Dashboard: NextPage = () => {
                 placeholder="Search for an event name..."
               />
             </div>
-            <EventCard />
-            <EventCard />
-            <EventCard />
+            <EventList />
           </div>
           <div className="flex h-full flex-col">
             <div className="mb-6 text-2xl font-bold">Add Event</div>
