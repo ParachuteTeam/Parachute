@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
-import React from "react";
+import React, { useState } from "react";
 import { api } from "../utils/api";
 import {
   MdOutlineAccessTime,
@@ -213,11 +213,11 @@ const StartNewEventSection = () => {
 
 const JoinExistingEventSection = () => {
   const router = useRouter();
-  const [joinCode, setJoinCode] = React.useState("");
-  const event = api.events.getEventjoinCode.useQuery({ joinCode });
+  const [joinCode, setJoinCode] = useState("");
+  const event = api.events.getEventjoinCode.useQuery({ joinCode: joinCode });
 
   const handleJoinEvent = () => {
-    const eventId = event?.data?.id || ("" as string);
+    const eventId = event?.data?.id || "";
     if (eventId)
       void router.push(`/event/${eventId}`).then(() => {
         // Additional logic can be placed here, if required.
