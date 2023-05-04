@@ -52,17 +52,17 @@ interface TimeslotSelectorProps {
   startTime: number;
   endTime: number;
   schedule: Date[];
-  setSchedule?: (newSchedule: Date[]) => void;
+  onChange?: (newSchedule: Date[]) => void;
   setHoveredTime: React.Dispatch<React.SetStateAction<Date | null>>;
   isInteractable: boolean;
 }
 
-export const TimeslotSelector: React.FC<TimeslotSelectorProps> = ({
+export const TimeslotView: React.FC<TimeslotSelectorProps> = ({
   occuringDates,
   startTime,
   endTime,
   schedule,
-  setSchedule,
+  onChange,
   setHoveredTime,
   isInteractable,
 }) => {
@@ -119,7 +119,7 @@ export const TimeslotSelector: React.FC<TimeslotSelectorProps> = ({
                 </div>
               );
             }}
-            onChange={isInteractable ? setSchedule : () => void 0}
+            onChange={isInteractable ? onChange : () => void 0}
           />
         );
       })}

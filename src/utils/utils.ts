@@ -1,4 +1,4 @@
-import { addDays, format, isEqual } from "date-fns";
+import { add, format, isEqual } from "date-fns";
 
 export const formatTime = (time: Date): string => {
   return format(time, "hh:mm aa") + (time.getDay() === 2 ? " (+1d)" : "");
@@ -15,34 +15,65 @@ export const formatShortDate = (date: Date, weekOnly = false) => {
   return format(date, "MMM d");
 };
 
-interface DateSpan {
+export interface DatetimeInterval {
   start: Date;
   end: Date;
 }
 
-export const formatOccurring = (dates: Date[], weekOnly: boolean): string => {
-  // Sort dates and extract the first date
+export const toDatetimeIntervals = (
+  dates: Date[],
+  step: Duration,
+  exclusiveIntervals: boolean
+): DatetimeInterval[] => {
   const sortedDates = dates.sort((a, b) => a.getTime() - b.getTime());
   const firstDate = sortedDates[0];
   if (firstDate === undefined) {
-    return "";
+    return [];
   }
 
   // Group dates into spans
-  const daySpans: DateSpan[] = [];
-  let currentSpan: DateSpan = { start: firstDate, end: firstDate };
-  for (const d of dates.slice(1)) {
-    if (isEqual(addDays(currentSpan.end, 1), d)) {
+  const intervals: DatetimeInterval[] = [];
+  let currentSpan: DatetimeInterval = { start: firstDate, end: firstDate };
+  for (const d of sortedDates.slice(1)) {
+    if (isEqual(add(currentSpan.end, step), d)) {
       currentSpan.end = d;
     } else {
-      daySpans.push(currentSpan);
+      if (exclusiveIntervals) {
+        currentSpan.end = add(currentSpan.end, step);
+      }
+      intervals.push(currentSpan);
       currentSpan = { start: d, end: d };
     }
   }
-  daySpans.push(currentSpan);
+  if (exclusiveIntervals) {
+    currentSpan.end = add(currentSpan.end, step);
+  }
+  intervals.push(currentSpan);
 
-  // Format spans
-  return daySpans
+  return intervals;
+};
+
+export const toIndividualDates = (
+  intervals: DatetimeInterval[],
+  step: Duration,
+  exclusiveIntervals: boolean
+): Date[] => {
+  const dates: Date[] = [];
+  for (const interval of intervals) {
+    let current = interval.start;
+    while (current < interval.end) {
+      dates.push(current);
+      current = add(current, step);
+    }
+    if (!exclusiveIntervals && isEqual(current, interval.end)) {
+      dates.push(current);
+    }
+  }
+  return dates;
+};
+
+export const formatOccurring = (dates: Date[], weekOnly: boolean): string => {
+  return toDatetimeIntervals(dates, { days: 1 }, false)
     .map((span) => {
       if (isEqual(span.start, span.end)) {
         return formatShortDate(span.start, weekOnly);

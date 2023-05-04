@@ -8,7 +8,9 @@ import {
 import { FiEdit } from "react-icons/fi";
 import { IoEarthSharp } from "react-icons/io5";
 import { api } from "../utils/api";
-import { TimeslotSelector } from "./TimeslotSelector";
+import { TimeslotView } from "./TimeslotView";
+import type { DatetimeInterval } from "../utils/utils";
+import { toDatetimeIntervals, toIndividualDates } from "../utils/utils";
 
 export const MyAvailabilityZone: React.FC<{
   occurringDaysArray: Date[];
@@ -26,21 +28,25 @@ export const MyAvailabilityZone: React.FC<{
     eventID: eventID,
   });
   const resetSchedule = () => {
-    setSchedule(
-      existingSchedule?.map((timeslot) => new Date(timeslot.begins)) ?? []
-    );
+    const intervals: DatetimeInterval[] =
+      existingSchedule?.map((timeslot) => ({
+        start: timeslot.begins,
+        end: timeslot.ends,
+      })) ?? [];
+    setSchedule(toIndividualDates(intervals, { minutes: 15 }, true));
     setChanged(false);
   };
   useEffect(resetSchedule, [existingSchedule]);
 
   const scheduleReplace = api.timeslots.timeslotsReplace.useMutation();
   const saveTimeSlots = () => {
+    const intervals = toDatetimeIntervals(schedule, { minutes: 15 }, true);
     scheduleReplace.mutate(
       {
         eventID: eventID,
-        timeslots: schedule.map((timeslot) => ({
-          begins: timeslot.toJSON(),
-          ends: add(timeslot, { minutes: 15 }).toJSON(),
+        timeslots: intervals.map((itv) => ({
+          begins: itv.start.toJSON(),
+          ends: itv.end.toJSON(),
         })),
       },
       {
@@ -93,13 +99,13 @@ export const MyAvailabilityZone: React.FC<{
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <div className="flex w-fit flex-row">
-          <TimeslotSelector
+          <TimeslotView
             isInteractable
             occuringDates={occurringDaysArray}
             startTime={8}
             endTime={20}
             schedule={schedule}
-            setSchedule={updateSchedule}
+            onChange={updateSchedule}
             setHoveredTime={() => void 0}
           />
         </div>
@@ -178,7 +184,7 @@ export const GroupAvailabilityZone: React.FC<{
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <div className="flex w-fit flex-row">
-          <TimeslotSelector
+          <TimeslotView
             isInteractable={false}
             occuringDates={occurringDaysArray}
             startTime={8}
