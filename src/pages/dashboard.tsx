@@ -231,6 +231,7 @@ const JoinExistingEventSection = () => {
         <input
           className="rounded-input"
           placeholder="xxxxxx"
+          maxLength={6}
           value={joinCode}
           onChange={(e) => setJoinCode(e.target.value)}
         />
