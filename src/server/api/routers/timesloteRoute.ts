@@ -137,4 +137,39 @@ export const timesloteRouter = createTRPCRouter({
         },
       });
     }),
+
+  /**
+   Delete timeslots of whole event.
+   */
+  ModifyManyTimeslot: protectedProcedure
+    .input(
+      z.object({
+        userID: z.string(),
+        eventID: z.string(),
+        beginsToAdd: z.array(z.string().datetime()),
+      })
+    )
+    .mutation(async (req) => {
+      await prisma.timeSlots.deleteMany({
+        where: {
+          participateUserID: req.input.userID,
+          participateEventID: req.input.eventID,
+        },
+      });
+      const createdTimeSlots = [];
+
+      for (const beginTime of req.input.beginsToAdd) {
+        const newTimeSlot = await prisma.timeSlots.create({
+          data: {
+            participateUserID: req.input.userID,
+            participateEventID: req.input.eventID,
+            date: beginTime,
+            begins: beginTime,
+            ends: beginTime,
+          },
+        });
+        createdTimeSlots.push(newTimeSlot);
+      }
+      return createdTimeSlots;
+    }),
 });
