@@ -57,11 +57,7 @@ export const MyAvailabilityZone: React.FC<{ occurringDaysArray: Date[] }> = ({
   occurringDaysArray,
 }) => {
   const [schedule, setSchedule] = useState<Date[]>([]);
-
-  useMemo(() => {
-    setSchedule(occurringDaysArray);
-  }, [occurringDaysArray]);
-
+  console.log(schedule);
   return (
     <div className="relative h-[500px]">
       <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
@@ -81,7 +77,7 @@ export const MyAvailabilityZone: React.FC<{ occurringDaysArray: Date[] }> = ({
         <div className="flex w-fit flex-row">
           <Parachute_ScheduleSelector
             isInteractable
-            occuringDates={schedule}
+            occuringDates={occurringDaysArray}
             startTime={8}
             endTime={20}
             schedule={schedule}
