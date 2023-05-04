@@ -212,16 +212,22 @@ const StartNewEventSection = () => {
 };
 
 const JoinExistingEventSection = () => {
+  const { data: session } = useSession();
   const router = useRouter();
   const [joinCode, setJoinCode] = useState("");
   const event = api.events.getEventjoinCode.useQuery({ joinCode: joinCode });
+  const createParticipant = api.participates.createParticipate.useMutation(); // FIXME: this logic should be a server-side-call
 
   const handleJoinEvent = () => {
     const eventId = event?.data?.id || "";
-    if (eventId)
-      void router.push(`/event/${eventId}`).then(() => {
-        // Additional logic can be placed here, if required.
+    if (eventId) {
+      createParticipant.mutate({
+        joinCode: joinCode,
+        userID: session?.user.id as string,
+        timeZone: currentTimezone,
       });
+      void router.push(`/event/${eventId}`);
+    }
   };
   return (
     <>
