@@ -73,7 +73,8 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 const EventList = () => {
   const { data: session } = useSession();
   const email = session?.user.email as string;
-  const { data: events } = api.events.getEventList.useQuery({ email });
+  console.log("email", email);
+  const { data: events } = api.events.getEventList.useQuery({ email: email });
   console.log(events);
 
   return (

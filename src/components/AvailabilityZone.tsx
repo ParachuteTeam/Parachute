@@ -64,7 +64,7 @@ export const MyAvailabilityZone: React.FC<{
   const user = api.users.getUser.useQuery({
     email: session?.user?.email ?? "",
   });
-  console.log(user.data?.id);
+  // console.log(user.data?.id);
 
   const scheduleSelected = api.timeslots.createtimeslote.useMutation();
   const mySchedule = api.timeslots.getAllTimeSlots.useQuery({
@@ -86,6 +86,12 @@ export const MyAvailabilityZone: React.FC<{
       date: scheduleDay.toJSON(),
     });
   };
+
+  // useEffect(() => {
+  //   schedule.forEach((scheduleDay) => {
+  //     updateTimeSlots(scheduleDay);
+  //   });
+  // }, [schedule]);
 
   useMemo(() => {
     // set schedule to be the timeslots that are already selected
@@ -226,6 +232,12 @@ export const GroupAvailabilityZone: React.FC<{
   const scheduleDates = schedule.data?.map((timeslot) => {
     return new Date(timeslot.begins);
   });
+
+  const participates = api.events.getAllParticipants.useQuery({
+    eventId: eventID,
+  });
+  // console.log(participates.data);
+
   const [hoveredTime, setHoveredTime] = useState<Date | null>(null);
   return (
     <div className="relative h-[500px]">
@@ -242,9 +254,18 @@ export const GroupAvailabilityZone: React.FC<{
                 {format(hoveredTime, "p")} to{" "}
                 {format(add(hoveredTime, { minutes: 15 }), "p")}:
               </div>
-              <AvailablePerson name={"John Doe"} />
-              <AvailablePerson name={"Raymond Wu"} />
-              <AvailablePerson name={"Max Zhang"} />
+              {schedule.data
+                ?.filter((timeslot) => {
+                  return timeslot.begins.toJSON() == hoveredTime.toJSON();
+                })
+                .map((timeslot) => {
+                  return (
+                    <AvailablePerson
+                      key={timeslot.id}
+                      name={timeslot.participateUserID ?? ""}
+                    />
+                  );
+                })}
             </>
           ) : (
             <>
