@@ -24,19 +24,21 @@ export const MyAvailabilityZone: React.FC<{
     setChanged(true);
   };
 
-  const { data: existingSchedule } = api.timeslots.getAllTimeSlots.useQuery({
-    eventID: eventID,
-  });
+  const { data: existingSchedule, refetch } =
+    api.timeslots.getAllTimeSlots.useQuery({
+      eventID: eventID,
+    });
   const resetSchedule = () => {
-    const intervals: DatetimeInterval[] =
-      existingSchedule?.map((timeslot) => ({
-        start: timeslot.begins,
-        end: timeslot.ends,
-      })) ?? [];
-    setSchedule(toIndividualDates(intervals, { minutes: 15 }, true));
-    setChanged(false);
+    if (!changed) {
+      const intervals: DatetimeInterval[] =
+        existingSchedule?.map((timeslot) => ({
+          start: timeslot.begins,
+          end: timeslot.ends,
+        })) ?? [];
+      setSchedule(toIndividualDates(intervals, { minutes: 15 }, true));
+    }
   };
-  useEffect(resetSchedule, [existingSchedule]);
+  useEffect(resetSchedule, [changed, existingSchedule]);
 
   const scheduleReplace = api.timeslots.timeslotsReplace.useMutation();
   const saveTimeSlots = () => {
@@ -51,7 +53,9 @@ export const MyAvailabilityZone: React.FC<{
       },
       {
         onSuccess: () => {
-          setChanged(false);
+          refetch().finally(() => {
+            setChanged(false);
+          });
         },
       }
     );
