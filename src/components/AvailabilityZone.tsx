@@ -5,6 +5,7 @@ import {
   MdOutlineFileDownloadDone,
   MdOutlineMouse,
 } from "react-icons/md";
+import { FiEdit } from "react-icons/fi";
 import ScheduleSelector from "react-schedule-selector";
 import { IoEarthSharp } from "react-icons/io5";
 import { api } from "../utils/api";
@@ -76,22 +77,21 @@ export const MyAvailabilityZone: React.FC<{
 
   // console.log(schedule[0]?.toJSON());
 
-  const updateTimeSlots = (scheduleDay: Date) => {
-    scheduleSelected.mutate({
-      userID: user.data?.id ?? "",
-      eventID: eventID,
-      // convert begins to datetime SQL format
-      begins: scheduleDay.toJSON(),
-      ends: scheduleDay.toJSON(),
-      date: scheduleDay.toJSON(),
+  const saveTimeSlots = () => {
+    const updateTimeSlots = (scheduleDay: Date) => {
+      scheduleSelected.mutate({
+        userID: user.data?.id ?? "",
+        eventID: eventID,
+        // convert begins to datetime SQL format
+        begins: scheduleDay.toJSON(),
+        ends: scheduleDay.toJSON(),
+        date: scheduleDay.toJSON(),
+      });
+    };
+    schedule.forEach((scheduleDay) => {
+      updateTimeSlots(scheduleDay);
     });
   };
-
-  // useEffect(() => {
-  //   schedule.forEach((scheduleDay) => {
-  //     updateTimeSlots(scheduleDay);
-  //   });
-  // }, [schedule]);
 
   useMemo(() => {
     // set schedule to be the timeslots that are already selected
@@ -108,10 +108,29 @@ export const MyAvailabilityZone: React.FC<{
       </div>
       <div className="absolute right-8 flex h-full flex-row items-center">
         <div className="card flex h-36 w-64 flex-col items-center justify-center shadow-lg">
-          <MdOutlineFileDownloadDone className="text-5xl text-gray-500" />
+          {/* <MdOutlineFileDownloadDone className="text-5xl text-gray-500" />
           <div className="mt-1 text-lg font-bold">File Saved</div>
           <div className="text-[12px] font-light text-gray-500">
             Availability is up to date
+          </div> */}
+          <div>
+            <div className="flex flex-row items-center justify-center gap-1 p-1">
+              <FiEdit className="text-md" />
+              <div className="text-md text-gray-500">
+                Unsaved change detected
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <button
+                className="rounded-md bg-black py-2 px-20 text-lg text-white"
+                onClick={saveTimeSlots}
+              >
+                Save
+              </button>
+              <button className="rounded-md border border-gray-200 bg-white py-2 px-20 text-lg text-black">
+                Discard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -236,7 +255,6 @@ export const GroupAvailabilityZone: React.FC<{
   const participates = api.events.getAllParticipants.useQuery({
     eventId: eventID,
   });
-  // console.log(participates.data);
 
   const [hoveredTime, setHoveredTime] = useState<Date | null>(null);
   return (
