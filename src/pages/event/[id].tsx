@@ -36,12 +36,15 @@ interface EditDialogProps {
   onSubmit: (eventName: string) => void;
 }
 const EditDialog: React.FC<EditDialogProps> = ({
-                                                 isOpen,
-                                                 close,
-                                                 eventName,
-                                                 onSubmit,
-                                               }) => {
-  const [newEventName, setNewEventName] = useState(eventName);
+  isOpen,
+  close,
+  eventName,
+  onSubmit,
+}) => {
+  const [newEventName, setNewEventName] = useState("");
+  useEffect(() => {
+    setNewEventName(eventName);
+  }, [eventName]);
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
@@ -130,11 +133,11 @@ interface DeleteDialogProps {
 }
 
 const DeleteDialog: React.FC<DeleteDialogProps> = ({
-                                                     isOpen,
-                                                     close,
-                                                     eventName,
-                                                     onSubmit,
-                                                   }) => {
+  isOpen,
+  close,
+  eventName,
+  onSubmit,
+}) => {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
@@ -206,7 +209,6 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
 const EventInfoHeader: React.FC = () => {
   const router = useRouter();
   const eventId = router.query.id as string;
-  const name = router.query.name as string;
   const { data: event } = api.events.getEvent.useQuery({ eventId });
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -217,7 +219,6 @@ const EventInfoHeader: React.FC = () => {
 
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
-
 
   const occurringDaysArray = event?.occuringDays
     .split(",")
@@ -238,9 +239,9 @@ const EventInfoHeader: React.FC = () => {
             <div>
               {event
                 ? formatOccurring(
-                  occurringDaysArray ?? [],
-                  event.type === "DAYSOFWEEK"
-                )
+                    occurringDaysArray ?? [],
+                    event.type === "DAYSOFWEEK"
+                  )
                 : "Loading..."}
             </div>
             <MdOutlineAccessTime className="ml-1" />
@@ -282,7 +283,7 @@ const EventInfoHeader: React.FC = () => {
       <EditDialog
         isOpen={isEditDialogOpen}
         close={() => setIsEditDialogOpen(false)}
-        eventName={""}
+        eventName={event?.name ?? ""}
         onSubmit={(newEventName) => {
           editEventName.mutate({
             host_email: email,
@@ -296,14 +297,13 @@ const EventInfoHeader: React.FC = () => {
         isOpen={isDeleteDialogOpen}
         close={() => setIsDeleteDialogOpen(false)}
         eventName={event?.name ?? "Loading..."}
-
         onSubmit={() => {
           void (async () => {
             deleteEvent.mutate({
               host_email: email,
               eventId: eventId,
             });
-            await router.push('/dashboard');
+            await router.push("/dashboard");
           })();
         }}
       />
@@ -321,10 +321,10 @@ const OperationCardTab: React.FC<
           className={`
             mb-[-1px] cursor-pointer border-b-2 pb-3 focus:outline-none
             ${
-            selected
-              ? "border-black text-center"
-              : "border-transparent text-center font-light text-gray-500 hover:border-b-2 hover:border-gray-300 hover:text-gray-700"
-          }
+              selected
+                ? "border-black text-center"
+                : "border-transparent text-center font-light text-gray-500 hover:border-b-2 hover:border-gray-300 hover:text-gray-700"
+            }
             ${className ?? ""}
             `}
         >
