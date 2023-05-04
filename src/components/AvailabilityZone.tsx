@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { add, format } from "date-fns";
 import {
   MdOutlineEditCalendar,
@@ -53,8 +53,15 @@ const TimeLabel: React.FC<{ time: Date; showTime: boolean }> = ({
   );
 };
 
-export const MyAvailabilityZone: React.FC = () => {
+export const MyAvailabilityZone: React.FC<{ occurringDaysArray: Date[] }> = ({
+  occurringDaysArray,
+}) => {
   const [schedule, setSchedule] = useState<Date[]>([]);
+
+  useMemo(() => {
+    setSchedule(occurringDaysArray);
+  }, [occurringDaysArray]);
+
   return (
     <div className="relative h-[500px]">
       <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
@@ -74,13 +81,7 @@ export const MyAvailabilityZone: React.FC = () => {
         <div className="flex w-fit flex-row">
           <Parachute_ScheduleSelector
             isInteractable
-            occuringDates={[
-              new Date(2022, 8, 30),
-              new Date(2022, 9, 2),
-              new Date(2022, 9, 6),
-              new Date(2022, 9, 10),
-              new Date(2022, 9, 11),
-            ]}
+            occuringDates={schedule}
             startTime={8}
             endTime={20}
             schedule={schedule}
