@@ -138,8 +138,9 @@ export const timesloteRouter = createTRPCRouter({
       });
     }),
 
-  /**
-   Delete timeslots of whole event.
+ /**
+   Delete all timeslots according to input userID and eventID.
+   Then create all time slots in arr beginsToAdd.
    */
   ModifyManyTimeslot: protectedProcedure
     .input(
