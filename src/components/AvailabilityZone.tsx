@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { add, format } from "date-fns";
 import {
   MdOutlineEditCalendar,
@@ -7,6 +7,8 @@ import {
 } from "react-icons/md";
 import ScheduleSelector from "react-schedule-selector";
 import { IoEarthSharp } from "react-icons/io5";
+import { api } from "../utils/api";
+import { useSession } from "next-auth/react";
 
 const TimeslotBlock: React.FC<{ selected: boolean; datetime: Date }> = ({
   selected,
@@ -53,10 +55,45 @@ const TimeLabel: React.FC<{ time: Date; showTime: boolean }> = ({
   );
 };
 
-export const MyAvailabilityZone: React.FC<{ occurringDaysArray: Date[] }> = ({
-  occurringDaysArray,
-}) => {
+export const MyAvailabilityZone: React.FC<{
+  occurringDaysArray: Date[];
+  eventID: string;
+}> = ({ occurringDaysArray, eventID }) => {
+  const { data: session } = useSession();
+
+  const user = api.users.getUser.useQuery({
+    email: session?.user?.email ?? "",
+  });
+  console.log(user.data?.id);
+
+  const scheduleSelected = api.timeslots.createtimeslote.useMutation();
+  const mySchedule = api.timeslots.getAllTimeSlots.useQuery({
+    userID: user.data?.id ?? "",
+    eventID: eventID,
+  });
+
   const [schedule, setSchedule] = useState<Date[]>([]);
+
+  // console.log(schedule[0]?.toJSON());
+
+  const updateTimeSlots = (scheduleDay: Date) => {
+    scheduleSelected.mutate({
+      userID: user.data?.id ?? "",
+      eventID: eventID,
+      // convert begins to datetime SQL format
+      begins: scheduleDay.toJSON(),
+      ends: scheduleDay.toJSON(),
+      date: scheduleDay.toJSON(),
+    });
+  };
+
+  useMemo(() => {
+    // set schedule to be the timeslots that are already selected
+    setSchedule(
+      mySchedule.data?.map((timeslot) => new Date(timeslot.date)) ?? []
+    );
+  }, [mySchedule.data]);
+
   return (
     <div className="relative h-[500px]">
       <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
@@ -155,7 +192,7 @@ const Parachute_ScheduleSelector: React.FC<{
                   onMouseEnter={() => setHoveredTime(datetime)}
                   onMouseLeave={() => setHoveredTime(null)}
                 >
-                  <TimeslotBlock selected={false} datetime={datetime} />
+                  <TimeslotBlock selected={selected} datetime={datetime} />
                 </div>
               );
             }}
@@ -179,7 +216,16 @@ const AvailablePerson: React.FC<{ name: string }> = ({ name }) => {
 
 export const GroupAvailabilityZone: React.FC<{
   occurringDaysArray: Date[];
-}> = ({ occurringDaysArray }) => {
+  eventID: string;
+}> = ({ occurringDaysArray, eventID }) => {
+  const schedule = api.timeslots.getAllTimeSlots_Event.useQuery({
+    eventID: eventID,
+  });
+  console.log(schedule.data);
+  // turn schedule.data into an array of dates
+  const scheduleDates = schedule.data?.map((timeslot) => {
+    return new Date(timeslot.begins);
+  });
   const [hoveredTime, setHoveredTime] = useState<Date | null>(null);
   return (
     <div className="relative h-[500px]">
@@ -219,7 +265,7 @@ export const GroupAvailabilityZone: React.FC<{
             occuringDates={occurringDaysArray}
             startTime={8}
             endTime={20}
-            schedule={[]}
+            schedule={scheduleDates ?? []}
             setHoveredTime={setHoveredTime}
           />
         </div>

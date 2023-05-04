@@ -361,11 +361,13 @@ const OperationCard: React.FC = () => {
             <Tab.Panel>
               <MyAvailabilityZone
                 occurringDaysArray={occurringDaysArray ?? []}
+                eventID={router.query.id as string}
               />
             </Tab.Panel>
             <Tab.Panel>
               <GroupAvailabilityZone
                 occurringDaysArray={occurringDaysArray ?? []}
+                eventID={router.query.id as string}
               />
             </Tab.Panel>
           </Tab.Panels>
