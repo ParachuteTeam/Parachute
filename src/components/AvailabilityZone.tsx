@@ -12,7 +12,6 @@ const TimeslotBlock: React.FC<{ selected: boolean; datetime: Date }> = ({
   selected,
   datetime,
 }) => {
-  console.log(datetime.getMinutes());
   return (
     // returns div with whole hours thicker than half hours, make half hours dotted
     <div
@@ -56,7 +55,6 @@ const TimeLabel: React.FC<{ time: Date; showTime: boolean }> = ({
 
 export const MyAvailabilityZone: React.FC = () => {
   const [schedule, setSchedule] = useState<Date[]>([]);
-  console.log(schedule.sort());
   return (
     <div className="relative h-[500px]">
       <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
@@ -122,7 +120,6 @@ const Parachute_ScheduleSelector: React.FC<{
     if (
       add(arr[index - 1] ?? new Date(), { days: 1 }).getDate() != date.getDate()
     ) {
-      console.log(date);
       acc.push(index);
     }
     return acc;
@@ -155,7 +152,6 @@ const Parachute_ScheduleSelector: React.FC<{
               return <DateLabel datetime={datetime} />;
             }}
             renderDateCell={(datetime, selected) => {
-              console.log("asdfasdfasdfasf", datetime);
               return isInteractable ? (
                 <TimeslotBlock selected={selected} datetime={datetime} />
               ) : (
