@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { add, format } from "date-fns";
 import {
   MdOutlineEditCalendar,
@@ -6,226 +6,105 @@ import {
   MdOutlineMouse,
 } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import ScheduleSelector from "react-schedule-selector";
 import { IoEarthSharp } from "react-icons/io5";
 import { api } from "../utils/api";
-import { useSession } from "next-auth/react";
-
-const TimeslotBlock: React.FC<{ selected: boolean; datetime: Date }> = ({
-  selected,
-  datetime,
-}) => {
-  return (
-    // returns div with whole hours thicker than half hours, make half hours dotted
-    <div
-      className={`h-4 w-20 border border-t-0 border-black ${
-        datetime.getMinutes() == 45
-          ? "border-black"
-          : datetime.getMinutes() == 15
-          ? "border-b-gray-500"
-          : "border-b-gray-300"
-      } ${selected ? "bg-[#79ffe1]" : ""}`}
-    />
-  );
-};
-
-const DateLabel: React.FC<{ datetime: Date }> = ({ datetime }) => {
-  return (
-    <div className="flex w-20 flex-col items-center border-b border-black pb-1">
-      <div className="text-xs">{format(datetime, "MMM d")}</div>
-      <div className="mt-[-4px] text-lg font-bold">
-        {format(datetime, "EEE")}
-      </div>
-    </div>
-  );
-};
-
-const TimeLabel: React.FC<{ time: Date; showTime: boolean }> = ({
-  time,
-  showTime,
-}) => {
-  return (
-    <div
-      className={
-        "relative bottom-[9px] text-right text-xs text-gray-500 " +
-        (showTime ? "w-16" : "w-10")
-      }
-    >
-      {showTime && (time.getMinutes() % 30 == 0 ? format(time, "p") : "")}
-    </div>
-  );
-};
+import { TimeslotSelector } from "./TimeslotSelector";
 
 export const MyAvailabilityZone: React.FC<{
   occurringDaysArray: Date[];
   eventID: string;
 }> = ({ occurringDaysArray, eventID }) => {
-  const { data: session } = useSession();
-
-  const user = api.users.getUser.useQuery({
-    email: session?.user?.email ?? "",
-  });
-  // console.log(user.data?.id);
-
-  const scheduleSelected = api.timeslots.createtimeslote.useMutation();
-  const mySchedule = api.timeslots.getAllTimeSlots.useQuery({
-    userID: user.data?.id ?? "",
-    eventID: eventID,
-  });
-
   const [schedule, setSchedule] = useState<Date[]>([]);
+  const [changed, setChanged] = useState(false);
 
-  // console.log(schedule[0]?.toJSON());
-
-  const saveTimeSlots = () => {
-    const updateTimeSlots = (scheduleDay: Date) => {
-      scheduleSelected.mutate({
-        userID: user.data?.id ?? "",
-        eventID: eventID,
-        // convert begins to datetime SQL format
-        begins: scheduleDay.toJSON(),
-        ends: scheduleDay.toJSON(),
-        date: scheduleDay.toJSON(),
-      });
-    };
-    schedule.forEach((scheduleDay) => {
-      updateTimeSlots(scheduleDay);
-    });
+  const updateSchedule = (newSchedule: Date[]) => {
+    setSchedule(newSchedule);
+    setChanged(true);
   };
 
-  useMemo(() => {
-    // set schedule to be the timeslots that are already selected
+  const { data: existingSchedule } = api.timeslots.getAllTimeSlots.useQuery({
+    eventID: eventID,
+  });
+  const resetSchedule = () => {
     setSchedule(
-      mySchedule.data?.map((timeslot) => new Date(timeslot.date)) ?? []
+      existingSchedule?.map((timeslot) => new Date(timeslot.begins)) ?? []
     );
-  }, [mySchedule.data]);
+    setChanged(false);
+  };
+  useEffect(resetSchedule, [existingSchedule]);
+
+  const scheduleReplace = api.timeslots.timeslotsReplace.useMutation();
+  const saveTimeSlots = () => {
+    scheduleReplace.mutate(
+      {
+        eventID: eventID,
+        timeslots: schedule.map((timeslot) => ({
+          begins: timeslot.toJSON(),
+          ends: add(timeslot, { minutes: 15 }).toJSON(),
+        })),
+      },
+      {
+        onSuccess: () => {
+          setChanged(false);
+        },
+      }
+    );
+  };
 
   return (
     <div className="relative h-[500px]">
-      <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
+      <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineEditCalendar className="text-md" />
         Click or drag to select available time slots
       </div>
       <div className="absolute right-8 flex h-full flex-row items-center">
-        <div className="card flex h-36 w-64 flex-col items-center justify-center shadow-lg">
-          {/* <MdOutlineFileDownloadDone className="text-5xl text-gray-500" />
-          <div className="mt-1 text-lg font-bold">File Saved</div>
-          <div className="text-[12px] font-light text-gray-500">
-            Availability is up to date
-          </div> */}
-          <div>
-            <div className="flex flex-row items-center justify-center gap-1 p-1">
-              <FiEdit className="text-md" />
-              <div className="text-md text-gray-500">
-                Unsaved change detected
+        <div className="card flex h-36 w-64 flex-col items-center justify-center gap-2 p-4 shadow-lg">
+          {changed ? (
+            <>
+              <div className="flex flex-row items-center justify-center gap-1 p-1">
+                <FiEdit className="text-sm" />
+                <div className="text-sm text-gray-500">
+                  Unsaved change detected
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col gap-2">
               <button
-                className="rounded-md bg-black py-2 px-20 text-lg text-white"
+                className="primary-button-with-hover w-full text-sm"
                 onClick={saveTimeSlots}
               >
                 Save
               </button>
-              <button className="rounded-md border border-gray-200 bg-white py-2 px-20 text-lg text-black">
+              <button
+                className="rounded-button w-full text-sm"
+                onClick={resetSchedule}
+              >
                 Discard
               </button>
-            </div>
-          </div>
+            </>
+          ) : (
+            <>
+              <MdOutlineFileDownloadDone className="text-5xl text-gray-500" />
+              <div className="mt-1 text-lg font-bold">File Saved</div>
+              <div className="text-[12px] font-light text-gray-500">
+                Availability is up to date
+              </div>
+            </>
+          )}
         </div>
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <div className="flex w-fit flex-row">
-          <Parachute_ScheduleSelector
+          <TimeslotSelector
             isInteractable
             occuringDates={occurringDaysArray}
             startTime={8}
             endTime={20}
             schedule={schedule}
-            setSchedule={setSchedule}
+            setSchedule={updateSchedule}
             setHoveredTime={() => void 0}
           />
         </div>
       </div>
     </div>
-  );
-};
-
-const Parachute_ScheduleSelector: React.FC<{
-  occuringDates: Date[];
-  startTime: number;
-  endTime: number;
-  schedule: Date[];
-  setSchedule?: React.Dispatch<React.SetStateAction<Date[]>>;
-  setHoveredTime: React.Dispatch<React.SetStateAction<Date | null>>;
-  isInteractable: boolean;
-}> = ({
-  occuringDates,
-  startTime,
-  endTime,
-  schedule,
-  setSchedule,
-  setHoveredTime,
-  isInteractable,
-}) => {
-  // find index of consecutive dates
-  const consecutiveDates = occuringDates.reduce((acc, date, index, arr) => {
-    if (index == 0) {
-      acc.push(index);
-      return acc;
-    }
-    // checks for consecutive index
-    if (
-      add(arr[index - 1] ?? new Date(), { days: 1 }).getDate() != date.getDate()
-    ) {
-      acc.push(index);
-    }
-    return acc;
-  }, [] as number[]);
-  return (
-    <>
-      {consecutiveDates.map((dateIndex, index, arr) => {
-        const length = occuringDates.length;
-        return (
-          <ScheduleSelector
-            key={index}
-            selection={schedule}
-            startDate={
-              dateIndex == 0 ? occuringDates[0] : occuringDates[dateIndex]
-            }
-            numDays={
-              index == arr.length - 1
-                ? length - dateIndex
-                : (arr[index + 1] ?? length) - dateIndex
-            }
-            minTime={startTime}
-            maxTime={endTime}
-            hourlyChunks={4}
-            rowGap="0px"
-            columnGap="10px"
-            renderTimeLabel={(time) => {
-              return <TimeLabel time={time} showTime={dateIndex == 0} />;
-            }}
-            renderDateLabel={(datetime) => {
-              return <DateLabel datetime={datetime} />;
-            }}
-            renderDateCell={(datetime, selected) => {
-              return isInteractable ? (
-                <TimeslotBlock selected={selected} datetime={datetime} />
-              ) : (
-                <div
-                  onMouseEnter={() => setHoveredTime(datetime)}
-                  onMouseLeave={() => setHoveredTime(null)}
-                >
-                  <TimeslotBlock selected={selected} datetime={datetime} />
-                </div>
-              );
-            }}
-            onChange={isInteractable ? setSchedule : () => void 0}
-          />
-        );
-      })}
-    </>
   );
 };
 
@@ -259,7 +138,7 @@ export const GroupAvailabilityZone: React.FC<{
   const [hoveredTime, setHoveredTime] = useState<Date | null>(null);
   return (
     <div className="relative h-[500px]">
-      <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
+      <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineMouse className="text-md" />
         Hover on slots to see who is available
       </div>
@@ -299,7 +178,7 @@ export const GroupAvailabilityZone: React.FC<{
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <div className="flex w-fit flex-row">
-          <Parachute_ScheduleSelector
+          <TimeslotSelector
             isInteractable={false}
             occuringDates={occurringDaysArray}
             startTime={8}

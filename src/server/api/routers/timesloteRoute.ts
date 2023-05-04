@@ -55,14 +55,13 @@ export const timesloteRouter = createTRPCRouter({
   getAllTimeSlots: protectedProcedure
     .input(
       z.object({
-        userID: z.string(),
         eventID: z.string(),
       })
     )
     .query(async (req) => {
       return await prisma.timeSlots.findMany({
         where: {
-          participateUserID: req.input.userID,
+          participateUserID: req.ctx.session.user.id,
           participateEventID: req.input.eventID,
         },
         orderBy: { begins: "asc" },
@@ -138,35 +137,41 @@ export const timesloteRouter = createTRPCRouter({
       });
     }),
 
- /**
+  /**
    Delete all timeslots according to input userID and eventID.
    Then create all time slots in arr beginsToAdd.
    */
-  ModifyManyTimeslot: protectedProcedure
+  timeslotsReplace: protectedProcedure
     .input(
       z.object({
-        userID: z.string(),
         eventID: z.string(),
-        beginsToAdd: z.array(z.string().datetime()),
+        timeslots: z.array(
+          z.object({
+            begins: z.string().datetime(),
+            ends: z.string().datetime(),
+          })
+        ),
       })
     )
     .mutation(async (req) => {
+      const userId = req.ctx.session.user.id;
+
       await prisma.timeSlots.deleteMany({
         where: {
-          participateUserID: req.input.userID,
+          participateUserID: userId,
           participateEventID: req.input.eventID,
         },
       });
       const createdTimeSlots = [];
 
-      for (const beginTime of req.input.beginsToAdd) {
+      for (const slot of req.input.timeslots) {
         const newTimeSlot = await prisma.timeSlots.create({
           data: {
-            participateUserID: req.input.userID,
+            participateUserID: userId,
             participateEventID: req.input.eventID,
-            date: beginTime,
-            begins: beginTime,
-            ends: beginTime,
+            date: slot.begins,
+            begins: slot.begins,
+            ends: slot.ends,
           },
         });
         createdTimeSlots.push(newTimeSlot);
