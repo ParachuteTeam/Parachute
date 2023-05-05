@@ -25,7 +25,16 @@ export const toDatetimeIntervals = (
   step: Duration,
   exclusiveIntervals: boolean
 ): DatetimeInterval[] => {
+  // Sort dates and remove duplicates
   const sortedDates = dates.sort((a, b) => a.getTime() - b.getTime());
+  for (let i = 1; i < sortedDates.length; i++) {
+    if (isEqual(sortedDates[i - 1] ?? 0, sortedDates[i] ?? 1)) {
+      sortedDates.splice(i, 1);
+      i--;
+    }
+  }
+
+  // Handle empty case
   const firstDate = sortedDates[0];
   if (firstDate === undefined) {
     return [];
