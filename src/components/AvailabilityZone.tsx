@@ -33,8 +33,12 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
     setChanged(true);
   };
 
-  const { data: existingSchedule, refetch } =
+  const { data: existingSchedule, refetch: refetchSchedule } =
     api.timeslots.getAllTimeSlots.useQuery({
+      eventID: eventID,
+    });
+  const { refetch: refetchAllSchedules } =
+    api.timeslots.getAllTimeSlots_Event.useQuery({
       eventID: eventID,
     });
   const resetSchedule = () => {
@@ -62,9 +66,11 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
       },
       {
         onSuccess: () => {
-          refetch().finally(() => {
-            setChanged(false);
-          });
+          Promise.all([refetchSchedule(), refetchAllSchedules()]).finally(
+            () => {
+              setChanged(false);
+            }
+          );
         },
       }
     );
