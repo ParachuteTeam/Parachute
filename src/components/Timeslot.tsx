@@ -84,7 +84,7 @@ export const TimeslotSelector: React.FC<TimeslotSelectorProps> = ({
     false
   );
   return (
-    <>
+    <div className="flex w-fit flex-row">
       {consecutiveDates.map((interval, index) => {
         return (
           <ScheduleSelector
@@ -110,7 +110,7 @@ export const TimeslotSelector: React.FC<TimeslotSelectorProps> = ({
           />
         );
       })}
-    </>
+    </div>
   );
 };
 
@@ -154,7 +154,7 @@ export const TimeslotView: React.FC<TimeslotViewProps> = ({
   }, [schedule]);
 
   return (
-    <>
+    <div className="flex w-fit flex-row">
       {consecutiveDates.map((interval, index) => {
         return (
           <ScheduleSelector
@@ -195,6 +195,6 @@ export const TimeslotView: React.FC<TimeslotViewProps> = ({
           />
         );
       })}
-    </>
+    </div>
   );
 };

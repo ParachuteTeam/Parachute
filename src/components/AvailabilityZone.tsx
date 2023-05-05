@@ -113,16 +113,14 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
         </div>
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
-        <div className="flex w-fit flex-row">
-          <TimeslotSelector
-            occurringDates={occurringDaysArray}
-            startTime={8}
-            endTime={20}
-            schedule={schedule}
-            onChange={updateSchedule}
-            weekOnly={weekOnly}
-          />
-        </div>
+        <TimeslotSelector
+          occurringDates={occurringDaysArray}
+          startTime={8}
+          endTime={20}
+          schedule={schedule}
+          onChange={updateSchedule}
+          weekOnly={weekOnly}
+        />
       </div>
     </div>
   );
@@ -243,17 +241,15 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
         </div>
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
-        <div className="flex w-fit flex-row">
-          <TimeslotView
-            occurringDates={occurringDaysArray}
-            startTime={8}
-            endTime={20}
-            schedule={schedule}
-            maxScheduleCount={participants?.length ?? 0}
-            setHoveredTime={setHoveredTime}
-            weekOnly={weekOnly}
-          />
-        </div>
+        <TimeslotView
+          occurringDates={occurringDaysArray}
+          startTime={8}
+          endTime={20}
+          schedule={schedule}
+          maxScheduleCount={participants?.length ?? 0}
+          setHoveredTime={setHoveredTime}
+          weekOnly={weekOnly}
+        />
       </div>
     </div>
   );
