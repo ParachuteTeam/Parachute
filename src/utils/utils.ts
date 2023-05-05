@@ -6,6 +6,14 @@ export const isBetween = (date: Date, start: Date, end: Date): boolean => {
   );
 };
 
+export const toHourDecimal = (date: Date): number => {
+  return date.getHours() + date.getMinutes() / 60;
+};
+
+export const csvToDateArray = (csv: string): Date[] => {
+  return csv.split(",").map((s) => new Date(s));
+};
+
 export const formatTime = (time: Date): string => {
   return format(time, "hh:mm aa") + (time.getDay() === 2 ? " (+1d)" : "");
 };
