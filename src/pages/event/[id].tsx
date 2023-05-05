@@ -25,13 +25,17 @@ import { DeleteDialog, EditDialog } from "../../components/section/Dialog";
 const EventInfoHeader: React.FC = () => {
   const router = useRouter();
   const eventId = router.query.id as string;
-  const { data: event } = api.events.getEvent.useQuery({ eventId });
+  const { data: event, refetch: refetchEvent } = api.events.getEvent.useQuery({
+    eventId,
+  });
+  const { refetch: refetchEventList } =
+    api.participates.getParticipateEvents.useQuery();
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const deleteEvent = api.events.deleteEvent.useMutation();
   const editEventName = api.events.updateEvent_name.useMutation();
+  const deleteEvent = api.events.deleteEvent.useMutation();
 
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
@@ -108,12 +112,18 @@ const EventInfoHeader: React.FC = () => {
         close={() => setIsEditDialogOpen(false)}
         eventName={event?.name ?? ""}
         onSubmit={(newEventName) => {
-          editEventName.mutate({
-            host_email: email,
-            name: newEventName,
-            eventId: eventId,
-          });
-          window.location.reload();
+          editEventName.mutate(
+            {
+              host_email: email,
+              name: newEventName,
+              eventId: eventId,
+            },
+            {
+              onSuccess: () => {
+                void refetchEvent();
+              },
+            }
+          );
         }}
       />
       <DeleteDialog
@@ -121,13 +131,19 @@ const EventInfoHeader: React.FC = () => {
         close={() => setIsDeleteDialogOpen(false)}
         eventName={event?.name ?? "Loading..."}
         onSubmit={() => {
-          void (async () => {
-            deleteEvent.mutate({
+          deleteEvent.mutate(
+            {
               host_email: email,
               eventId: eventId,
-            });
-            await router.push("/dashboard");
-          })();
+            },
+            {
+              onSuccess: () => {
+                refetchEventList().finally(() => {
+                  void router.push("/dashboard");
+                });
+              },
+            }
+          );
         }}
       />
     </div>
