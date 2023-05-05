@@ -362,12 +362,14 @@ const OperationCard: React.FC = () => {
               <MyAvailabilityZone
                 occurringDaysArray={occurringDaysArray ?? []}
                 eventID={router.query.id as string}
+                weekOnly={event.data?.type === "DAYSOFWEEK"}
               />
             </Tab.Panel>
             <Tab.Panel>
               <GroupAvailabilityZone
                 occurringDaysArray={occurringDaysArray ?? []}
                 eventID={router.query.id as string}
+                weekOnly={event.data?.type === "DAYSOFWEEK"}
               />
             </Tab.Panel>
           </Tab.Panels>

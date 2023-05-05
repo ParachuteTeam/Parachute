@@ -20,10 +20,13 @@ const TimeslotBlock: React.FC<{ selected: boolean; datetime: Date }> = ({
   );
 };
 
-const DateLabel: React.FC<{ datetime: Date }> = ({ datetime }) => {
+const DateLabel: React.FC<{ datetime: Date; weekOnly?: boolean }> = ({
+  datetime,
+  weekOnly,
+}) => {
   return (
     <div className="flex w-20 flex-col items-center border-b border-black pb-1">
-      <div className="text-xs">{format(datetime, "MMM d")}</div>
+      {!weekOnly && <div className="text-xs">{format(datetime, "MMM d")}</div>}
       <div className="mt-[-4px] text-lg font-bold">
         {format(datetime, "EEE")}
       </div>
@@ -55,6 +58,7 @@ interface TimeslotSelectorProps {
   onChange?: (newSchedule: Date[]) => void;
   setHoveredTime: React.Dispatch<React.SetStateAction<Date | null>>;
   isInteractable: boolean;
+  weekOnly?: boolean;
 }
 
 export const TimeslotView: React.FC<TimeslotSelectorProps> = ({
@@ -65,6 +69,7 @@ export const TimeslotView: React.FC<TimeslotSelectorProps> = ({
   onChange,
   setHoveredTime,
   isInteractable,
+  weekOnly,
 }) => {
   // find index of consecutive dates
   const consecutiveDates = occuringDates.reduce((acc, date, index, arr) => {
@@ -105,7 +110,7 @@ export const TimeslotView: React.FC<TimeslotSelectorProps> = ({
               return <TimeLabel time={time} showTime={dateIndex == 0} />;
             }}
             renderDateLabel={(datetime) => {
-              return <DateLabel datetime={datetime} />;
+              return <DateLabel datetime={datetime} weekOnly={weekOnly} />;
             }}
             renderDateCell={(datetime, selected) => {
               return isInteractable ? (

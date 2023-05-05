@@ -12,10 +12,17 @@ import { TimeslotView } from "./TimeslotView";
 import type { DatetimeInterval } from "../utils/utils";
 import { toDatetimeIntervals, toIndividualDates } from "../utils/utils";
 
-export const MyAvailabilityZone: React.FC<{
+interface MyAvailabilityZoneProps {
   occurringDaysArray: Date[];
   eventID: string;
-}> = ({ occurringDaysArray, eventID }) => {
+  weekOnly?: boolean;
+}
+
+export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
+  occurringDaysArray,
+  eventID,
+  weekOnly,
+}) => {
   const [schedule, setSchedule] = useState<Date[]>([]);
   const [changed, setChanged] = useState(false);
 
@@ -43,6 +50,7 @@ export const MyAvailabilityZone: React.FC<{
   const scheduleReplace = api.timeslots.timeslotsReplace.useMutation();
   const saveTimeSlots = () => {
     const intervals = toDatetimeIntervals(schedule, { minutes: 15 }, true);
+    console.log(intervals);
     scheduleReplace.mutate(
       {
         eventID: eventID,
@@ -111,6 +119,7 @@ export const MyAvailabilityZone: React.FC<{
             schedule={schedule}
             onChange={updateSchedule}
             setHoveredTime={() => void 0}
+            weekOnly={weekOnly}
           />
         </div>
       </div>
@@ -128,14 +137,21 @@ const AvailablePerson: React.FC<{ name: string }> = ({ name }) => {
   );
 };
 
-export const GroupAvailabilityZone: React.FC<{
+interface GroupAvailabilityZoneProps {
   occurringDaysArray: Date[];
   eventID: string;
-}> = ({ occurringDaysArray, eventID }) => {
+  weekOnly?: boolean;
+}
+
+export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
+  occurringDaysArray,
+  eventID,
+  weekOnly,
+}) => {
   const schedule = api.timeslots.getAllTimeSlots_Event.useQuery({
     eventID: eventID,
   });
-  console.log(schedule.data);
+
   // turn schedule.data into an array of dates
   const scheduleDates = schedule.data?.map((timeslot) => {
     return new Date(timeslot.begins);
@@ -195,6 +211,7 @@ export const GroupAvailabilityZone: React.FC<{
             endTime={20}
             schedule={scheduleDates ?? []}
             setHoveredTime={setHoveredTime}
+            weekOnly={weekOnly}
           />
         </div>
       </div>
