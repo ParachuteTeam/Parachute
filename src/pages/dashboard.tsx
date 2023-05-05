@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/section/Navbar";
 import React, { useState } from "react";
 import { api } from "../utils/api";
 import {
@@ -9,16 +9,16 @@ import {
   MdOutlineSearch,
 } from "react-icons/md";
 import { useSession } from "next-auth/react";
-import { EventTypeTag } from "../components/Tag";
-import type { ListboxOption } from "../components/Input";
+import { EventTypeTag } from "../components/ui/Tag";
+import type { ListboxOption } from "../components/ui/Input";
 import {
   RoundedListbox,
   Selector,
   RoundedTimezoneInput,
   TimespanSelector,
-} from "../components/Input";
+} from "../components/ui/Input";
 import Link from "next/link";
-import { DateSelect } from "../components/DateSelect";
+import { DateSelect } from "../components/ui/DateSelect";
 import { currentTimezone } from "../utils/timezone";
 import { formatOccurring, formatTime } from "../utils/utils";
 

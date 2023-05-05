@@ -7,15 +7,15 @@ import {
 } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
 import { IoEarthSharp } from "react-icons/io5";
-import { api } from "../utils/api";
-import { TimeslotSelector, TimeslotView } from "./Timeslot";
-import type { DatetimeInterval } from "../utils/utils";
+import { api } from "../../utils/api";
+import { TimeslotSelector, TimeslotView } from "../ui/Timeslot";
+import type { DatetimeInterval } from "../../utils/utils";
 import {
   csvToDateArray,
   isBetween,
   toDatetimeIntervals,
   toIndividualDates,
-} from "../utils/utils";
+} from "../../utils/utils";
 
 interface MyAvailabilityZoneProps {
   eventID: string;

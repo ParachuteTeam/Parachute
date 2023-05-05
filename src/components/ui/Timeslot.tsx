@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { differenceInDays, format } from "date-fns";
 import ScheduleSelector from "react-schedule-selector";
-import { toDatetimeIntervals, toHourDecimal } from "../utils/utils";
+import { toDatetimeIntervals, toHourDecimal } from "../../utils/utils";
 
 const TimeslotBlock: React.FC<{
   selected: boolean;

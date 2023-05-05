@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
-import OnHover from "./OnHover";
+import OnHover from "../ui/OnHover";
 import Link from "next/link";
 
 const Navbar = () => {
