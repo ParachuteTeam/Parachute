@@ -341,6 +341,11 @@ export const eventRouter = createTRPCRouter({
           eventID: req.input.eventId,
         },
       });
+      await prisma.timeSlots.deleteMany({
+        where: {
+          participateEventID: req.input.eventId,
+        },
+      });
       return await prisma.event.delete({
         where: {
           id: req.input.eventId,
