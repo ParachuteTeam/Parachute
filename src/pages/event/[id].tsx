@@ -112,18 +112,20 @@ const EventInfoHeader: React.FC = () => {
         close={() => setIsEditDialogOpen(false)}
         eventName={event?.name ?? ""}
         onSubmit={(newEventName) => {
-          editEventName.mutate(
-            {
-              host_email: email,
-              name: newEventName,
-              eventId: eventId,
-            },
-            {
-              onSuccess: () => {
-                void refetchEvent();
+          return new Promise<void>((resolve) => {
+            editEventName.mutate(
+              {
+                host_email: email,
+                name: newEventName,
+                eventId: eventId,
               },
-            }
-          );
+              {
+                onSuccess: () => {
+                  refetchEvent().finally(resolve);
+                },
+              }
+            );
+          });
         }}
       />
       <DeleteDialog
@@ -131,19 +133,21 @@ const EventInfoHeader: React.FC = () => {
         close={() => setIsDeleteDialogOpen(false)}
         eventName={event?.name ?? "Loading..."}
         onSubmit={() => {
-          deleteEvent.mutate(
-            {
-              host_email: email,
-              eventId: eventId,
-            },
-            {
-              onSuccess: () => {
-                refetchEventList().finally(() => {
-                  void router.push("/dashboard");
-                });
+          return new Promise((resolve) => {
+            deleteEvent.mutate(
+              {
+                host_email: email,
+                eventId: eventId,
               },
-            }
-          );
+              {
+                onSuccess: () => {
+                  refetchEventList().finally(() => {
+                    router.push("/dashboard").finally(resolve);
+                  });
+                },
+              }
+            );
+          });
         }}
       />
     </div>

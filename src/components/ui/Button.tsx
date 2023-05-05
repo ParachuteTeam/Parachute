@@ -28,7 +28,7 @@ export const ButtonWithState: React.FC<LoadableButtonProps> = ({
           : disabled
           ? disabledClassName
           : className) ?? ""
-      } ${loading && disabled ? "cursor-not-allowed" : ""}`}
+      } ${loading || disabled ? "cursor-not-allowed" : ""}`}
       onClick={onClick}
     >
       {loading && <AiOutlineLoading className="animate-spin" />}

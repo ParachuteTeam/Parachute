@@ -1,18 +1,12 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { ButtonWithState } from "../ui/Button";
 
 interface EditDialogProps {
   isOpen: boolean;
   close: () => void;
   eventName: string;
-  onSubmit: (eventName: string) => void;
-}
-
-interface EditDialogProps {
-  isOpen: boolean;
-  close: () => void;
-  eventName: string;
-  onSubmit: (eventName: string) => void;
+  onSubmit: (eventName: string) => Promise<void>;
 }
 export const EditDialog: React.FC<EditDialogProps> = ({
   isOpen,
@@ -24,6 +18,7 @@ export const EditDialog: React.FC<EditDialogProps> = ({
   useEffect(() => {
     setNewEventName(eventName);
   }, [eventName]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
@@ -76,25 +71,30 @@ export const EditDialog: React.FC<EditDialogProps> = ({
                 </div>
               </div>
               <div className="mt-5 flex justify-center gap-4">
-                <button
+                <ButtonWithState
                   className="rounded-button w-[50%] text-sm"
+                  disabledClassName="rounded-button-disabled w-[50%] text-sm"
+                  disabled={isSubmitting}
                   onClick={() => close()}
                 >
                   Cancel
-                </button>
-                <button
+                </ButtonWithState>
+                <ButtonWithState
                   className="primary-button-with-hover w-[50%] text-sm font-normal"
+                  loadingClassName="primary-button-loading w-[50%] text-sm font-normal"
+                  disabledClassName="primary-button-loading w-[50%] text-sm font-normal"
+                  loading={isSubmitting}
+                  disabled={newEventName.length === 0}
                   onClick={() => {
-                    if (!newEventName) {
-                      alert("Empty EventName is Not Allowed.");
-                      return;
-                    }
-                    onSubmit(newEventName);
-                    close();
+                    setIsSubmitting(true);
+                    onSubmit(newEventName).finally(() => {
+                      setIsSubmitting(false);
+                      close();
+                    });
                   }}
                 >
                   Save
-                </button>
+                </ButtonWithState>
               </div>
             </div>
           </Transition.Child>
@@ -108,7 +108,7 @@ interface DeleteDialogProps {
   isOpen: boolean;
   close: () => void;
   eventName: string;
-  onSubmit: () => void;
+  onSubmit: () => Promise<void>;
 }
 
 export const DeleteDialog: React.FC<DeleteDialogProps> = ({
@@ -117,6 +117,7 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = ({
   eventName,
   onSubmit,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
@@ -162,21 +163,28 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = ({
                 undone.
               </div>
               <div className="mt-6 flex justify-center gap-4">
-                <button
+                <ButtonWithState
                   className="rounded-button w-[50%] text-sm"
+                  disabledClassName="rounded-button-disabled w-[50%] text-sm"
+                  disabled={isSubmitting}
                   onClick={() => close()}
                 >
                   Cancel
-                </button>
-                <button
+                </ButtonWithState>
+                <ButtonWithState
                   className="danger-button w-[50%] text-sm"
+                  loadingClassName="danger-button-loading w-[50%] text-sm"
+                  loading={isSubmitting}
                   onClick={() => {
-                    onSubmit();
-                    close();
+                    setIsSubmitting(true);
+                    onSubmit().finally(() => {
+                      setIsSubmitting(false);
+                      close();
+                    });
                   }}
                 >
                   Permanently Delete
-                </button>
+                </ButtonWithState>
               </div>
             </div>
           </Transition.Child>
