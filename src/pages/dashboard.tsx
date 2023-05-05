@@ -265,6 +265,18 @@ const NewEventCard = () => {
 };
 
 const Dashboard: NextPage = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    void router.push("/");
+    return <div>Redirecting...</div>;
+  }
+
   return (
     <div className="min-h-screen w-screen bg-gray-100">
       <Navbar />
