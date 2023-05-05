@@ -21,6 +21,7 @@ import Link from "next/link";
 import { DateSelect } from "../components/ui/DateSelect";
 import { currentTimezone } from "../utils/timezone";
 import { formatOccurring, formatTime } from "../utils/utils";
+import { ButtonWithState } from "../components/ui/Button";
 
 interface Event {
   id: string;
@@ -132,12 +133,12 @@ const StartNewEventSection = () => {
 
   const { data: session } = useSession();
   const email = session?.user.email as string;
-  const mutation = api.events.createEvent.useMutation();
+  const createEvent = api.events.createEvent.useMutation();
 
   const handleCreateEvent = () => {
     // Save the event details to the database, and update the Event model.
 
-    mutation.mutate(
+    createEvent.mutate(
       {
         occuringDays: selectedDays.toString(),
         name: eventName,
@@ -216,12 +217,14 @@ const StartNewEventSection = () => {
           onChangeEnd={setEndTime}
         />
       </div>
-      <button
+      <ButtonWithState
         className="primary-button mt-3 py-3 text-sm"
+        loadingClassName="primary-button-loading mt-3 py-3 text-sm"
+        loading={createEvent.isLoading}
         onClick={() => void handleCreateEvent()}
       >
         Create Event
-      </button>
+      </ButtonWithState>
       <div className="text-center text-xs text-gray-400">
         Timezone, days and time span cannot be <br />
         changed after the event is created

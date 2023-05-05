@@ -53,4 +53,8 @@
     .primary-button-with-hover {
         @apply primary-button hover:bg-gray-700;
     }
+
+    .primary-button-loading {
+        @apply primary-button bg-gray-500 cursor-not-allowed;
+    }
 }
