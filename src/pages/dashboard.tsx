@@ -36,7 +36,7 @@ interface Event {
 }
 interface EventCardProps {
   event: Event;
-  myEvent: boolean
+  myEvent: boolean;
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
@@ -94,7 +94,11 @@ const EventList = () => {
         />
       </div>
       {filteredEvents?.map((event) => (
-        <EventCard key={event.id} event={event} myEvent={event.ownerID === session?.user.id} />
+        <EventCard
+          key={event.id}
+          event={event}
+          myEvent={event.ownerID === session?.user.id}
+        />
       ))}
     </div>
   );
@@ -282,8 +286,6 @@ const NewEventCard = () => {
 };
 
 const Dashboard: NextPage = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -302,9 +304,7 @@ const Dashboard: NextPage = () => {
         <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
           <div className="flex h-full flex-grow flex-col">
             <div className="mb-6 text-2xl font-bold">Recent Events</div>
-            <div className="card mb-4 flex flex-row items-center px-4 text-sm">
-            </div>
-            <EventList/>
+            <EventList />
           </div>
           <div className="flex h-full flex-col">
             <div className="mb-6 text-2xl font-bold">Add Event</div>

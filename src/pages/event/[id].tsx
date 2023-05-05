@@ -133,11 +133,11 @@ interface DeleteDialogProps {
 }
 
 const DeleteDialog: React.FC<DeleteDialogProps> = ({
-                                                     isOpen,
-                                                     close,
-                                                     eventName,
-                                                     onSubmit,
-                                                   }) => {
+  isOpen,
+  close,
+  eventName,
+  onSubmit,
+}) => {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
@@ -241,9 +241,9 @@ const EventInfoHeader: React.FC = () => {
             <div>
               {event
                 ? formatOccurring(
-                  occurringDaysArray ?? [],
-                  event.type === "DAYSOFWEEK"
-                )
+                    occurringDaysArray ?? [],
+                    event.type === "DAYSOFWEEK"
+                  )
                 : "Loading..."}
             </div>
             <MdOutlineAccessTime className="ml-1" />
@@ -269,20 +269,23 @@ const EventInfoHeader: React.FC = () => {
         </div>
 
         <div className="flex w-[200px] flex-col gap-3 text-sm font-light">
-          {isOwner && <button
-            className="rounded-button"
-            onClick={() => setIsEditDialogOpen(true)}
-          >
-            Edit
-          </button>}
-          {isOwner && <button
-            className="danger-button"
-            onClick={() => setIsDeleteDialogOpen(true)}
-          >
-            Delete
-          </button>}
+          {isOwner && (
+            <button
+              className="rounded-button"
+              onClick={() => setIsEditDialogOpen(true)}
+            >
+              Edit
+            </button>
+          )}
+          {isOwner && (
+            <button
+              className="danger-button"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              Delete
+            </button>
+          )}
         </div>
-
       </div>
       <EditDialog
         isOpen={isEditDialogOpen}
@@ -325,10 +328,10 @@ const OperationCardTab: React.FC<
           className={`
             mb-[-1px] cursor-pointer border-b-2 pb-3 focus:outline-none
             ${
-            selected
-              ? "border-black text-center"
-              : "border-transparent text-center font-light text-gray-500 hover:border-b-2 hover:border-gray-300 hover:text-gray-700"
-          }
+              selected
+                ? "border-black text-center"
+                : "border-transparent text-center font-light text-gray-500 hover:border-b-2 hover:border-gray-300 hover:text-gray-700"
+            }
             ${className ?? ""}
             `}
         >
