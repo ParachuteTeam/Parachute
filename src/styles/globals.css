@@ -30,8 +30,16 @@
         @apply rounded-md border border-gray-300 py-2 px-4 hover:bg-gray-100;
     }
 
+    .rounded-button-disabled {
+        @apply rounded-md border border-gray-300 py-2 px-4 bg-gray-100 cursor-not-allowed;
+    }
+
     .danger-button {
         @apply bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600;
+    }
+
+    .danger-button-loading {
+        @apply bg-red-300 text-white py-2 px-4 rounded-md cursor-not-allowed;
     }
 
     .input-field {
@@ -52,5 +60,9 @@
 
     .primary-button-with-hover {
         @apply primary-button hover:bg-gray-700;
+    }
+
+    .primary-button-loading {
+        @apply primary-button bg-gray-500 cursor-not-allowed;
     }
 }

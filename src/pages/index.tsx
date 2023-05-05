@@ -1,10 +1,13 @@
 import { type NextPage } from "next";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/section/Navbar";
 import React from "react";
 import { useElementMouseRelativeAngle } from "../utils/hooks";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { Auth0LoginButton, GoogleLoginButton } from "../components/LoginButton";
+import {
+  Auth0LoginButton,
+  GoogleLoginButton,
+} from "../components/ui/LoginButton";
 
 const Home: NextPage = () => {
   const { angle, ref } = useElementMouseRelativeAngle();

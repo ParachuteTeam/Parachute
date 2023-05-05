@@ -308,6 +308,8 @@ export const eventRouter = createTRPCRouter({
       })
     )
     .mutation(async (req) => {
+      const userId = req.ctx.session.user.id;
+
       const eventCheck = await prisma.event.findUnique({
         where: {
           id: req.input.eventId,
@@ -319,31 +321,20 @@ export const eventRouter = createTRPCRouter({
           message: "Event does not exist",
         });
       }
-      const userCheck = await prisma.user.findUnique({
-        where: {
-          email: req.input.host_email,
-        },
-      });
-      if (!userCheck) {
+      if (userId != eventCheck.ownerID) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "User does not exist",
-        });
-      }
-      if (userCheck.id != eventCheck.ownerID) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
           message: "User is not event holder",
         });
       }
-      await prisma.participate.deleteMany({
-        where: {
-          eventID: req.input.eventId,
-        },
-      });
       await prisma.timeSlots.deleteMany({
         where: {
           participateEventID: req.input.eventId,
+        },
+      });
+      await prisma.participate.deleteMany({
+        where: {
+          eventID: req.input.eventId,
         },
       });
       return await prisma.event.delete({
