@@ -36,11 +36,11 @@ interface EditDialogProps {
   onSubmit: (eventName: string) => void;
 }
 const EditDialog: React.FC<EditDialogProps> = ({
-                                                 isOpen,
-                                                 close,
-                                                 eventName,
-                                                 onSubmit,
-                                               }) => {
+  isOpen,
+  close,
+  eventName,
+  onSubmit,
+}) => {
   const [newEventName, setNewEventName] = useState("");
   useEffect(() => {
     setNewEventName(eventName);

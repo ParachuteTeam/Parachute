@@ -39,7 +39,7 @@ interface EventCardProps {
   myEvent: boolean
 }
 
-const EventCardMyEvent: React.FC<EventCardProps> = ({ event, myEvent }) => {
+const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
   const eventId = event.id;
   const eventName = event.name;
   const occurringDaysArray = event.occuringDays
@@ -81,7 +81,7 @@ const EventList = () => {
   return (
     <div className="event-list-container">
       {participatedEvents?.map((event) => (
-        <EventCardMyEvent key={event.id} event={event} myEvent={event.ownerID === session?.user.id} />
+        <EventCard key={event.id} event={event} myEvent={event.ownerID === session?.user.id} />
       ))}
     </div>
   );
@@ -269,6 +269,17 @@ const NewEventCard = () => {
 };
 
 const Dashboard: NextPage = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    void router.push("/");
+    return <div>Redirecting...</div>;
+  }
   return (
     <div className="min-h-screen w-screen bg-gray-100">
       <Navbar />
