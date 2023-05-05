@@ -76,7 +76,6 @@ const EventInfoHeader: React.FC = () => {
           </div>
           <div className="flex flex-row items-center gap-2 text-sm">
             {isOwner && <EventTypeTag>My Event</EventTypeTag>}
-            <p>No one filled yet</p>
             <p>
               <span className="font-bold">Event ID:</span>{" "}
               {event?.joinCode ?? ""}
