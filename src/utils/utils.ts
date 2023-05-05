@@ -1,5 +1,11 @@
 import { add, format, isEqual } from "date-fns";
 
+export const isBetween = (date: Date, start: Date, end: Date): boolean => {
+  return (
+    isEqual(date, start) || isEqual(date, end) || (date > start && date < end)
+  );
+};
+
 export const formatTime = (time: Date): string => {
   return format(time, "hh:mm aa") + (time.getDay() === 2 ? " (+1d)" : "");
 };
