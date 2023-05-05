@@ -9,10 +9,16 @@ import { Auth0LoginButton, GoogleLoginButton } from "../components/LoginButton";
 const Home: NextPage = () => {
   const { angle, ref } = useElementMouseRelativeAngle();
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
   if (session) {
     void router.replace("/dashboard");
+    return <div>Redirecting...</div>;
   }
+
   return (
     <>
       <Navbar />
