@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
-import React from "react";
+import React, { useState } from "react";
 import { api } from "../utils/api";
 import {
   MdOutlineAccessTime,
@@ -71,14 +71,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 };
 
 const EventList = () => {
-  const { data: session } = useSession();
-  const email = session?.user.email as string;
-  const { data: events } = api.events.getEventList.useQuery({ email });
-  console.log(events);
-
+  const { data: participatedEvents } =
+    api.participates.getParticipateEvents.useQuery();
+  console.log("participatedEvents", participatedEvents);
   return (
     <div className="event-list-container">
-      {events?.map((event) => (
+      {participatedEvents?.map((event) => (
         <EventCard key={event.id} event={event} />
       ))}
     </div>
@@ -213,16 +211,18 @@ const StartNewEventSection = () => {
 
 const JoinExistingEventSection = () => {
   const router = useRouter();
-  const [joinCode, setJoinCode] = React.useState("");
-  const event = api.events.getEventjoinCode.useQuery({ joinCode });
+  const [joinCode, setJoinCode] = useState("");
+  const { data: event } = api.events.getEventjoinCode.useQuery({
+    joinCode: joinCode,
+  });
 
   const handleJoinEvent = () => {
-    const eventId = event?.data?.id || ("" as string);
-    if (eventId)
-      void router.push(`/event/${eventId}`).then(() => {
-        // Additional logic can be placed here, if required.
-      });
+    const eventId = event?.id;
+    if (eventId) {
+      void router.push(`/event/${eventId}`);
+    }
   };
+
   return (
     <>
       <div className="input-field">
@@ -231,6 +231,7 @@ const JoinExistingEventSection = () => {
         <input
           className="rounded-input"
           placeholder="xxxxxx"
+          maxLength={6}
           value={joinCode}
           onChange={(e) => setJoinCode(e.target.value)}
         />

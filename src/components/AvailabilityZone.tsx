@@ -1,179 +1,149 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { add, format } from "date-fns";
 import {
   MdOutlineEditCalendar,
   MdOutlineFileDownloadDone,
   MdOutlineMouse,
 } from "react-icons/md";
-import ScheduleSelector from "react-schedule-selector";
+import { FiEdit } from "react-icons/fi";
 import { IoEarthSharp } from "react-icons/io5";
+import { api } from "../utils/api";
+import { TimeslotSelector, TimeslotView } from "./Timeslot";
+import type { DatetimeInterval } from "../utils/utils";
+import {
+  csvToDateArray,
+  isBetween,
+  toDatetimeIntervals,
+  toIndividualDates,
+} from "../utils/utils";
 
-const TimeslotBlock: React.FC<{ selected: boolean; datetime: Date }> = ({
-  selected,
-  datetime,
+interface MyAvailabilityZoneProps {
+  eventID: string;
+  weekOnly?: boolean;
+}
+
+export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
+  eventID,
 }) => {
-  return (
-    // returns div with whole hours thicker than half hours, make half hours dotted
-    <div
-      className={`h-4 w-20 border border-t-0 border-black ${
-        datetime.getMinutes() == 45
-          ? "border-black"
-          : datetime.getMinutes() == 15
-          ? "border-b-gray-500"
-          : "border-b-gray-300"
-      } ${selected ? "bg-[#79ffe1]" : ""}`}
-    />
-  );
-};
-
-const DateLabel: React.FC<{ datetime: Date }> = ({ datetime }) => {
-  return (
-    <div className="flex w-20 flex-col items-center border-b border-black pb-1">
-      <div className="text-xs">{format(datetime, "MMM d")}</div>
-      <div className="mt-[-4px] text-lg font-bold">
-        {format(datetime, "EEE")}
-      </div>
-    </div>
-  );
-};
-
-const TimeLabel: React.FC<{ time: Date; showTime: boolean }> = ({
-  time,
-  showTime,
-}) => {
-  return (
-    <div
-      className={
-        "relative bottom-[9px] text-right text-xs text-gray-500 " +
-        (showTime ? "w-16" : "w-10")
-      }
-    >
-      {showTime && (time.getMinutes() % 30 == 0 ? format(time, "p") : "")}
-    </div>
-  );
-};
-
-export const MyAvailabilityZone: React.FC = () => {
   const [schedule, setSchedule] = useState<Date[]>([]);
+  const [changed, setChanged] = useState(false);
+
+  const updateSchedule = (newSchedule: Date[]) => {
+    setSchedule(newSchedule);
+    setChanged(true);
+  };
+
+  const { data: existingSchedule, refetch: refetchSchedule } =
+    api.timeslots.getAllTimeSlots.useQuery({
+      eventID: eventID,
+    });
+  const { refetch: refetchAllSchedules } =
+    api.timeslots.getAllTimeSlots_Event.useQuery({
+      eventID: eventID,
+    });
+  const resetSchedule = () => {
+    if (!changed) {
+      const intervals: DatetimeInterval[] =
+        existingSchedule?.map((timeslot) => ({
+          start: timeslot.begins,
+          end: timeslot.ends,
+        })) ?? [];
+      setSchedule(toIndividualDates(intervals, { minutes: 15 }, true));
+    }
+  };
+  useEffect(resetSchedule, [changed, existingSchedule]);
+
+  const scheduleReplace = api.timeslots.timeslotsReplace.useMutation();
+  const saveTimeSlots = () => {
+    const intervals = toDatetimeIntervals(schedule, { minutes: 15 }, true);
+    scheduleReplace.mutate(
+      {
+        eventID: eventID,
+        timeslots: intervals.map((itv) => ({
+          begins: itv.start.toJSON(),
+          ends: itv.end.toJSON(),
+        })),
+      },
+      {
+        onSuccess: () => {
+          Promise.all([refetchSchedule(), refetchAllSchedules()]).finally(
+            () => {
+              setChanged(false);
+            }
+          );
+        },
+      }
+    );
+  };
+
+  const { data: event } = api.events.getEvent.useQuery({ eventId: eventID });
+  if (!event) return null;
+
   return (
     <div className="relative h-[500px]">
-      <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
+      <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineEditCalendar className="text-md" />
         Click or drag to select available time slots
       </div>
       <div className="absolute right-8 flex h-full flex-row items-center">
-        <div className="card flex h-36 w-64 flex-col items-center justify-center shadow-lg">
-          <MdOutlineFileDownloadDone className="text-5xl text-gray-500" />
-          <div className="mt-1 text-lg font-bold">File Saved</div>
-          <div className="text-[12px] font-light text-gray-500">
-            Availability is up to date
-          </div>
+        <div className="card flex h-36 w-64 flex-col items-center justify-center gap-2 p-4 shadow-lg">
+          {changed ? (
+            <>
+              <div className="flex flex-row items-center justify-center gap-1 p-1">
+                <FiEdit className="text-sm" />
+                <div className="text-sm text-gray-500">
+                  Unsaved change detected
+                </div>
+              </div>
+              <button
+                className="primary-button-with-hover w-full text-sm"
+                onClick={saveTimeSlots}
+              >
+                Save
+              </button>
+              <button
+                className="rounded-button w-full text-sm"
+                onClick={resetSchedule}
+              >
+                Discard
+              </button>
+            </>
+          ) : (
+            <>
+              <MdOutlineFileDownloadDone className="text-5xl text-gray-500" />
+              <div className="mt-1 text-lg font-bold">File Saved</div>
+              <div className="text-[12px] font-light text-gray-500">
+                Availability is up to date
+              </div>
+            </>
+          )}
         </div>
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
-        <div className="flex w-fit flex-row">
-          <Parachute_ScheduleSelector
-            isInteractable
-            occuringDates={[
-              new Date(2022, 8, 30),
-              new Date(2022, 9, 2),
-              new Date(2022, 9, 6),
-              new Date(2022, 9, 10),
-              new Date(2022, 9, 11),
-            ]}
-            startTime={8}
-            endTime={20}
-            schedule={schedule}
-            setSchedule={setSchedule}
-            setHoveredTime={() => void 0}
-          />
-        </div>
+        <TimeslotSelector
+          occurringDates={csvToDateArray(event.occuringDays)}
+          startTime={event.begins}
+          endTime={event.ends}
+          schedule={schedule}
+          onChange={updateSchedule}
+          weekOnly={event.type === "DAYSOFWEEK"}
+        />
       </div>
     </div>
   );
 };
 
-const Parachute_ScheduleSelector: React.FC<{
-  occuringDates: Date[];
-  startTime: number;
-  endTime: number;
-  schedule: Date[];
-  setSchedule?: React.Dispatch<React.SetStateAction<Date[]>>;
-  setHoveredTime: React.Dispatch<React.SetStateAction<Date | null>>;
-  isInteractable: boolean;
-}> = ({
-  occuringDates,
-  startTime,
-  endTime,
-  schedule,
-  setSchedule,
-  setHoveredTime,
-  isInteractable,
-}) => {
-  // find index of consecutive dates
-  const consecutiveDates = occuringDates.reduce((acc, date, index, arr) => {
-    if (index == 0) {
-      acc.push(index);
-      return acc;
-    }
-    // checks for consecutive index
-    if (
-      add(arr[index - 1] ?? new Date(), { days: 1 }).getDate() != date.getDate()
-    ) {
-      acc.push(index);
-    }
-    return acc;
-  }, [] as number[]);
+const AvailablePerson: React.FC<{
+  id?: string;
+  name: string;
+  setHoveredPerson?: (id: string | null) => void;
+}> = ({ id, name, setHoveredPerson }) => {
   return (
-    <>
-      {consecutiveDates.map((dateIndex, index, arr) => {
-        const length = occuringDates.length;
-        return (
-          <ScheduleSelector
-            key={index}
-            selection={schedule}
-            startDate={
-              dateIndex == 0 ? occuringDates[0] : occuringDates[dateIndex]
-            }
-            numDays={
-              index == arr.length - 1
-                ? length - dateIndex
-                : (arr[index + 1] ?? length) - dateIndex
-            }
-            minTime={startTime}
-            maxTime={endTime}
-            hourlyChunks={4}
-            rowGap="0px"
-            columnGap="10px"
-            renderTimeLabel={(time) => {
-              return <TimeLabel time={time} showTime={dateIndex == 0} />;
-            }}
-            renderDateLabel={(datetime) => {
-              return <DateLabel datetime={datetime} />;
-            }}
-            renderDateCell={(datetime, selected) => {
-              return isInteractable ? (
-                <TimeslotBlock selected={selected} datetime={datetime} />
-              ) : (
-                <div
-                  onMouseEnter={() => setHoveredTime(datetime)}
-                  onMouseLeave={() => setHoveredTime(null)}
-                >
-                  <TimeslotBlock selected={false} datetime={datetime} />
-                </div>
-              );
-            }}
-            onChange={isInteractable ? setSchedule : () => void 0}
-          />
-        );
-      })}
-    </>
-  );
-};
-
-const AvailablePerson: React.FC<{ name: string }> = ({ name }) => {
-  return (
-    <div className="flex flex-row items-center gap-1">
+    <div
+      className="flex flex-row items-center gap-1"
+      onMouseEnter={() => setHoveredPerson?.(id ?? null)}
+      onMouseLeave={() => setHoveredPerson?.(null)}
+    >
       <div className="font-semibold">{name}</div>
       <IoEarthSharp className="text-md ml-2 text-gray-500" />
       <div className="text-gray-500">Chicago (GMT-8)</div>
@@ -181,56 +151,112 @@ const AvailablePerson: React.FC<{ name: string }> = ({ name }) => {
   );
 };
 
-export const GroupAvailabilityZone: React.FC = () => {
+interface GroupAvailabilityZoneProps {
+  eventID: string;
+  weekOnly?: boolean;
+}
+
+export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
+  eventID,
+}) => {
+  const { data: existingSchedule } =
+    api.timeslots.getAllTimeSlots_Event.useQuery({
+      eventID: eventID,
+    });
+
+  const { data: participants } = api.events.getAllParticipants.useQuery({
+    eventId: eventID,
+  });
+
+  const participantsMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    participants?.forEach((participant) => {
+      map[participant.userID] = participant.user.name;
+    });
+    return map;
+  }, [participants]);
+
   const [hoveredTime, setHoveredTime] = useState<Date | null>(null);
+  const [hoveredPerson, setHoveredPerson] = useState<string | null>(null);
+
+  const schedule = useMemo(() => {
+    const intervals: DatetimeInterval[] =
+      existingSchedule
+        ?.filter(
+          (timeslot) =>
+            !hoveredPerson || timeslot.participateUserID == hoveredPerson
+        )
+        .map((timeslot) => ({
+          start: timeslot.begins,
+          end: timeslot.ends,
+        })) ?? [];
+    return toIndividualDates(intervals, { minutes: 15 }, true);
+  }, [existingSchedule, hoveredPerson]);
+
+  const { data: event } = api.events.getEvent.useQuery({ eventId: eventID });
+  if (!event) return null;
+
   return (
     <div className="relative h-[500px]">
-      <div className="absolute top-4 left-8 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
+      <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineMouse className="text-md" />
         Hover on slots to see who is available
       </div>
       <div className="absolute right-8 flex h-full flex-row items-center">
         <div className="card flex h-96 w-96 flex-col items-start justify-start gap-3 p-6 text-sm shadow-lg">
-          {hoveredTime ? (
+          {hoveredPerson || !hoveredTime ? (
+            <>
+              <div className="mb-6 text-xs text-gray-500">
+                {hoveredPerson
+                  ? `Now displaying availability of ${
+                      participantsMap[hoveredPerson] ?? ""
+                    }`
+                  : "All people filled (hover to see their availability):"}
+              </div>
+              {participants?.map((participant) => (
+                <AvailablePerson
+                  key={participant.userID}
+                  id={participant.userID}
+                  name={participant.user.name}
+                  setHoveredPerson={setHoveredPerson}
+                />
+              ))}
+            </>
+          ) : (
             <>
               <div className="mb-6 text-xs text-gray-500">
                 People available on {format(hoveredTime, "EEEEEEE")} from{" "}
                 {format(hoveredTime, "p")} to{" "}
                 {format(add(hoveredTime, { minutes: 15 }), "p")}:
               </div>
-              <AvailablePerson name={"John Doe"} />
-              <AvailablePerson name={"Raymond Wu"} />
-              <AvailablePerson name={"Max Zhang"} />
-            </>
-          ) : (
-            <>
-              <div className="mb-6 text-xs text-gray-500">
-                All people filled (hover to see their availability):
-              </div>
-              <AvailablePerson name={"John Doe"} />
-              <AvailablePerson name={"Raymond Wu"} />
-              <AvailablePerson name={"Max Zhang"} />
+              {existingSchedule
+                ?.filter((timeslot) => {
+                  return isBetween(hoveredTime, timeslot.begins, timeslot.ends);
+                })
+                .map((timeslot) => {
+                  return (
+                    <AvailablePerson
+                      key={timeslot.id}
+                      name={
+                        participantsMap[timeslot.participateUserID ?? ""] ?? ""
+                      }
+                    />
+                  );
+                })}
             </>
           )}
         </div>
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
-        <div className="flex w-fit flex-row">
-          <Parachute_ScheduleSelector
-            isInteractable={false}
-            occuringDates={[
-              new Date(2022, 8, 30),
-              new Date(2022, 9, 2),
-              new Date(2022, 9, 6),
-              new Date(2022, 9, 10),
-              new Date(2022, 9, 11),
-            ]}
-            startTime={8}
-            endTime={20}
-            schedule={[]}
-            setHoveredTime={setHoveredTime}
-          />
-        </div>
+        <TimeslotView
+          occurringDates={csvToDateArray(event.occuringDays)}
+          startTime={event.begins}
+          endTime={event.ends}
+          schedule={schedule}
+          maxScheduleCount={participants?.length ?? 0}
+          setHoveredTime={setHoveredTime}
+          weekOnly={event.type === "DAYSOFWEEK"}
+        />
       </div>
     </div>
   );

@@ -222,7 +222,7 @@ const EventInfoHeader: React.FC = () => {
 
   const occurringDaysArray = event?.occuringDays
     .split(",")
-    .map((s) => new Date(s));
+    .map((s: string) => new Date(s));
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -336,6 +336,7 @@ const OperationCardTab: React.FC<
 };
 
 const OperationCard: React.FC = () => {
+  const router = useRouter();
   const [timezone, setTimezone] = React.useState(currentTimezone);
   return (
     <div className="flex flex-row justify-center p-6">
@@ -351,10 +352,10 @@ const OperationCard: React.FC = () => {
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel>
-              <MyAvailabilityZone />
+              <MyAvailabilityZone eventID={router.query.id as string} />
             </Tab.Panel>
             <Tab.Panel>
-              <GroupAvailabilityZone />
+              <GroupAvailabilityZone eventID={router.query.id as string} />
             </Tab.Panel>
           </Tab.Panels>
           <div className="flex w-full flex-row gap-2 rounded-b-md border-t border-gray-300 bg-white px-6 py-4 text-sm">

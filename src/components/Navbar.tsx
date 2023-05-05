@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import OnHover from "./OnHover";
-import Link from "next/link";
 
 const Navbar = () => {
   const router = useRouter();
@@ -24,7 +23,11 @@ const Navbar = () => {
         <div className="grow text-3xl font-bold">
           <div
             className="max-w-[140px] grow cursor-pointer text-3xl font-bold"
-            onClick={() => void router.push("/")}
+            onClick={
+              session
+                ? () => void router.push("/dashboard")
+                : () => void router.push("/")
+            }
           >
             Parachute
           </div>

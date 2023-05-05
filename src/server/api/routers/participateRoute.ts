@@ -44,24 +44,39 @@ export const participateRouter = createTRPCRouter({
   /**
    This function return all eventID that this person participates.
    */
-  getParticipateEvents: protectedProcedure
-    .input(z.object({ userID: z.string() }))
-    .query(async (req) => {
-      return await prisma.participate.findMany({
-        where: { userID: req.input.userID },
-        select: { eventID: true },
-      });
-    }),
+  getParticipateEvents: protectedProcedure.query(async (req) => {
+    const eventID = await prisma.participate.findMany({
+      where: { userID: req.ctx.session.user.id },
+      select: { eventID: true },
+    });
+    //fetch event from eventID
+    const event = await prisma.event.findMany({
+      where: { id: { in: eventID.map((e) => e.eventID) } },
+      select: {
+        id: true,
+        name: true,
+        begins: true,
+        ends: true,
+        joinCode: true,
+        occuringDays: true,
+        type: true,
+      },
+      orderBy: { begins: "asc" },
+    });
+    return event;
+  }),
 
   /**
    This function are used to update the timeZone of a participation
    */
   updateTimeZone: protectedProcedure
-    .input(z.object({
-      userID: z.string(),
-      eventID: z.string(),
-      timeZone: z.string(),
-    }))
+    .input(
+      z.object({
+        userID: z.string(),
+        eventID: z.string(),
+        timeZone: z.string(),
+      })
+    )
     .mutation(async (req) => {
       return await prisma.participate.update({
         where: {
@@ -75,7 +90,6 @@ export const participateRouter = createTRPCRouter({
         },
       });
     }),
-
 
   /**
    Delete a participate according to userID and eventID
