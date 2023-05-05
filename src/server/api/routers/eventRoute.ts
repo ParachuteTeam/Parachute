@@ -363,7 +363,11 @@ export const eventRouter = createTRPCRouter({
         where: {
           eventID: req.input.eventId,
         },
-        select: { userID: true, timeZone: true },
+        select: {
+          userID: true,
+          user: { select: { name: true } },
+          timeZone: true,
+        },
       });
     }),
 
