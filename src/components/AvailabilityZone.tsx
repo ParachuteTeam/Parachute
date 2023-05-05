@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { add, format } from "date-fns";
 import {
   MdOutlineEditCalendar,
@@ -8,9 +8,13 @@ import {
 import { FiEdit } from "react-icons/fi";
 import { IoEarthSharp } from "react-icons/io5";
 import { api } from "../utils/api";
-import { TimeslotView } from "./TimeslotView";
+import { TimeslotSelector, TimeslotView } from "./Timeslot";
 import type { DatetimeInterval } from "../utils/utils";
-import { toDatetimeIntervals, toIndividualDates } from "../utils/utils";
+import {
+  isBetween,
+  toDatetimeIntervals,
+  toIndividualDates,
+} from "../utils/utils";
 
 interface MyAvailabilityZoneProps {
   occurringDaysArray: Date[];
@@ -50,7 +54,6 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
   const scheduleReplace = api.timeslots.timeslotsReplace.useMutation();
   const saveTimeSlots = () => {
     const intervals = toDatetimeIntervals(schedule, { minutes: 15 }, true);
-    console.log(intervals);
     scheduleReplace.mutate(
       {
         eventID: eventID,
@@ -111,14 +114,12 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <div className="flex w-fit flex-row">
-          <TimeslotView
-            isInteractable
-            occuringDates={occurringDaysArray}
+          <TimeslotSelector
+            occurringDates={occurringDaysArray}
             startTime={8}
             endTime={20}
             schedule={schedule}
             onChange={updateSchedule}
-            setHoveredTime={() => void 0}
             weekOnly={weekOnly}
           />
         </div>
@@ -148,18 +149,30 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
   eventID,
   weekOnly,
 }) => {
-  const schedule = api.timeslots.getAllTimeSlots_Event.useQuery({
-    eventID: eventID,
-  });
+  const { data: existingSchedule } =
+    api.timeslots.getAllTimeSlots_Event.useQuery({
+      eventID: eventID,
+    });
+  const schedule = useMemo(() => {
+    const intervals: DatetimeInterval[] =
+      existingSchedule?.map((timeslot) => ({
+        start: timeslot.begins,
+        end: timeslot.ends,
+      })) ?? [];
+    return toIndividualDates(intervals, { minutes: 15 }, true);
+  }, [existingSchedule]);
 
-  // turn schedule.data into an array of dates
-  const scheduleDates = schedule.data?.map((timeslot) => {
-    return new Date(timeslot.begins);
-  });
-
-  const participates = api.events.getAllParticipants.useQuery({
+  const { data: participants } = api.events.getAllParticipants.useQuery({
     eventId: eventID,
   });
+
+  const participantsMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    participants?.forEach((participant) => {
+      map[participant.userID] = participant.user.name;
+    });
+    return map;
+  }, [participants]);
 
   const [hoveredTime, setHoveredTime] = useState<Date | null>(null);
   return (
@@ -177,15 +190,17 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
                 {format(hoveredTime, "p")} to{" "}
                 {format(add(hoveredTime, { minutes: 15 }), "p")}:
               </div>
-              {schedule.data
+              {existingSchedule
                 ?.filter((timeslot) => {
-                  return timeslot.begins.toJSON() == hoveredTime.toJSON();
+                  return isBetween(hoveredTime, timeslot.begins, timeslot.ends);
                 })
                 .map((timeslot) => {
                   return (
                     <AvailablePerson
                       key={timeslot.id}
-                      name={timeslot.participateUserID ?? ""}
+                      name={
+                        participantsMap[timeslot.participateUserID ?? ""] ?? ""
+                      }
                     />
                   );
                 })}
@@ -195,9 +210,12 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
               <div className="mb-6 text-xs text-gray-500">
                 All people filled (hover to see their availability):
               </div>
-              <AvailablePerson name={"John Doe"} />
-              <AvailablePerson name={"Raymond Wu"} />
-              <AvailablePerson name={"Max Zhang"} />
+              {participants?.map((participant) => (
+                <AvailablePerson
+                  key={participant.userID}
+                  name={participant.user.name}
+                />
+              ))}
             </>
           )}
         </div>
@@ -205,11 +223,11 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <div className="flex w-fit flex-row">
           <TimeslotView
-            isInteractable={false}
-            occuringDates={occurringDaysArray}
+            occurringDates={occurringDaysArray}
             startTime={8}
             endTime={20}
-            schedule={scheduleDates ?? []}
+            schedule={schedule}
+            maxScheduleCount={participants?.length ?? 0}
             setHoveredTime={setHoveredTime}
             weekOnly={weekOnly}
           />
