@@ -71,15 +71,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 };
 
 const EventList = () => {
-  const { data: session } = useSession();
-  const email = session?.user.email as string;
-  console.log("email", email);
-  const { data: events } = api.events.getEventList.useQuery({ email: email });
-  console.log(events);
-
+  const { data: participatedEvents } =
+    api.participates.getParticipateEvents.useQuery();
+  console.log("participatedEvents", participatedEvents);
   return (
     <div className="event-list-container">
-      {events?.map((event) => (
+      {participatedEvents?.map((event) => (
         <EventCard key={event.id} event={event} />
       ))}
     </div>
