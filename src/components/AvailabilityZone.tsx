@@ -128,9 +128,17 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
   );
 };
 
-const AvailablePerson: React.FC<{ name: string }> = ({ name }) => {
+const AvailablePerson: React.FC<{
+  id?: string;
+  name: string;
+  setHoveredPerson?: (id: string | null) => void;
+}> = ({ id, name, setHoveredPerson }) => {
   return (
-    <div className="flex flex-row items-center gap-1">
+    <div
+      className="flex flex-row items-center gap-1"
+      onMouseEnter={() => setHoveredPerson?.(id ?? null)}
+      onMouseLeave={() => setHoveredPerson?.(null)}
+    >
       <div className="font-semibold">{name}</div>
       <IoEarthSharp className="text-md ml-2 text-gray-500" />
       <div className="text-gray-500">Chicago (GMT-8)</div>
@@ -153,14 +161,6 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
     api.timeslots.getAllTimeSlots_Event.useQuery({
       eventID: eventID,
     });
-  const schedule = useMemo(() => {
-    const intervals: DatetimeInterval[] =
-      existingSchedule?.map((timeslot) => ({
-        start: timeslot.begins,
-        end: timeslot.ends,
-      })) ?? [];
-    return toIndividualDates(intervals, { minutes: 15 }, true);
-  }, [existingSchedule]);
 
   const { data: participants } = api.events.getAllParticipants.useQuery({
     eventId: eventID,
@@ -175,6 +175,22 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
   }, [participants]);
 
   const [hoveredTime, setHoveredTime] = useState<Date | null>(null);
+  const [hoveredPerson, setHoveredPerson] = useState<string | null>(null);
+
+  const schedule = useMemo(() => {
+    const intervals: DatetimeInterval[] =
+      existingSchedule
+        ?.filter(
+          (timeslot) =>
+            !hoveredPerson || timeslot.participateUserID == hoveredPerson
+        )
+        .map((timeslot) => ({
+          start: timeslot.begins,
+          end: timeslot.ends,
+        })) ?? [];
+    return toIndividualDates(intervals, { minutes: 15 }, true);
+  }, [existingSchedule, hoveredPerson]);
+
   return (
     <div className="relative h-[500px]">
       <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
@@ -183,7 +199,25 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
       </div>
       <div className="absolute right-8 flex h-full flex-row items-center">
         <div className="card flex h-96 w-96 flex-col items-start justify-start gap-3 p-6 text-sm shadow-lg">
-          {hoveredTime ? (
+          {hoveredPerson || !hoveredTime ? (
+            <>
+              <div className="mb-6 text-xs text-gray-500">
+                {hoveredPerson
+                  ? `Now displaying availability of ${
+                      participantsMap[hoveredPerson] ?? ""
+                    }`
+                  : "All people filled (hover to see their availability):"}
+              </div>
+              {participants?.map((participant) => (
+                <AvailablePerson
+                  key={participant.userID}
+                  id={participant.userID}
+                  name={participant.user.name}
+                  setHoveredPerson={setHoveredPerson}
+                />
+              ))}
+            </>
+          ) : (
             <>
               <div className="mb-6 text-xs text-gray-500">
                 People available on {format(hoveredTime, "EEEEEEE")} from{" "}
@@ -204,18 +238,6 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
                     />
                   );
                 })}
-            </>
-          ) : (
-            <>
-              <div className="mb-6 text-xs text-gray-500">
-                All people filled (hover to see their availability):
-              </div>
-              {participants?.map((participant) => (
-                <AvailablePerson
-                  key={participant.userID}
-                  name={participant.user.name}
-                />
-              ))}
             </>
           )}
         </div>
