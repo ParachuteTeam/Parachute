@@ -220,6 +220,8 @@ const EventInfoHeader: React.FC = () => {
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
 
+  const isOwner = event?.ownerID === session?.user.id;
+
   const occurringDaysArray = event?.occuringDays
     .split(",")
     .map((s: string) => new Date(s));
@@ -253,7 +255,7 @@ const EventInfoHeader: React.FC = () => {
             {event?.name ?? "Loading..."}
           </div>
           <div className="flex flex-row items-center gap-2 text-sm">
-            <EventTypeTag>My Event</EventTypeTag>
+            {isOwner && <EventTypeTag>My Event</EventTypeTag>}
             <p>No one filled yet</p>
             <p>
               <span className="font-bold">Event ID:</span>{" "}
@@ -265,19 +267,24 @@ const EventInfoHeader: React.FC = () => {
             </p>
           </div>
         </div>
+
         <div className="flex w-[200px] flex-col gap-3 text-sm font-light">
-          <button
-            className="rounded-button"
-            onClick={() => setIsEditDialogOpen(true)}
-          >
-            Edit
-          </button>
-          <button
-            className="danger-button"
-            onClick={() => setIsDeleteDialogOpen(true)}
-          >
-            Delete
-          </button>
+          {isOwner && (
+            <button
+              className="rounded-button"
+              onClick={() => setIsEditDialogOpen(true)}
+            >
+              Edit
+            </button>
+          )}
+          {isOwner && (
+            <button
+              className="danger-button"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
       <EditDialog

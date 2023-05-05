@@ -30,13 +30,16 @@ interface Event {
   begins: Date;
   ends: Date;
   type?: string;
+
+  ownerID?: string;
   // Add other properties as needed
 }
 interface EventCardProps {
   event: Event;
+  myEvent: boolean;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event }) => {
+const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
   const eventId = event.id;
   const eventName = event.name;
   const occurringDaysArray = event.occuringDays
@@ -63,7 +66,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       </div>
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
       <div className="flex flex-row items-center gap-2 text-sm">
-        <EventTypeTag>My Event</EventTypeTag>
+        {myEvent && <EventTypeTag>My Event</EventTypeTag>}
         <div>No one filled yet</div>
       </div>
     </Link>
@@ -73,11 +76,29 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 const EventList = () => {
   const { data: participatedEvents } =
     api.participates.getParticipateEvents.useQuery();
-  console.log("participatedEvents", participatedEvents);
+  const { data: session } = useSession();
+  const [searchQuery, setSearchQuery] = useState("");
+  const filteredEvents = participatedEvents?.filter((event) =>
+    event.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="event-list-container">
-      {participatedEvents?.map((event) => (
-        <EventCard key={event.id} event={event} />
+      <div className="card mb-4 flex flex-row items-center px-4 text-sm">
+        <MdOutlineSearch className="mr-2 text-lg text-gray-500" />
+        <input
+          className="h-full w-full py-4 focus:outline-none"
+          placeholder="Search for an event name..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+      {filteredEvents?.map((event) => (
+        <EventCard
+          key={event.id}
+          event={event}
+          myEvent={event.ownerID === session?.user.id}
+        />
       ))}
     </div>
   );
@@ -276,7 +297,6 @@ const Dashboard: NextPage = () => {
     void router.push("/");
     return <div>Redirecting...</div>;
   }
-
   return (
     <div className="min-h-screen w-screen bg-gray-100">
       <Navbar />
@@ -284,13 +304,6 @@ const Dashboard: NextPage = () => {
         <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
           <div className="flex h-full flex-grow flex-col">
             <div className="mb-6 text-2xl font-bold">Recent Events</div>
-            <div className="card mb-4 flex flex-row items-center px-4 text-sm">
-              <MdOutlineSearch className="mr-2 text-lg text-gray-500" />
-              <input
-                className="h-full w-full py-4 focus:outline-none"
-                placeholder="Search for an event name..."
-              />
-            </div>
             <EventList />
           </div>
           <div className="flex h-full flex-col">
