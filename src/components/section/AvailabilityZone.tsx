@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { add, format } from "date-fns";
 import {
   MdOutlineEditCalendar,
@@ -16,6 +16,7 @@ import {
   toDatetimeIntervals,
   toIndividualDates,
 } from "../../utils/utils";
+import { ButtonWithState } from "../ui/Button";
 
 interface MyAvailabilityZoneProps {
   eventID: string;
@@ -41,20 +42,27 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
     api.timeslots.getAllTimeSlots_Event.useQuery({
       eventID: eventID,
     });
-  const resetSchedule = () => {
+
+  const resetSchedule = useCallback(() => {
+    const intervals: DatetimeInterval[] =
+      existingSchedule?.map((timeslot) => ({
+        start: timeslot.begins,
+        end: timeslot.ends,
+      })) ?? [];
+    setSchedule(toIndividualDates(intervals, { minutes: 15 }, true));
+    setChanged(false);
+  }, [existingSchedule]);
+
+  useEffect(() => {
     if (!changed) {
-      const intervals: DatetimeInterval[] =
-        existingSchedule?.map((timeslot) => ({
-          start: timeslot.begins,
-          end: timeslot.ends,
-        })) ?? [];
-      setSchedule(toIndividualDates(intervals, { minutes: 15 }, true));
+      resetSchedule();
     }
-  };
-  useEffect(resetSchedule, [changed, existingSchedule]);
+  }, [changed, resetSchedule]);
 
   const scheduleReplace = api.timeslots.timeslotsReplace.useMutation();
+  const [isSaving, setIsSaving] = useState(false);
   const saveTimeSlots = () => {
+    setIsSaving(true);
     const intervals = toDatetimeIntervals(schedule, { minutes: 15 }, true);
     scheduleReplace.mutate(
       {
@@ -69,6 +77,7 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
           Promise.all([refetchSchedule(), refetchAllSchedules()]).finally(
             () => {
               setChanged(false);
+              setIsSaving(false);
             }
           );
         },
@@ -95,18 +104,22 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
                   Unsaved change detected
                 </div>
               </div>
-              <button
+              <ButtonWithState
                 className="primary-button-with-hover w-full text-sm"
+                loadingClassName="primary-button-loading w-full text-sm"
+                loading={isSaving}
                 onClick={saveTimeSlots}
               >
                 Save
-              </button>
-              <button
+              </ButtonWithState>
+              <ButtonWithState
                 className="rounded-button w-full text-sm"
+                disabledClassName="rounded-button-disabled w-full text-sm"
+                disabled={isSaving}
                 onClick={resetSchedule}
               >
                 Discard
-              </button>
+              </ButtonWithState>
             </>
           ) : (
             <>
