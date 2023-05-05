@@ -68,7 +68,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         {myEvent && <EventTypeTag>My Event</EventTypeTag>}
-        <div>No one filled yet</div>
+        <div>Click to see detail</div>
       </div>
     </Link>
   );
