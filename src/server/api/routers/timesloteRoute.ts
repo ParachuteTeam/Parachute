@@ -139,7 +139,7 @@ export const timesloteRouter = createTRPCRouter({
 
   /**
    Delete all timeslots according to input userID and eventID.
-   Then create all time slots in arr beginsToAdd.
+   Then create add time slots in arr timeslots.
    */
   timeslotsReplace: protectedProcedure
     .input(
