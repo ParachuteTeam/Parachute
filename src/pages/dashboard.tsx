@@ -30,13 +30,16 @@ interface Event {
   begins: Date;
   ends: Date;
   type?: string;
+
+  ownerID?: string;
   // Add other properties as needed
 }
 interface EventCardProps {
   event: Event;
+  myEvent: boolean
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event }) => {
+const EventCardMyEvent: React.FC<EventCardProps> = ({ event, myEvent }) => {
   const eventId = event.id;
   const eventName = event.name;
   const occurringDaysArray = event.occuringDays
@@ -63,7 +66,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
       </div>
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
       <div className="flex flex-row items-center gap-2 text-sm">
-        <EventTypeTag>My Event</EventTypeTag>
+        {myEvent && <EventTypeTag>My Event</EventTypeTag>}
         <div>No one filled yet</div>
       </div>
     </Link>
@@ -73,11 +76,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 const EventList = () => {
   const { data: participatedEvents } =
     api.participates.getParticipateEvents.useQuery();
-  console.log("participatedEvents", participatedEvents);
+  const { data: session } = useSession();
+
   return (
     <div className="event-list-container">
       {participatedEvents?.map((event) => (
-        <EventCard key={event.id} event={event} />
+        <EventCardMyEvent key={event.id} event={event} myEvent={event.ownerID === session?.user.id} />
       ))}
     </div>
   );
@@ -265,18 +269,6 @@ const NewEventCard = () => {
 };
 
 const Dashboard: NextPage = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (!session) {
-    void router.push("/");
-    return <div>Redirecting...</div>;
-  }
-
   return (
     <div className="min-h-screen w-screen bg-gray-100">
       <Navbar />
