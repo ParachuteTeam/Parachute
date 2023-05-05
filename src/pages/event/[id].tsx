@@ -338,13 +338,6 @@ const OperationCardTab: React.FC<
 const OperationCard: React.FC = () => {
   const router = useRouter();
   const [timezone, setTimezone] = React.useState(currentTimezone);
-  const event = api.events.getEvent.useQuery({
-    eventId: router.query.id as string,
-  });
-  // turn the string into an array of dates
-  const occurringDaysArray = event.data?.occuringDays
-    .split(",")
-    .map((s) => new Date(s));
   return (
     <div className="flex flex-row justify-center p-6">
       <div className="card max-w-[1248px] flex-1 p-0">
@@ -359,18 +352,10 @@ const OperationCard: React.FC = () => {
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel>
-              <MyAvailabilityZone
-                occurringDaysArray={occurringDaysArray ?? []}
-                eventID={router.query.id as string}
-                weekOnly={event.data?.type === "DAYSOFWEEK"}
-              />
+              <MyAvailabilityZone eventID={router.query.id as string} />
             </Tab.Panel>
             <Tab.Panel>
-              <GroupAvailabilityZone
-                occurringDaysArray={occurringDaysArray ?? []}
-                eventID={router.query.id as string}
-                weekOnly={event.data?.type === "DAYSOFWEEK"}
-              />
+              <GroupAvailabilityZone eventID={router.query.id as string} />
             </Tab.Panel>
           </Tab.Panels>
           <div className="flex w-full flex-row gap-2 rounded-b-md border-t border-gray-300 bg-white px-6 py-4 text-sm">

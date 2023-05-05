@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { differenceInDays, format } from "date-fns";
 import ScheduleSelector from "react-schedule-selector";
-import { toDatetimeIntervals } from "../utils/utils";
+import { toDatetimeIntervals, toHourDecimal } from "../utils/utils";
 
 const TimeslotBlock: React.FC<{
   selected: boolean;
@@ -61,10 +61,10 @@ const TimeLabel: React.FC<{ time: Date; showTime: boolean }> = ({
 };
 
 interface TimeslotSelectorProps {
-  startTime: number;
-  endTime: number;
-  schedule: Date[];
   occurringDates: Date[];
+  startTime: Date;
+  endTime: Date;
+  schedule: Date[];
   onChange?: (newSchedule: Date[]) => void;
   weekOnly?: boolean;
 }
@@ -92,8 +92,8 @@ export const TimeslotSelector: React.FC<TimeslotSelectorProps> = ({
             selection={schedule}
             startDate={interval.start}
             numDays={differenceInDays(interval.end, interval.start) + 1}
-            minTime={startTime}
-            maxTime={endTime}
+            minTime={toHourDecimal(startTime)}
+            maxTime={toHourDecimal(endTime)}
             hourlyChunks={4}
             rowGap="0px"
             columnGap="10px"
@@ -116,8 +116,8 @@ export const TimeslotSelector: React.FC<TimeslotSelectorProps> = ({
 
 interface TimeslotViewProps {
   occurringDates: Date[];
-  startTime: number;
-  endTime: number;
+  startTime: Date;
+  endTime: Date;
   schedule: Date[];
   maxScheduleCount: number;
   setHoveredTime?: (time: Date | null) => void;
@@ -162,8 +162,8 @@ export const TimeslotView: React.FC<TimeslotViewProps> = ({
             selection={[]}
             startDate={interval.start}
             numDays={differenceInDays(interval.end, interval.start) + 1}
-            minTime={startTime}
-            maxTime={endTime}
+            minTime={toHourDecimal(startTime)}
+            maxTime={toHourDecimal(endTime)}
             hourlyChunks={4}
             rowGap="0px"
             columnGap="10px"

@@ -11,21 +11,19 @@ import { api } from "../utils/api";
 import { TimeslotSelector, TimeslotView } from "./Timeslot";
 import type { DatetimeInterval } from "../utils/utils";
 import {
+  csvToDateArray,
   isBetween,
   toDatetimeIntervals,
   toIndividualDates,
 } from "../utils/utils";
 
 interface MyAvailabilityZoneProps {
-  occurringDaysArray: Date[];
   eventID: string;
   weekOnly?: boolean;
 }
 
 export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
-  occurringDaysArray,
   eventID,
-  weekOnly,
 }) => {
   const [schedule, setSchedule] = useState<Date[]>([]);
   const [changed, setChanged] = useState(false);
@@ -72,6 +70,9 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
     );
   };
 
+  const { data: event } = api.events.getEvent.useQuery({ eventId: eventID });
+  if (!event) return null;
+
   return (
     <div className="relative h-[500px]">
       <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
@@ -114,12 +115,12 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <TimeslotSelector
-          occurringDates={occurringDaysArray}
-          startTime={8}
-          endTime={20}
+          occurringDates={csvToDateArray(event.occuringDays)}
+          startTime={event.begins}
+          endTime={event.ends}
           schedule={schedule}
           onChange={updateSchedule}
-          weekOnly={weekOnly}
+          weekOnly={event.type === "DAYSOFWEEK"}
         />
       </div>
     </div>
@@ -145,15 +146,12 @@ const AvailablePerson: React.FC<{
 };
 
 interface GroupAvailabilityZoneProps {
-  occurringDaysArray: Date[];
   eventID: string;
   weekOnly?: boolean;
 }
 
 export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
-  occurringDaysArray,
   eventID,
-  weekOnly,
 }) => {
   const { data: existingSchedule } =
     api.timeslots.getAllTimeSlots_Event.useQuery({
@@ -188,6 +186,9 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
         })) ?? [];
     return toIndividualDates(intervals, { minutes: 15 }, true);
   }, [existingSchedule, hoveredPerson]);
+
+  const { data: event } = api.events.getEvent.useQuery({ eventId: eventID });
+  if (!event) return null;
 
   return (
     <div className="relative h-[500px]">
@@ -242,13 +243,13 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <TimeslotView
-          occurringDates={occurringDaysArray}
-          startTime={8}
-          endTime={20}
+          occurringDates={csvToDateArray(event.occuringDays)}
+          startTime={event.begins}
+          endTime={event.ends}
           schedule={schedule}
           maxScheduleCount={participants?.length ?? 0}
           setHoveredTime={setHoveredTime}
-          weekOnly={weekOnly}
+          weekOnly={event.type === "DAYSOFWEEK"}
         />
       </div>
     </div>
