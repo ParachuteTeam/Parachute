@@ -213,23 +213,19 @@ const StartNewEventSection = () => {
 };
 
 const JoinExistingEventSection = () => {
-  const { data: session } = useSession();
   const router = useRouter();
   const [joinCode, setJoinCode] = useState("");
-  const event = api.events.getEventjoinCode.useQuery({ joinCode: joinCode });
-  const createParticipant = api.participates.createParticipate.useMutation(); // FIXME: this logic should be a server-side-call
+  const { data: event } = api.events.getEventjoinCode.useQuery({
+    joinCode: joinCode,
+  });
 
   const handleJoinEvent = () => {
-    const eventId = event?.data?.id || "";
+    const eventId = event?.id;
     if (eventId) {
-      createParticipant.mutate({
-        joinCode: joinCode,
-        userID: session?.user.id as string,
-        timeZone: currentTimezone,
-      });
       void router.push(`/event/${eventId}`);
     }
   };
+
   return (
     <>
       <div className="input-field">
