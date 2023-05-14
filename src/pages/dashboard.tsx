@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Navbar from "../components/section/Navbar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "../utils/api";
 import {
   MdOutlineAccessTime,
@@ -22,6 +22,7 @@ import { DateSelect } from "../components/ui/DateSelect";
 import { currentTimezone } from "../utils/timezone";
 import { formatOccurring, formatTime } from "../utils/utils";
 import { ButtonWithState } from "../components/ui/Button";
+import { AiOutlineClose } from "react-icons/ai";
 
 interface Event {
   id: string;
@@ -279,7 +280,10 @@ const eventOptions = ["Start New", "Join Existing"];
 const NewEventCard = () => {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   return (
-    <div className="card flex w-[400px] flex-col gap-3 px-8 py-6">
+    <div
+      className="card flex w-[400px] flex-col gap-3 px-8 py-6"
+      onClick={(e) => e.stopPropagation()}
+    >
       <Selector
         className="mb-2"
         options={eventOptions}
@@ -294,6 +298,22 @@ const NewEventCard = () => {
 
 const Dashboard: NextPage = () => {
   const { data: session, status } = useSession();
+  const [showWizard, setShowWizard] = useState(false);
+  const [isMobile, setIsMobile] = useState(false); // REVIEW: could use a global state management lib like jotai
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", () => {
+      setIsMobile(window.innerWidth < 768);
+    });
+
+    return () => {
+      window.removeEventListener("resize", () => {
+        setIsMobile(window.innerWidth < 768);
+      });
+    };
+  }, []);
+
   const router = useRouter();
 
   if (status === "loading") {
@@ -311,13 +331,32 @@ const Dashboard: NextPage = () => {
       <div className="flex justify-center px-4 py-8 md:px-12">
         <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
           <div className="flex h-full flex-grow flex-col">
-            <div className="mb-6 text-2xl font-bold">Recent Events</div>
+            <div className="mb-6 flex flex-row items-center justify-between">
+              <div className="text-2xl font-bold">Recent Events</div>
+              <div
+                className="cursor-pointer rounded-xl bg-black px-4 py-1 text-sm font-bold uppercase text-white md:hidden"
+                onClick={() => setShowWizard(!showWizard)}
+              >
+                new/join
+              </div>
+            </div>
             <EventList />
           </div>
-          {/* <div className="flex h-full flex-col">
-            <div className="mb-6 text-2xl font-bold">Add Event</div>
-            <NewEventCard />
-          </div> */}
+          {!isMobile ? (
+            <div className="flex h-full flex-col">
+              <div className="mb-6 text-2xl font-bold">Add Event</div>
+              <NewEventCard />
+            </div>
+          ) : (
+            showWizard && (
+              <div
+                className="fixed left-0 top-0 z-50 flex h-screen w-screen flex-row items-center justify-center bg-black bg-opacity-50 p-4"
+                onClick={() => setShowWizard(false)}
+              >
+                <NewEventCard />
+              </div>
+            )
+          )}
         </div>
       </div>
     </div>
