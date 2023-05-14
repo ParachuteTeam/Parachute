@@ -19,11 +19,11 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky top-0 flex w-full justify-center bg-white px-12 py-4">
+    <div className="sticky top-0 flex w-full justify-center bg-white px-4 py-3 md:px-12 md:py-4">
       <div className="mx-auto flex max-w-[1200px] grow text-3xl font-bold">
-        <div className="grow text-3xl font-bold">
+        <div className="grow">
           <Link
-            className="max-w-[140px] grow cursor-pointer text-3xl font-bold"
+            className="max-w-[140px] grow cursor-pointer text-2xl font-bold md:text-3xl"
             href={session ? "/dashboard" : "/"}
           >
             Parachute
