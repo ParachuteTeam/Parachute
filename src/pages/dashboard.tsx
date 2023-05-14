@@ -52,17 +52,21 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
       className="card mb-4 flex flex-col gap-1 p-5 hover:ring-2 hover:ring-gray-300"
       href={`/event/${eventId}`}
     >
-      <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
-        <MdOutlineCalendarToday />
-        <div>
-          {formatOccurring(
-            occurringDaysArray ?? [],
-            event.type === "DAYSOFWEEK"
-          )}
+      <div className="flex flex-row items-center gap-1 text-xs text-gray-500 md:text-sm">
+        <div className="flex flex-row items-center gap-1">
+          <MdOutlineCalendarToday />
+          <div>
+            {formatOccurring(
+              occurringDaysArray ?? [],
+              event.type === "DAYSOFWEEK"
+            )}
+          </div>
         </div>
-        <MdOutlineAccessTime className="ml-1" />
-        <div>
-          {formatTime(event.begins)} - {formatTime(event.ends)}
+        <div className="flex flex-row items-center gap-1">
+          <MdOutlineAccessTime className="ml-1" />
+          <div>
+            {formatTime(event.begins)} - {formatTime(event.ends)}
+          </div>
         </div>
       </div>
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
@@ -300,19 +304,20 @@ const Dashboard: NextPage = () => {
     void router.push("/");
     return <div>Redirecting...</div>;
   }
+
   return (
     <div className="min-h-screen w-screen bg-gray-100">
       <Navbar />
-      <div className="flex justify-center px-12 py-8">
+      <div className="flex justify-center px-4 py-8 md:px-12">
         <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
           <div className="flex h-full flex-grow flex-col">
             <div className="mb-6 text-2xl font-bold">Recent Events</div>
             <EventList />
           </div>
-          <div className="flex h-full flex-col">
+          {/* <div className="flex h-full flex-col">
             <div className="mb-6 text-2xl font-bold">Add Event</div>
             <NewEventCard />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
