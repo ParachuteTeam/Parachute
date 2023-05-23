@@ -350,7 +350,7 @@ const Dashboard: NextPage = () => {
           ) : (
             showWizard && (
               <div
-                className="fixed left-0 top-0 z-50 flex h-screen w-screen flex-row items-center justify-center bg-black bg-opacity-50 p-4"
+                className="fixed left-0 top-0 z-50 flex h-screen w-screen flex-row items-start justify-center bg-black bg-opacity-50 p-4"
                 onClick={() => setShowWizard(false)}
               >
                 <NewEventCard />
