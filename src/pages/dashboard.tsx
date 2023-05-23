@@ -337,7 +337,7 @@ const Dashboard: NextPage = () => {
                 className="primary-button cursor-pointer md:hidden"
                 onClick={() => setShowWizard(!showWizard)}
               >
-                new/join
+                New / Join
               </div>
             </div>
             <EventList />
