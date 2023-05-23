@@ -334,7 +334,7 @@ const Dashboard: NextPage = () => {
             <div className="mb-6 flex flex-row items-center justify-between">
               <div className="text-2xl font-bold">Recent Events</div>
               <div
-                className="cursor-pointer rounded-xl bg-black px-4 py-1 text-sm font-bold uppercase text-white md:hidden"
+                className="primary-button cursor-pointer md:hidden"
                 onClick={() => setShowWizard(!showWizard)}
               >
                 new/join
