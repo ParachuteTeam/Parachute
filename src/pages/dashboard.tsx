@@ -334,10 +334,10 @@ const Dashboard: NextPage = () => {
             <div className="mb-6 flex flex-row items-center justify-between">
               <div className="text-2xl font-bold">Recent Events</div>
               <div
-                className="primary-button cursor-pointer md:hidden"
+                className="primary-button cursor-pointer text-sm md:hidden"
                 onClick={() => setShowWizard(!showWizard)}
               >
-                New / Join
+                Start / Join Event
               </div>
             </div>
             <EventList />
@@ -350,7 +350,7 @@ const Dashboard: NextPage = () => {
           ) : (
             showWizard && (
               <div
-                className="fixed left-0 top-0 z-50 flex h-screen w-screen flex-row items-start justify-center bg-black bg-opacity-50 p-4"
+                className="fixed left-0 top-0 z-50 flex h-screen w-screen flex-row items-start justify-center bg-black bg-opacity-50 p-4 pt-20"
                 onClick={() => setShowWizard(false)}
               >
                 <NewEventCard />
