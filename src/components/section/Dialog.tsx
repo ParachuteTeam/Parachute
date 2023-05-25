@@ -2,7 +2,6 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ButtonWithState } from "../ui/Button";
 import { AiOutlineUserAdd, AiOutlineUserDelete } from "react-icons/ai";
-import { IconContext } from "react-icons";
 import { useSession } from "next-auth/react";
 
 interface EditDialogProps {
