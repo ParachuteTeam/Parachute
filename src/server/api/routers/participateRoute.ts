@@ -112,4 +112,20 @@ export const participateRouter = createTRPCRouter({
         },
       });
     }),
+
+  deleteParticipants: protectedProcedure
+    .input(
+      z.object({
+        userIDs: z.array(z.string()),
+        eventID: z.string(),
+      })
+    )
+    .mutation(async (req) => {
+      return await prisma.participate.deleteMany({
+        where: {
+          eventID: req.input.eventID,
+          userID: { in: req.input.userIDs },
+        },
+      });
+    }),
 });
