@@ -30,12 +30,17 @@ const EventInfoHeader: React.FC = () => {
   });
   const { refetch: refetchEventList } =
     api.participates.getParticipateEvents.useQuery();
+  const participants = api.events.getAllParticipants.useQuery({
+    eventId,
+  });
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const editEventName = api.events.updateEvent_name.useMutation();
   const deleteEvent = api.events.deleteEvent.useMutation();
+  const editEventParticipants =
+    api.participates.deleteParticipants.useMutation();
 
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
@@ -110,7 +115,8 @@ const EventInfoHeader: React.FC = () => {
         isOpen={isEditDialogOpen}
         close={() => setIsEditDialogOpen(false)}
         eventName={event?.name ?? ""}
-        onSubmit={(newEventName) => {
+        participants={participants.data ?? []}
+        onSubmit={(newEventName, deletedUserIDs) => {
           return new Promise<void>((resolve) => {
             editEventName.mutate(
               {
@@ -124,6 +130,10 @@ const EventInfoHeader: React.FC = () => {
                 },
               }
             );
+            editEventParticipants.mutate({
+              eventID: eventId,
+              userIDs: deletedUserIDs,
+            });
           });
         }}
       />
