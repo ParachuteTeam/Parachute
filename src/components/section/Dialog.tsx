@@ -86,7 +86,10 @@ export const EditDialog: React.FC<EditDialogProps> = ({
                 <label>Participants</label>
                 <div className="mt-2 text-left text-xs text-gray-500">
                   {participants.map((participant) => (
-                    <div key={participant.userID} className="flex flex-row">
+                    <div
+                      key={participant.userID}
+                      className="flex flex-row pt-1"
+                    >
                       <div
                         className={
                           deletedUserIDs.includes(participant.userID)
