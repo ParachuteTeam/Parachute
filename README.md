@@ -110,8 +110,4 @@ It is recommended to deply using [Vercel](https://vercel.com), simply select Nex
   <img src="https://contrib.rocks/image?repo=ParachuteTeam/Parachute" />
 </a>
 
-Made with [contrib.rocks](https://contrib.rocks).<a href="https://github.com/ParachuteTeam/Parachute/graphs/contributors">
-<img src="https://contrib.rocks/image?repo=ParachuteTeam/Parachute" />
-</a>
-
 Made with [contrib.rocks](https://contrib.rocks).
