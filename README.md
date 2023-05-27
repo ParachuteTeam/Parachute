@@ -1,7 +1,5 @@
 # Parachute.fyi - when2meet alternative
 
-Link to website: [parachute.fyi](https://parachute.fyi).
-
 ## Introduction
 
 🪂 Parachute.fyi is an open-sourced web-based scheduling application built with modern frameworks. It integrates modern user interface and login mechanism, thus offering way better experience than when2meet.com.
