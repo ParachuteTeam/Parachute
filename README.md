@@ -62,7 +62,7 @@ Link to website: [parachute.fyi](https://parachute.fyi).
 
 It is recommended to deply using [Vercel](https://vercel.com), simply select Next.js project and fill-in all environment variables will do. Remember to also create a production-ready MySQL database for data persistence. Here is our deployed web [Parachute](https://parachute.fyi).
 
-## Team
+## Contributors
 
 <a href="https://github.com/ParachuteTeam/Parachute/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=ParachuteTeam/Parachute" />
