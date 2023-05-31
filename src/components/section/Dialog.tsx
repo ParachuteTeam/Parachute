@@ -26,13 +26,13 @@ export const EditDialog: React.FC<EditDialogProps> = ({
 }) => {
   const [newEventName, setNewEventName] = useState("");
   const [deletedUserIDs, setDeletedUserIDs] = useState<string[]>([]);
-  console.log(deletedUserIDs);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
 
   useEffect(() => {
     setNewEventName(eventName);
   }, [eventName]);
+
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
@@ -83,8 +83,10 @@ export const EditDialog: React.FC<EditDialogProps> = ({
                   To change occurring days and time span, delete the event and
                   create a new one.
                 </div>
+              </div>
+              <div className="input-field mt-4 text-left">
                 <label>Participants</label>
-                <div className="mt-2 text-left text-xs text-gray-500">
+                <div className="text-left text-xs text-gray-500">
                   {participants.map((participant) => (
                     <div
                       key={participant.userID}
