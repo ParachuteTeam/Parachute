@@ -138,7 +138,10 @@ export const EditDialog: React.FC<EditDialogProps> = ({
                   className="rounded-button w-[50%] text-sm"
                   disabledClassName="rounded-button-disabled w-[50%] text-sm"
                   disabled={isSubmitting}
-                  onClick={() => close()}
+                  onClick={() => {
+                    setDeletedUserIDs([]);
+                    close();
+                  }}
                 >
                   Cancel
                 </ButtonWithState>
