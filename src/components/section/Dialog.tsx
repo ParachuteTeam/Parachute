@@ -1,24 +1,38 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ButtonWithState } from "../ui/Button";
+import { AiOutlineUserAdd, AiOutlineUserDelete } from "react-icons/ai";
+import { useSession } from "next-auth/react";
 
 interface EditDialogProps {
   isOpen: boolean;
   close: () => void;
   eventName: string;
-  onSubmit: (eventName: string) => Promise<void>;
+  participants: {
+    user: {
+      name: string;
+    };
+    userID: string;
+    timeZone: string;
+  }[];
+  onSubmit: (eventName: string, deletedUserIDs: string[]) => Promise<void>;
 }
 export const EditDialog: React.FC<EditDialogProps> = ({
   isOpen,
   close,
   eventName,
+  participants,
   onSubmit,
 }) => {
   const [newEventName, setNewEventName] = useState("");
+  const [deletedUserIDs, setDeletedUserIDs] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: session } = useSession();
+
   useEffect(() => {
     setNewEventName(eventName);
   }, [eventName]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
@@ -53,7 +67,7 @@ export const EditDialog: React.FC<EditDialogProps> = ({
           >
             <div className="my-space-x-8 inline-block w-[400px] transform rounded-xl bg-white p-7 shadow-xl transition-all">
               <Dialog.Title className="text-left text-xl font-semibold leading-6 text-gray-900">
-                Edit Event Name
+                Edit Event Details
               </Dialog.Title>
               <div className="input-field mt-5 text-left">
                 <label>Event Name</label>
@@ -70,12 +84,64 @@ export const EditDialog: React.FC<EditDialogProps> = ({
                   create a new one.
                 </div>
               </div>
+              <div className="input-field mt-4 text-left">
+                <label>Participants</label>
+                <div className="text-left text-xs text-gray-500">
+                  {participants.map((participant) => (
+                    <div
+                      key={participant.userID}
+                      className="flex flex-row pt-1"
+                    >
+                      <div
+                        className={
+                          deletedUserIDs.includes(participant.userID)
+                            ? "line-through"
+                            : ""
+                        }
+                      >
+                        {participant.user.name} ({participant.timeZone})
+                        <div className="text-xs text-gray-400">
+                          {participant.userID}
+                        </div>
+                      </div>
+                      {participant.userID !== session?.user.id && (
+                        <button
+                          className="ml-auto text-xl"
+                          onClick={() => {
+                            if (deletedUserIDs.includes(participant.userID)) {
+                              setDeletedUserIDs(
+                                deletedUserIDs.filter(
+                                  (id) => id !== participant.userID
+                                )
+                              );
+                            } else {
+                              setDeletedUserIDs([
+                                ...deletedUserIDs,
+                                participant.userID,
+                              ]);
+                            }
+                          }}
+                        >
+                          {deletedUserIDs.includes(participant.userID) ? (
+                            <AiOutlineUserAdd className="text-gray-400" />
+                          ) : (
+                            <AiOutlineUserDelete className="text-red-400" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="mt-5 flex justify-center gap-4">
                 <ButtonWithState
                   className="rounded-button w-[50%] text-sm"
                   disabledClassName="rounded-button-disabled w-[50%] text-sm"
                   disabled={isSubmitting}
-                  onClick={() => close()}
+                  onClick={() => {
+                    setDeletedUserIDs([]);
+                    close();
+                  }}
                 >
                   Cancel
                 </ButtonWithState>
@@ -87,7 +153,7 @@ export const EditDialog: React.FC<EditDialogProps> = ({
                   disabled={newEventName.length === 0}
                   onClick={() => {
                     setIsSubmitting(true);
-                    onSubmit(newEventName).finally(() => {
+                    onSubmit(newEventName, deletedUserIDs).finally(() => {
                       setIsSubmitting(false);
                       close();
                     });

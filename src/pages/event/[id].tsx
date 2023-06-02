@@ -30,12 +30,22 @@ const EventInfoHeader: React.FC = () => {
   });
   const { refetch: refetchEventList } =
     api.participates.getParticipateEvents.useQuery();
+  const { data: participants, refetch: refetchParticipants } =
+    api.events.getAllParticipants.useQuery({
+      eventId,
+    });
+  const { refetch: refetchTimeslots } =
+    api.timeslots.getAllTimeSlots_Event.useQuery({
+      eventID: eventId,
+    });
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const editEventName = api.events.updateEvent_name.useMutation();
   const deleteEvent = api.events.deleteEvent.useMutation();
+  const editEventParticipants =
+    api.participates.deleteParticipants.useMutation();
 
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
@@ -110,20 +120,26 @@ const EventInfoHeader: React.FC = () => {
         isOpen={isEditDialogOpen}
         close={() => setIsEditDialogOpen(false)}
         eventName={event?.name ?? ""}
-        onSubmit={(newEventName) => {
+        participants={participants ?? []}
+        onSubmit={(newEventName, deletedUserIDs) => {
           return new Promise<void>((resolve) => {
-            editEventName.mutate(
-              {
+            Promise.all([
+              editEventName.mutateAsync({
                 host_email: email,
                 name: newEventName,
                 eventId: eventId,
-              },
-              {
-                onSuccess: () => {
-                  refetchEvent().finally(resolve);
-                },
-              }
-            );
+              }),
+              editEventParticipants.mutateAsync({
+                eventID: eventId,
+                userIDs: deletedUserIDs,
+              }),
+            ]).finally(() => {
+              Promise.all([
+                refetchEvent(),
+                refetchParticipants(),
+                refetchTimeslots(),
+              ]).finally(resolve);
+            });
           });
         }}
       />
