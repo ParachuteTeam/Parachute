@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { addDays, format, isAfter, isEqual } from "date-fns";
+import { addDays, format, isAfter, isEqual, startOfToday } from "date-fns";
 import {
   MdOutlineKeyboardDoubleArrowDown,
   MdOutlineKeyboardDoubleArrowUp,
@@ -49,7 +49,7 @@ export const DateSelect: React.FC<DateSelectProps> = ({
   value,
   onChange,
 }) => {
-  const [currentDate, setCurrentDate] = React.useState(new Date());
+  const [currentDate, setCurrentDate] = React.useState(startOfToday());
 
   const firstDayOfWeek = addDays(currentDate, -currentDate.getDay());
   const firstDay = addDays(firstDayOfWeek, -14);
