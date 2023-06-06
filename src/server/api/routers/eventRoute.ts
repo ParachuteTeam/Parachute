@@ -7,31 +7,6 @@ import { TRPCError } from "@trpc/server";
 
 const prisma = new PrismaClient();
 
-// interface User {
-//     id: string;
-//     name: string;
-//     email: string;
-//     emailVerified: Date;
-//     image: string;
-//     createdAt: Date;
-//     updatedAt: Date;
-//   }
-//
-// interface Event {
-//     id: string;
-//     occuringAt: Date;
-//     ownerID: string;
-//     address: string;
-//     createdAt: Date;
-//     updatedAt: Date;
-// }
-//
-// interface Participate {
-//     eventID: string;
-//     userID: Date;
-//     timeSlots: JSON;
-// }
-
 const VALUES = ["DAYSOFWEEK", "DATES"] as const;
 
 function generateRandomSixDigitNumber(): string {
@@ -103,7 +78,7 @@ export const eventRouter = createTRPCRouter({
           ends: req.input.ends,
           type: req.input.type,
           ownerID: userCheck.id,
-          address: req.input.address,
+          timeZone: req.input.timeZone,
         },
       });
       await prisma.participate.create({
@@ -191,58 +166,6 @@ export const eventRouter = createTRPCRouter({
       //     });
       // }
       // return eventCheck;
-    }),
-
-  /**
-   * Verify the status of event host and check the existance of event.
-   * Then update event address. The email should be email address of the eventOwner.
-   * Then this function return the updated event.
-   */
-  updateEvent_addresss: protectedProcedure
-    .input(
-      z.object({
-        host_email: z.string().email(),
-        address: z.string(),
-        eventId: z.string(),
-      })
-    )
-    .mutation(async (req) => {
-      const eventCheck = await prisma.event.findUnique({
-        where: {
-          id: req.input.eventId,
-        },
-      });
-      if (!eventCheck) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Event does not exist",
-        });
-      }
-      const userCheck = await prisma.user.findUnique({
-        where: {
-          email: req.input.host_email,
-        },
-      });
-      if (!userCheck) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User does not exist",
-        });
-      }
-      if (userCheck.id != eventCheck.ownerID) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "User is not event holder",
-        });
-      }
-      return await prisma.event.update({
-        where: {
-          id: req.input.eventId,
-        },
-        data: {
-          address: req.input.address,
-        },
-      });
     }),
 
   /**
