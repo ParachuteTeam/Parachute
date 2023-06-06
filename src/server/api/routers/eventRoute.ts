@@ -52,7 +52,6 @@ export const eventRouter = createTRPCRouter({
         ends: z.string().datetime(),
         type: z.enum(VALUES),
         email: z.string().email(),
-        address: z.string(),
         timeZone: z.string(),
       })
     )
@@ -118,6 +117,7 @@ export const eventRouter = createTRPCRouter({
           begins: true,
           ends: true,
           joinCode: true,
+          timeZone: true,
           occuringDays: true,
           type: true,
         },
@@ -157,6 +157,17 @@ export const eventRouter = createTRPCRouter({
       return prisma.event.findUnique({
         where: {
           id: req.input.eventId,
+        },
+        select: {
+          id: true,
+          name: true,
+          begins: true,
+          ends: true,
+          joinCode: true,
+          timeZone: true,
+          occuringDays: true,
+          ownerID: true,
+          type: true,
         },
       });
       // if (!eventCheck) {

@@ -58,6 +58,7 @@ export const participateRouter = createTRPCRouter({
         begins: true,
         ends: true,
         joinCode: true,
+        timeZone: true,
         occuringDays: true,
         type: true,
         ownerID: true,
