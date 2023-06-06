@@ -166,7 +166,7 @@ export const RoundedCombobox: React.FC<RoundedComboboxProps> = ({
         <div className="relative">
           <div className="rounded-input relative pl-3">
             <Combobox.Input
-              className="border-none focus:outline-none"
+              className="w-full border-none focus:outline-none"
               displayValue={() => selected?.label ?? ""}
               onChange={(event) => setQuery(event.target.value)}
             />
