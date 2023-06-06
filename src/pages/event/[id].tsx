@@ -18,9 +18,15 @@ import {
   GoogleLoginButton,
 } from "../../components/ui/LoginButton";
 import { currentTimezone } from "../../utils/timezone";
-import { formatOccurring, formatTimespan } from "../../utils/utils";
+import {
+  formatOccurring,
+  formatTimespan,
+  getCurrentTimeZoneTag,
+  getInfoFromTimeZoneTag,
+} from "../../utils/utils";
 import { useState, useEffect } from "react";
 import { DeleteDialog, EditDialog } from "../../components/section/Dialog";
+import { IoEarthSharp } from "react-icons/io5";
 
 const EventInfoHeader: React.FC = () => {
   const router = useRouter();
@@ -72,13 +78,27 @@ const EventInfoHeader: React.FC = () => {
               {event
                 ? formatOccurring(
                     occurringDaysArray ?? [],
-                    event.type === "DAYSOFWEEK"
+                    event.type === "DAYSOFWEEK",
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                    event.timeZone
                   )
                 : "Loading..."}
             </div>
             <MdOutlineAccessTime className="ml-1" />
             <div>
-              {event ? formatTimespan(event.begins, event.ends) : "Loading..."}
+              {event
+                ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                  formatTimespan(event.begins, event.ends, event.timeZone)
+                : "Loading..."}
+            </div>
+            <IoEarthSharp className="ml-1" />
+            <div>
+              {event
+                ? getInfoFromTimeZoneTag(
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                    event.timeZone ?? getCurrentTimeZoneTag()
+                  ).timeZone
+                : "Loading..."}
             </div>
           </div>
           <div className="text-3xl font-semibold">

@@ -14,11 +14,16 @@ import type { ListboxOption } from "../components/ui/Input";
 import { RoundedListbox, Selector } from "../components/ui/Input";
 import Link from "next/link";
 import { DateSelect } from "../components/ui/DateSelect";
-import { currentTimezone } from "../utils/timezone";
-import { formatOccurring, formatTime } from "../utils/utils";
+import {
+  formatOccurring,
+  formatTime,
+  getCurrentTimeZoneTag,
+  getInfoFromTimeZoneTag,
+} from "../utils/utils";
 import { ButtonWithState } from "../components/ui/Button";
 import { RoundedTimezoneInput } from "../components/ui/TimezoneInput";
 import { TimespanSelector } from "../components/ui/TimeSelector";
+import { IoEarthSharp } from "react-icons/io5";
 
 interface Event {
   id: string;
@@ -28,7 +33,7 @@ interface Event {
   begins: Date;
   ends: Date;
   type?: string;
-
+  timeZone?: string;
   ownerID?: string;
   // Add other properties as needed
 }
@@ -55,14 +60,25 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
           <div>
             {formatOccurring(
               occurringDaysArray ?? [],
-              event.type === "DAYSOFWEEK"
+              event.type === "DAYSOFWEEK",
+              event.timeZone
             )}
           </div>
         </div>
         <div className="flex flex-row items-center gap-1">
           <MdOutlineAccessTime className="ml-1" />
           <div>
-            {formatTime(event.begins)} - {formatTime(event.ends)}
+            {formatTime(event.begins, event.timeZone)} -{" "}
+            {formatTime(event.ends, event.timeZone)}
+          </div>
+        </div>
+        <div className="flex flex-row items-center gap-1">
+          <IoEarthSharp className="ml-1" />
+          <div>
+            {
+              getInfoFromTimeZoneTag(event.timeZone ?? getCurrentTimeZoneTag())
+                .timeZone
+            }
           </div>
         </div>
       </div>
@@ -120,12 +136,12 @@ const selectDaysOptions: ListboxOption[] = [
 const StartNewEventSection = () => {
   const router = useRouter();
   const [eventName, setEventName] = React.useState("");
-  const [timezone, setTimezone] = React.useState(currentTimezone);
+  const [timezone, setTimezone] = React.useState(getCurrentTimeZoneTag());
   const [startTime, setStartTime] = React.useState<Date>(
-    new Date(0, 0, 1, 8, 0, 0)
+    new Date(1, 0, 1, 8, 0, 0)
   );
   const [endTime, setEndTime] = React.useState<Date>(
-    new Date(0, 0, 1, 22, 0, 0)
+    new Date(1, 0, 1, 22, 0, 0)
   );
   const [selectDaysType, setSelectDaysType] = React.useState<
     "DAYSOFWEEK" | "DATES"
@@ -147,7 +163,6 @@ const StartNewEventSection = () => {
         ends: endTime.toISOString(),
         type: selectDaysType,
         email: email,
-        address: "",
         timeZone: timezone,
       },
       {
@@ -172,7 +187,7 @@ const StartNewEventSection = () => {
         />
       </div>
       <div className="input-field text-sm">
-        <label>Timezone</label>
+        <label>Time zone</label>
         <RoundedTimezoneInput
           className="px-0 text-sm"
           value={timezone}
@@ -212,6 +227,7 @@ const StartNewEventSection = () => {
       <div className="input-field">
         <label>Timespan</label>
         <TimespanSelector
+          timeZone={timezone}
           start={startTime}
           end={endTime}
           onChangeStart={setStartTime}
