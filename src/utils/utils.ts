@@ -1,4 +1,6 @@
-import { add, format, isEqual } from "date-fns";
+import { add, addMilliseconds, isEqual } from "date-fns";
+import { format, formatInTimeZone, getTimezoneOffset } from "date-fns-tz";
+import { currentTimezone } from "./timezone";
 
 export const isBetween = (date: Date, start: Date, end: Date): boolean => {
   return (
@@ -14,19 +16,86 @@ export const csvToDateArray = (csv: string): Date[] => {
   return csv.split(",").map((s) => new Date(s));
 };
 
-export const formatTime = (time: Date): string => {
-  return format(time, "hh:mm aa") + (time.getDay() === 2 ? " (+1d)" : "");
+const cachedToday = new Date();
+
+export const getCurrentGMT = (timeZone?: string) => {
+  return formatInTimeZone(cachedToday, timeZone ?? "", "O");
 };
 
-export const formatTimespan = (begins: Date, ends: Date): string => {
-  return `${formatTime(begins)}-${formatTime(ends)}`;
+export const getCurrentTimeZoneTag = (timeZone?: string) => {
+  return `${timeZone ?? currentTimezone},${getCurrentGMT(timeZone)}`;
 };
 
-export const formatShortDate = (date: Date, weekOnly = false) => {
-  if (weekOnly) {
-    return format(date, "EEE");
+export const offsetFromTimeZoneTag = (timeZoneTag?: string) => {
+  if (timeZoneTag === undefined) {
+    return getTimezoneOffset(currentTimezone, new Date());
   }
-  return format(date, "MMM d");
+  const offsetString = timeZoneTag.split("GMT")[1];
+  if (offsetString === undefined) {
+    return getTimezoneOffset(currentTimezone, new Date());
+  }
+  return Number(offsetString) * 60 * 60 * 1000;
+};
+
+export const getInfoFromTimeZoneTag = (timeZoneTag: string) => {
+  const [timeZone, gmt] = timeZoneTag.split(",");
+  const offsetString = timeZoneTag.split("GMT")[1];
+  return { timeZone, gmt, offset: Number(offsetString) * 60 * 60 * 1000 };
+};
+
+export const formatWithTimeZoneTag = (
+  time: Date,
+  timeZoneTag: string,
+  formatStr: string
+) => {
+  const { timeZone, offset } = getInfoFromTimeZoneTag(timeZoneTag);
+  const currentTimezoneOffset = offsetFromTimeZoneTag(currentTimezone);
+  return format(
+    addMilliseconds(time, offset - currentTimezoneOffset),
+    formatStr,
+    { timeZone }
+  );
+};
+
+export const makeTime = (
+  plusDay: number,
+  hour: number,
+  minute: number,
+  timeZoneTag?: string
+): Date => {
+  // Use 1971 to allow timezone shifting to previous day
+  const utcTime = Date.UTC(2000, 0, 1 + plusDay, hour, minute, 0);
+  return new Date(utcTime - offsetFromTimeZoneTag(timeZoneTag));
+};
+
+export const formatTime = (time: Date, timeZoneTag = ""): string => {
+  return (
+    formatWithTimeZoneTag(time, timeZoneTag, "hh:mm aa") +
+    (formatWithTimeZoneTag(time, timeZoneTag, "d") === "2" ? " (+1d)" : "")
+  );
+};
+
+export const formatTimeIdentifier = (time: Date, timeZoneTag = ""): string => {
+  return formatWithTimeZoneTag(time, timeZoneTag, "dd:HH:mm");
+};
+
+export const formatTimespan = (
+  begins: Date,
+  ends: Date,
+  timeZoneTag?: string
+): string => {
+  return `${formatTime(begins, timeZoneTag)}-${formatTime(ends, timeZoneTag)}`;
+};
+
+export const formatShortDate = (
+  date: Date,
+  weekOnly = false,
+  timeZoneTag = ""
+) => {
+  if (weekOnly) {
+    return formatWithTimeZoneTag(date, timeZoneTag, "EEE");
+  }
+  return formatWithTimeZoneTag(date, timeZoneTag, "MMM d");
 };
 
 export interface DatetimeInterval {
@@ -95,16 +164,21 @@ export const toIndividualDates = (
   return dates;
 };
 
-export const formatOccurring = (dates: Date[], weekOnly: boolean): string => {
+export const formatOccurring = (
+  dates: Date[],
+  weekOnly: boolean,
+  timeZoneTag?: string
+): string => {
   return toDatetimeIntervals(dates, { days: 1 }, false)
     .map((span) => {
       if (isEqual(span.start, span.end)) {
-        return formatShortDate(span.start, weekOnly);
+        return formatShortDate(span.start, weekOnly, timeZoneTag);
       }
-      return `${formatShortDate(span.start, weekOnly)} - ${formatShortDate(
-        span.end,
-        weekOnly
-      )}`;
+      return `${formatShortDate(
+        span.start,
+        weekOnly,
+        timeZoneTag
+      )} - ${formatShortDate(span.end, weekOnly, timeZoneTag)}`;
     })
     .join(", ");
 };
