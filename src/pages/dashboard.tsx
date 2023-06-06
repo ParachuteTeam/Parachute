@@ -11,18 +11,14 @@ import {
 import { useSession } from "next-auth/react";
 import { EventTypeTag } from "../components/ui/Tag";
 import type { ListboxOption } from "../components/ui/Input";
-import {
-  RoundedListbox,
-  Selector,
-  RoundedTimezoneInput,
-  TimespanSelector,
-} from "../components/ui/Input";
+import { RoundedListbox, Selector } from "../components/ui/Input";
 import Link from "next/link";
 import { DateSelect } from "../components/ui/DateSelect";
 import { currentTimezone } from "../utils/timezone";
 import { formatOccurring, formatTime } from "../utils/utils";
 import { ButtonWithState } from "../components/ui/Button";
-import { AiOutlineClose } from "react-icons/ai";
+import { RoundedTimezoneInput } from "../components/ui/TimezoneInput";
+import { TimespanSelector } from "../components/ui/TimeSelector";
 
 interface Event {
   id: string;

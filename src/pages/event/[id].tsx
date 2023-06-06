@@ -6,7 +6,7 @@ import { HiOutlineGlobe } from "react-icons/hi";
 import { EventTypeTag } from "../../components/ui/Tag";
 import React, { Fragment } from "react";
 import { Tab } from "@headlessui/react";
-import { RoundedTimezoneInput } from "../../components/ui/Input";
+import { RoundedTimezoneInput } from "../../components/ui/TimezoneInput";
 import {
   GroupAvailabilityZone,
   MyAvailabilityZone,
