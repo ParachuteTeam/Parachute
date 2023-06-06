@@ -17,8 +17,8 @@ import { DateSelect } from "../components/ui/DateSelect";
 import {
   formatOccurring,
   formatTime,
+  formatTimeZoneTag,
   getCurrentTimeZoneTag,
-  getInfoFromTimeZoneTag,
 } from "../utils/utils";
 import { ButtonWithState } from "../components/ui/Button";
 import { RoundedTimezoneInput } from "../components/ui/TimezoneInput";
@@ -74,12 +74,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
         </div>
         <div className="flex flex-row items-center gap-1">
           <IoEarthSharp className="ml-1" />
-          <div>
-            {
-              getInfoFromTimeZoneTag(event.timeZone ?? getCurrentTimeZoneTag())
-                .timeZone
-            }
-          </div>
+          <div>{formatTimeZoneTag(event.timeZone ?? "")}</div>
         </div>
       </div>
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>

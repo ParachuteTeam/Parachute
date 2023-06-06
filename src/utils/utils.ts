@@ -57,6 +57,11 @@ export const formatWithTimeZoneTag = (
   );
 };
 
+export const formatTimeZoneTag = (timeZoneTag: string) => {
+  const { timeZone, gmt } = getInfoFromTimeZoneTag(timeZoneTag);
+  return `${timeZone ?? ""} (${gmt ?? ""})`;
+};
+
 export const makeTime = (
   plusDay: number,
   hour: number,

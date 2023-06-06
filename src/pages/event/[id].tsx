@@ -17,12 +17,11 @@ import {
   Auth0LoginButton,
   GoogleLoginButton,
 } from "../../components/ui/LoginButton";
-import { currentTimezone } from "../../utils/timezone";
 import {
   formatOccurring,
   formatTimespan,
+  formatTimeZoneTag,
   getCurrentTimeZoneTag,
-  getInfoFromTimeZoneTag,
 } from "../../utils/utils";
 import { useState, useEffect } from "react";
 import { DeleteDialog, EditDialog } from "../../components/section/Dialog";
@@ -93,12 +92,8 @@ const EventInfoHeader: React.FC = () => {
             </div>
             <IoEarthSharp className="ml-1" />
             <div>
-              {event
-                ? getInfoFromTimeZoneTag(
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    event.timeZone ?? getCurrentTimeZoneTag()
-                  ).timeZone
-                : "Loading..."}
+              {/* eslint-disable-next-line @typescript-eslint/no-unsafe-argument */}
+              {event ? formatTimeZoneTag(event.timeZone) : "Loading..."}
             </div>
           </div>
           <div className="text-3xl font-semibold">
