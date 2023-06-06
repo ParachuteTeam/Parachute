@@ -1,14 +1,13 @@
 import React, { useCallback, useMemo } from "react";
-import { addMinutes, format, isAfter, isBefore, parse } from "date-fns";
-import { formatTime } from "../../utils/utils";
+import { addMinutes, isAfter, isBefore, parse } from "date-fns";
+import { formatTime, formatTimeIdentifier, makeTime } from "../../utils/utils";
 import { RoundedListbox } from "./Input";
 
 export interface TimeSelectorProps {
   className?: string;
   direction?: "up" | "down";
   timeGapMinutes?: number;
-  timeStart?: Date;
-  timeEnd?: Date;
+  timeZone?: string;
   value: Date;
   onChange?: (value: Date) => void;
 }
@@ -17,31 +16,41 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
   className,
   direction,
   timeGapMinutes,
-  timeStart,
-  timeEnd,
+  timeZone,
   value,
   onChange,
 }) => {
   const availableTimes = useMemo(() => {
     const times = [];
-    const start = timeStart ?? new Date(0, 0, 1, 0, 0, 0);
-    const end = timeEnd ?? new Date(0, 0, 2, 0, 0, 0);
+    const start = makeTime(0, 0, 0, timeZone);
+    const end = makeTime(1, 0, 0, timeZone);
     const gap = timeGapMinutes ?? 30;
     for (let time = start; time <= end; time = addMinutes(time, gap)) {
       times.push(time);
     }
     return times;
-  }, [timeGapMinutes, timeStart, timeEnd]);
+  }, [timeGapMinutes, timeZone]);
+
+  const options = useMemo(
+    () =>
+      availableTimes.map((time) => ({
+        label: formatTime(time, timeZone),
+        value: formatTimeIdentifier(time, timeZone),
+      })),
+    [availableTimes, timeZone]
+  );
+
+  const valueIdentifier = useMemo(
+    () => formatTimeIdentifier(value, timeZone),
+    [value, timeZone]
+  );
 
   return (
     <RoundedListbox
       className={className}
       direction={direction}
-      options={availableTimes.map((time) => ({
-        label: formatTime(time),
-        value: format(time, "dd:HH:mm"),
-      }))}
-      value={format(value, "dd:HH:mm")}
+      options={options}
+      value={valueIdentifier}
       onChange={(value) => onChange?.(parse(value, "dd:HH:mm", new Date()))}
     />
   );
@@ -50,6 +59,7 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
 export interface TimespanSelectorProps {
   className?: string;
   direction?: "up" | "down";
+  timeZone?: string;
   start: Date;
   end: Date;
   onChangeStart?: (start: Date) => void;
@@ -59,6 +69,7 @@ export interface TimespanSelectorProps {
 export const TimespanSelector: React.FC<TimespanSelectorProps> = ({
   className,
   direction,
+  timeZone,
   start,
   end,
   onChangeStart,
@@ -87,12 +98,14 @@ export const TimespanSelector: React.FC<TimespanSelectorProps> = ({
       <TimeSelector
         className="w-[50%]"
         direction={direction}
+        timeZone={timeZone}
         value={start}
         onChange={onChangeStartInternal}
       />
       <TimeSelector
         className="w-[50%]"
         direction={direction}
+        timeZone={timeZone}
         value={end}
         onChange={onChangeEndInternal}
       />
