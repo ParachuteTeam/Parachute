@@ -8,10 +8,6 @@ export const isBetween = (date: Date, start: Date, end: Date): boolean => {
   );
 };
 
-export const toHourDecimal = (date: Date): number => {
-  return date.getHours() + date.getMinutes() / 60;
-};
-
 export const csvToDateArray = (csv: string): Date[] => {
   return csv.split(",").map((s) => new Date(s));
 };
@@ -43,18 +39,24 @@ export const getInfoFromTimeZoneTag = (timeZoneTag: string) => {
   return { timeZone, gmt, offset: Number(offsetString) * 60 * 60 * 1000 };
 };
 
+export const toZonedTime = (time: Date, timeZoneTag: string) => {
+  const offset = offsetFromTimeZoneTag(timeZoneTag);
+  const currentTimezoneOffset = offsetFromTimeZoneTag(currentTimezone);
+  return addMilliseconds(time, offset - currentTimezoneOffset);
+};
+
 export const formatWithTimeZoneTag = (
   time: Date,
   timeZoneTag: string,
   formatStr: string
 ) => {
-  const { timeZone, offset } = getInfoFromTimeZoneTag(timeZoneTag);
-  const currentTimezoneOffset = offsetFromTimeZoneTag(currentTimezone);
-  return format(
-    addMilliseconds(time, offset - currentTimezoneOffset),
-    formatStr,
-    { timeZone }
-  );
+  const { timeZone } = getInfoFromTimeZoneTag(timeZoneTag);
+  return format(toZonedTime(time, timeZoneTag), formatStr, { timeZone });
+};
+
+export const toHourDecimal = (date: Date, timeZoneTag = ""): number => {
+  const zonedTime = toZonedTime(date, timeZoneTag);
+  return zonedTime.getHours() + zonedTime.getMinutes() / 60;
 };
 
 export const formatTimeZoneTag = (timeZoneTag: string) => {
