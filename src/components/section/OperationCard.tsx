@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 import { Tab } from "@headlessui/react";
 import { useRouter } from "next/router";
-import { currentTimezone } from "../../utils/timezone";
 import { GroupAvailabilityZone, MyAvailabilityZone } from "./AvailabilityZone";
 import { RoundedTimezoneInput } from "../ui/TimezoneInput";
+import { getCurrentTimeZoneTag } from "../../utils/utils";
 
 const OperationCardTab: React.FC<
   React.PropsWithChildren<{ className?: string }>
@@ -31,7 +31,7 @@ const OperationCardTab: React.FC<
 
 export const OperationCard: React.FC = () => {
   const router = useRouter();
-  const [timezone, setTimezone] = React.useState(currentTimezone);
+  const [timeZoneTag, setTimeZoneTag] = React.useState(getCurrentTimeZoneTag());
   return (
     <div className="flex flex-row justify-center p-6">
       <div className="card max-w-[1248px] flex-1 p-0">
@@ -46,10 +46,16 @@ export const OperationCard: React.FC = () => {
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel>
-              <MyAvailabilityZone eventID={router.query.id as string} />
+              <MyAvailabilityZone
+                eventID={router.query.id as string}
+                timeZoneTag={timeZoneTag}
+              />
             </Tab.Panel>
             <Tab.Panel>
-              <GroupAvailabilityZone eventID={router.query.id as string} />
+              <GroupAvailabilityZone
+                eventID={router.query.id as string}
+                timeZoneTag={timeZoneTag}
+              />
             </Tab.Panel>
           </Tab.Panels>
           <div className="flex w-full flex-row gap-2 rounded-b-md border-t border-gray-300 bg-white px-6 py-4 text-sm">
@@ -63,8 +69,8 @@ export const OperationCard: React.FC = () => {
             <RoundedTimezoneInput
               className="w-[300px] px-0"
               direction="up"
-              value={timezone}
-              onChange={setTimezone}
+              value={timeZoneTag}
+              onChange={setTimeZoneTag}
             />
           </div>
         </Tab.Group>
