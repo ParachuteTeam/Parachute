@@ -1,4 +1,5 @@
 import { api } from "./api";
+import { toDatetimeIntervals } from "./utils";
 
 // >>> Query Hooks >>>
 
@@ -21,6 +22,12 @@ export const useParticipatedEvents = () => {
 export const useParticipantsOf = (eventId: string) => {
   return api.events.getAllParticipants.useQuery({
     eventId,
+  });
+};
+
+export const useUserTimeslotsIn = (eventId: string) => {
+  return api.timeslots.getAllTimeSlots.useQuery({
+    eventID: eventId,
   });
 };
 
@@ -58,6 +65,21 @@ export const useDeleteEvent = (eventId: string) => {
   const { mutateAsync: deleteEvent } = api.events.deleteEvent.useMutation();
   return async () => {
     await deleteEvent({ eventId });
+  };
+};
+
+export const useReplaceUserTimeslotsIn = (eventId: string) => {
+  const { mutateAsync: replaceMyTimeslots } =
+    api.timeslots.timeslotsReplace.useMutation();
+  return async (schedule: Date[]) => {
+    const intervals = toDatetimeIntervals(schedule, { minutes: 15 }, true);
+    await replaceMyTimeslots({
+      eventID: eventId,
+      timeslots: intervals.map((itv) => ({
+        begins: itv.start.toJSON(),
+        ends: itv.end.toJSON(),
+      })),
+    });
   };
 };
 
