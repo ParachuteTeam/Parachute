@@ -278,6 +278,7 @@ export const eventRouter = createTRPCRouter({
           userID: true,
           user: { select: { name: true } },
           timeZone: true,
+          timeSlots: true,
         },
       });
     }),
