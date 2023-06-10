@@ -61,6 +61,7 @@ export const participateRouter = createTRPCRouter({
         occuringDays: true,
         type: true,
         ownerID: true,
+        partCount: true,
       },
       orderBy: { begins: "asc" },
     });
