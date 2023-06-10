@@ -33,6 +33,7 @@ interface Event {
   ends: Date;
   type?: string;
 
+  partCount: number;
   ownerID?: string;
   // Add other properties as needed
 }
@@ -47,6 +48,8 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
   const occurringDaysArray = event.occuringDays
     ?.split(",")
     .map((s) => new Date(s));
+  const num_participant = event.partCount;
+
 
   return (
     <Link
@@ -73,7 +76,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         {myEvent && <EventTypeTag>My Event</EventTypeTag>}
-        <div>Click to see detail</div>
+        <div>{num_participant} people filled</div>
       </div>
     </Link>
   );
