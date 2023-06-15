@@ -4,8 +4,10 @@ import { TimeslotSelector, TimeslotView } from "../ui/TimeslotGrid";
 import type { DatetimeInterval } from "../../utils/utils";
 import {
   csvToDateArray,
+  dateArraysEqual,
   isBetween,
   toIndividualDates,
+  toZonedTime,
 } from "../../utils/utils";
 import {
   useAllTimeslotsOf,
@@ -32,15 +34,28 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
     useUserTimeslotsIn(eventID);
   const { refetch: refetchAllSchedules } = useAllTimeslotsOf(eventID);
 
+  // Get existingSchedule
+  const existingSchedule = useMemo(() => {
+    const intervals: DatetimeInterval[] =
+      existingTimeSlots?.map((timeslot) => ({
+        start: timeslot.begins,
+        end: timeslot.ends,
+      })) ?? [];
+    return toIndividualDates(intervals, { minutes: 15 }, true);
+  }, [existingTimeSlots]);
+
   // States
   const [schedule, setSchedule] = useState<Date[]>([]);
   const [changed, setChanged] = useState(false);
 
   // Update schedule callback
-  const updateSchedule = (newSchedule: Date[]) => {
-    setSchedule(newSchedule);
-    setChanged(true);
-  };
+  const updateSchedule = useCallback(
+    (newSchedule: Date[]) => {
+      setChanged(!dateArraysEqual(newSchedule, existingSchedule));
+      setSchedule(newSchedule);
+    },
+    [existingSchedule]
+  );
 
   // Save schedule callback
   const scheduleReplace = useReplaceUserTimeslotsIn(eventID);
@@ -52,14 +67,9 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
 
   // Reset schedule callback
   const resetSchedule = useCallback(() => {
-    const intervals: DatetimeInterval[] =
-      existingTimeSlots?.map((timeslot) => ({
-        start: timeslot.begins,
-        end: timeslot.ends,
-      })) ?? [];
-    setSchedule(toIndividualDates(intervals, { minutes: 15 }, true));
+    setSchedule(existingSchedule);
     setChanged(false);
-  }, [existingTimeSlots]);
+  }, [existingSchedule]);
 
   // Calls resetSchedule once on first render
   useEffect(() => {
@@ -86,8 +96,10 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <TimeslotSelector
-          occurringDates={csvToDateArray(event.occuringDays)}
-          timeLabelTimeZoneTag={timeZoneTag}
+          occurringDates={csvToDateArray(event.occuringDays).map((date) =>
+            toZonedTime(date, event.timeZone)
+          )}
+          timeZoneTag={timeZoneTag}
           startTime={event.begins}
           endTime={event.ends}
           schedule={schedule}
@@ -165,8 +177,10 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
         <TimeslotView
-          occurringDates={csvToDateArray(event.occuringDays)}
-          timeLabelTimeZoneTag={timeZoneTag}
+          occurringDates={csvToDateArray(event.occuringDays).map((date) =>
+            toZonedTime(date, event.timeZone)
+          )}
+          timeZoneTag={timeZoneTag}
           startTime={event.begins}
           endTime={event.ends}
           schedule={filteredSchedule}

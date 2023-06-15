@@ -51,18 +51,15 @@ const DateLabel: React.FC<{
 
 const TimeLabel: React.FC<{
   time: Date;
-  timeZoneTag: string;
-}> = ({ time, timeZoneTag }) => {
+}> = ({ time }) => {
   return (
     <div className="relative bottom-[9px] w-16 text-right text-xs text-gray-500">
-      {time.getMinutes() % 30 == 0 ? formatTime(time, timeZoneTag) : ""}
+      {time.getMinutes() % 30 == 0 ? formatTime(time) : ""}
     </div>
   );
 };
 
 interface StyledScheduleSelectorProps {
-  timeLabelTimeZoneTag: string;
-
   startDate: Date;
   numDays: number;
   minTime: number;
@@ -76,14 +73,12 @@ interface StyledScheduleSelectorProps {
 
   disabled?: boolean;
   showTime: boolean;
-  showDate: boolean;
+  dateRenderMode: "DATE" | "ELLIPSE" | "NONE";
   weekOnly?: boolean;
   displayDepth?: number;
 }
 
 export const StyledScheduleSelector: React.FC<StyledScheduleSelectorProps> = ({
-  timeLabelTimeZoneTag,
-
   startDate,
   numDays,
   minTime,
@@ -97,7 +92,7 @@ export const StyledScheduleSelector: React.FC<StyledScheduleSelectorProps> = ({
 
   disabled,
   showTime,
-  showDate,
+  dateRenderMode,
   weekOnly,
   displayDepth,
 }) => {
@@ -127,15 +122,22 @@ export const StyledScheduleSelector: React.FC<StyledScheduleSelectorProps> = ({
       columnGap="10px"
       renderTimeLabel={(time) => {
         if (showTime) {
-          return <TimeLabel time={time} timeZoneTag={timeLabelTimeZoneTag} />;
+          return <TimeLabel time={time} />;
         }
-        return <div className="w-10"></div>;
+        return <div />;
       }}
       renderDateLabel={(datetime) => {
-        if (showDate) {
+        if (dateRenderMode === "DATE") {
           return <DateLabel datetime={datetime} weekOnly={weekOnly} />;
         }
-        return <div className="h-20 w-20 border-b border-black"></div>;
+        if (dateRenderMode === "ELLIPSE") {
+          return (
+            <div className="flex h-20 w-20 flex-row items-center justify-center border-b border-black">
+              ···
+            </div>
+          );
+        }
+        return <div />;
       }}
       renderDateCell={(datetime, selected) => {
         return (
