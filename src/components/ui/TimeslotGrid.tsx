@@ -133,7 +133,7 @@ export const TimeslotGrid: React.FC<TimeslotGridProps> = ({
       renderEllipsis: boolean
     ) => {
       // number of full days
-      const numDays = differenceInDays(startDate, endDate) + 1;
+      const numDays = differenceInDays(endDate, startDate) + 1;
 
       // cached dates
       const offsetStartDate = addDays(startDate, startTimePlusDay);
