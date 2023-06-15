@@ -314,8 +314,9 @@ export const LeaveDialog: React.FC<LeaveDialogProps> = ({
                 {eventName}
               </div>
               <div className="mt-2 text-left text-xs text-gray-500">
-                You will leave the event permanently, including all availability
-                data. This action is irreversible and can not be undone.
+                You will leave {eventName} permanently, your selected time slots
+                will also be deleted. This action is irreversible and can not be
+                undone.
               </div>
               <div className="mt-6 flex justify-center gap-4">
                 <ButtonWithState
