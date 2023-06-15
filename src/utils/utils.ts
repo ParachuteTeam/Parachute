@@ -39,13 +39,19 @@ export const offsetFromTimeZoneTag = (timeZoneTag?: string) => {
   if (offsetString === undefined) {
     return getTimezoneOffset(currentTimezone, new Date());
   }
-  return Number(offsetString) * 60 * 60 * 1000;
+  const [hours, minutes] = offsetString.split(":");
+  return (Number(hours ?? 0) * 60 + Number(minutes ?? 0)) * 60 * 1000;
 };
 
 export const getInfoFromTimeZoneTag = (timeZoneTag: string) => {
   const [timeZone, gmt] = timeZoneTag.split(",");
-  const offsetString = timeZoneTag.split("GMT")[1];
-  return { timeZone, gmt, offset: Number(offsetString) * 60 * 60 * 1000 };
+  const offsetString = timeZoneTag.split("GMT")[1] ?? "";
+  const [hours, minutes] = offsetString.split(":");
+  return {
+    timeZone,
+    gmt,
+    offset: (Number(hours ?? 0) * 60 + Number(minutes ?? 0)) * 60 * 1000,
+  };
 };
 
 export const toZonedTime = (time: Date, timeZoneTag: string) => {
