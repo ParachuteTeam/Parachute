@@ -308,15 +308,14 @@ export const LeaveDialog: React.FC<LeaveDialogProps> = ({
           >
             <div className="my-space-x-8 inline-block w-[450px] max-w-lg transform rounded-xl bg-white p-6 shadow-xl transition-all">
               <Dialog.Title className="text-left text-lg font-semibold leading-6 text-gray-900">
-                Confirm Leave Event
+                Confirm Leaving Event
               </Dialog.Title>
-              <div className="mt-4 text-left text-2xl font-bold">
-                {eventName}
-              </div>
+
               <div className="mt-2 text-left text-xs text-gray-500">
-                You will leave {eventName} permanently, your selected time slots
-                will also be deleted. This action is irreversible and can not be
-                undone.
+                You will leave{" "}
+                <span className="font-bold text-red-500">{eventName}</span>{" "}
+                permanently, your selected time slots will also be deleted. This
+                action is irreversible and can not be undone.
               </div>
               <div className="mt-6 flex justify-center gap-4">
                 <ButtonWithState
