@@ -1,4 +1,4 @@
-import { add, addMilliseconds, isEqual } from "date-fns";
+import { add, addMilliseconds, compareAsc, isEqual } from "date-fns";
 import { format, formatInTimeZone, getTimezoneOffset } from "date-fns-tz";
 import { currentTimezone } from "./timezone";
 
@@ -6,6 +6,15 @@ export const isBetween = (date: Date, start: Date, end: Date): boolean => {
   return (
     isEqual(date, start) || isEqual(date, end) || (date > start && date < end)
   );
+};
+
+export const dateArraysEqual = (a: Date[], b: Date[]): boolean => {
+  if (a.length !== b.length) {
+    return false;
+  }
+  a = a.sort(compareAsc);
+  b = b.sort(compareAsc);
+  return a.every((date, index) => isEqual(date, b[index] ?? 0));
 };
 
 export const csvToDateArray = (csv: string): Date[] => {
@@ -45,6 +54,12 @@ export const toZonedTime = (time: Date, timeZoneTag: string) => {
   return addMilliseconds(time, offset - currentTimezoneOffset);
 };
 
+export const toUTCTime = (time: Date, timeZoneTag: string) => {
+  const offset = offsetFromTimeZoneTag(timeZoneTag);
+  const currentTimezoneOffset = offsetFromTimeZoneTag(currentTimezone);
+  return addMilliseconds(time, currentTimezoneOffset - offset);
+};
+
 export const formatWithTimeZoneTag = (
   time: Date,
   timeZoneTag: string,
@@ -52,6 +67,12 @@ export const formatWithTimeZoneTag = (
 ) => {
   const { timeZone } = getInfoFromTimeZoneTag(timeZoneTag);
   return format(toZonedTime(time, timeZoneTag), formatStr, { timeZone });
+};
+
+export const toPlusDay = (date: Date, timeZoneTag = ""): number => {
+  const zonedTime = toZonedTime(date, timeZoneTag);
+  const dateValue = zonedTime.getDate();
+  return dateValue === 31 ? -1 : dateValue - 1;
 };
 
 export const toHourDecimal = (date: Date, timeZoneTag = ""): number => {
@@ -76,9 +97,10 @@ export const makeTime = (
 };
 
 export const formatTime = (time: Date, timeZoneTag = ""): string => {
+  const plusDay = toPlusDay(time, timeZoneTag);
   return (
     formatWithTimeZoneTag(time, timeZoneTag, "hh:mm aa") +
-    (formatWithTimeZoneTag(time, timeZoneTag, "d") === "2" ? " (+1d)" : "")
+    (plusDay === 1 ? " (+1d)" : plusDay === -1 ? " (-1d)" : "")
   );
 };
 
