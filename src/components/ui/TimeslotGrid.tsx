@@ -141,7 +141,7 @@ export const TimeslotGrid: React.FC<TimeslotGridProps> = ({
 
       if (sameDay) {
         return (
-          <div className="flex flex-row">
+          <div key={index} className="flex flex-row">
             {renderEllipsis && <VerticalEllipsis />}
             {renderScheduleSelector(
               index,
@@ -157,7 +157,7 @@ export const TimeslotGrid: React.FC<TimeslotGridProps> = ({
         );
       } else {
         return (
-          <div className="flex flex-col">
+          <div key={index} className="flex flex-col">
             <div className="flex flex-row">
               {renderEllipsis && <VerticalEllipsis />}
               {renderScheduleSelector(
