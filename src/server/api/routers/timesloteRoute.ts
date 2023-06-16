@@ -103,16 +103,6 @@ export const timesloteRouter = createTRPCRouter({
             timeZone: "UTC",
           },
         });
-        await prisma.event.update({
-          where: {
-            id: req.input.eventID
-          },
-          data: {
-            partCount: {
-              increment: 1
-            }
-          }
-        });
       }
 
       await prisma.timeSlots.deleteMany({
