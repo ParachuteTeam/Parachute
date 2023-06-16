@@ -104,7 +104,7 @@ const EventInfoHeader: React.FC = () => {
         </div>
 
         <div className="flex w-[200px] flex-col gap-3 text-sm font-light">
-          {isOwner && (
+          {event && isOwner && (
             <button
               className="rounded-button"
               onClick={() => setIsEditDialogOpen(true)}
@@ -112,7 +112,7 @@ const EventInfoHeader: React.FC = () => {
               Edit
             </button>
           )}
-          {isOwner && (
+          {event && isOwner && (
             <button
               className="danger-button"
               onClick={() => setIsDeleteDialogOpen(true)}
@@ -120,7 +120,7 @@ const EventInfoHeader: React.FC = () => {
               Delete
             </button>
           )}
-          {!isOwner && (
+          {event && !isOwner && (
             <button
               className="danger-button"
               onClick={() => setIsLeaveDialogOpen(true)}
