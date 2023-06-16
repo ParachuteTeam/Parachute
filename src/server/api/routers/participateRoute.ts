@@ -13,33 +13,34 @@ export const participateRouter = createTRPCRouter({
    joinCode should be a valid 6-digit string.
    */
   createParticipate: protectedProcedure
-    .input(
-      z.object({
-        userID: z.string(),
-        timeZone: z.string(),
-        joinCode: z.string(),
-      })
-    )
-    .mutation(async (req) => {
-      const eventCheck = await prisma.event.findUnique({
-        where: {
-          joinCode: req.input.joinCode,
-        },
-      });
-      if (!eventCheck) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Joincode is invalid!",
+      .input(
+          z.object({
+            userID: z.string(),
+            timeZone: z.string(),
+            joinCode: z.string(),
+          })
+      )
+      .mutation(async (req) => {
+        const eventCheck = await prisma.event.findUnique({
+          where: {
+            joinCode: req.input.joinCode,
+          },
         });
-      }
-      return await prisma.participate.create({
-        data: {
-          eventID: eventCheck.id,
-          userID: req.input.userID,
-          timeZone: req.input.timeZone,
-        },
-      });
-    }),
+        if (!eventCheck) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Joincode is invalid!",
+          });
+        }
+        const participate_ = await prisma.participate.create({
+          data: {
+            eventID: eventCheck.id,
+            userID: req.input.userID,
+            timeZone: req.input.timeZone,
+          },
+        });
+        return participate_;
+      }),
 
   /**
    This function return all eventID that this person participates.
@@ -49,7 +50,6 @@ export const participateRouter = createTRPCRouter({
       where: { userID: req.ctx.session.user.id },
       select: { eventID: true },
     });
-    //fetch event from eventID
     const event = await prisma.event.findMany({
       where: { id: { in: eventID.map((e) => e.eventID) } },
       select: {
@@ -71,73 +71,96 @@ export const participateRouter = createTRPCRouter({
    This function are used to update the timeZone of a participation
    */
   updateTimeZone: protectedProcedure
-    .input(
-      z.object({
-        userID: z.string(),
-        eventID: z.string(),
-        timeZone: z.string(),
-      })
-    )
-    .mutation(async (req) => {
-      return await prisma.participate.update({
-        where: {
-          eventID_userID: {
-            eventID: req.input.eventID,
-            userID: req.input.userID,
+      .input(
+          z.object({
+            userID: z.string(),
+            eventID: z.string(),
+            timeZone: z.string(),
+          })
+      )
+      .mutation(async (req) => {
+        return await prisma.participate.update({
+          where: {
+            eventID_userID: {
+              eventID: req.input.eventID,
+              userID: req.input.userID,
+            },
           },
-        },
-        data: {
-          timeZone: req.input.timeZone,
-        },
-      });
-    }),
+          data: {
+            timeZone: req.input.timeZone,
+          },
+        });
+      }),
 
   /**
    Delete a participate according to userID and eventID
    */
   deleteParticipate: protectedProcedure
-    .input(
-      z.object({
-        userID: z.string(),
-        eventID: z.string(),
-      })
-    )
-    .mutation(async (req) => {
-      await prisma.timeSlots.deleteMany({
-        where: {
-          participateEventID: req.input.eventID,
-          participateUserID: { in: req.input.userID },
-        },
-      });
-      return await prisma.participate.delete({
-        where: {
-          eventID_userID: {
-            eventID: req.input.eventID,
-            userID: req.input.userID,
+      .input(
+          z.object({
+            userID: z.string(),
+            eventID: z.string(),
+          })
+      )
+      .mutation(async (req) => {
+        return await prisma.participate.delete({
+          where: {
+            eventID_userID: {
+              eventID: req.input.eventID,
+              userID: req.input.userID,
+            },
           },
-        },
-      });
-    }),
+        });
+      }),
 
   deleteParticipants: protectedProcedure
-    .input(
-      z.object({
-        userIDs: z.array(z.string()),
-        eventID: z.string(),
-      })
-    )
-    .mutation(async (req) => {
-      await prisma.timeSlots.deleteMany({
-        where: {
-          participateEventID: req.input.eventID,
-          participateUserID: { in: req.input.userIDs },
-        },
+      .input(
+          z.object({
+            userIDs: z.array(z.string()),
+            eventID: z.string(),
+          })
+      )
+      .mutation(async (req) => {
+        await prisma.timeSlots.deleteMany({
+          where: {
+            participateEventID: req.input.eventID,
+            participateUserID: { in: req.input.userIDs },
+          },
+        });
+        const evetId =  req.input.eventID;
+        const deletedParticipate = await prisma.participate.deleteMany({
+          where: {
+            eventID: req.input.eventID,
+            userID: { in: req.input.userIDs },
+          },
+        });
+        return deletedParticipate;
+      }),
+  getNumParticipants: protectedProcedure
+      .input(z.object({ eventID: z.string() }))
+      .query(async (req) => {
+        return await prisma.participate.count({
+          where: {
+            eventID: req.input.eventID,
+          },
+        });
+      }),
+
+  getParticipateEventsNew: protectedProcedure.query(async (req) => {
+    const eventIDs = await prisma.participate.findMany({
+      where: { userID: req.ctx.session.user.id },
+      select: { eventID: true },
+    });
+
+    const participantCounts: { [key: string]: number } = {};
+
+    for (const { eventID } of eventIDs) {
+      const count = await prisma.participate.count({
+        where: { eventID: eventID },
       });
-      return await prisma.participate.deleteMany({
-        where: {
-          eventID: req.input.eventID,
-          userID: { in: req.input.userIDs },
-        },
-      });
-    }),
+      participantCounts[eventID] = count;
+    }
+    return participantCounts;
+  }),
+
 });
