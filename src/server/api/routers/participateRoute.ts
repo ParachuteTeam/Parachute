@@ -43,11 +43,6 @@ export const participateRouter = createTRPCRouter({
         where: {
           id: eventCheck.id,
         },
-        data: {
-          partCount: {
-            increment: 1,
-          },
-        },
       });
       return participate_;
     }),
@@ -71,7 +66,6 @@ export const participateRouter = createTRPCRouter({
         occuringDays: true,
         type: true,
         ownerID: true,
-        partCount: true,
       },
       orderBy: { begins: "asc" },
     });
@@ -148,11 +142,6 @@ export const participateRouter = createTRPCRouter({
       await prisma.event.update({
         where: {
           id: evetId,
-        },
-        data: {
-          partCount: {
-            decrement: 1,
-          },
         },
       });
       return deletedParticipate;
