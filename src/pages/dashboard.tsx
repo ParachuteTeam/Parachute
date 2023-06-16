@@ -32,8 +32,6 @@ interface Event {
   begins: Date;
   ends: Date;
   type?: string;
-
-  partCount: number;
   ownerID?: string;
   // Add other properties as needed
 }
