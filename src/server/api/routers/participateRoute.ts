@@ -32,13 +32,24 @@ export const participateRouter = createTRPCRouter({
           message: "Joincode is invalid!",
         });
       }
-      return await prisma.participate.create({
+      const participate_ = await prisma.participate.create({
         data: {
           eventID: eventCheck.id,
           userID: req.input.userID,
           timeZone: req.input.timeZone,
         },
       });
+      await prisma.event.update({
+        where: {
+          id: eventCheck.id,
+        },
+        data: {
+          partCount: {
+            increment: 1,
+          },
+        },
+      });
+      return participate_;
     }),
 
   /**
@@ -49,7 +60,6 @@ export const participateRouter = createTRPCRouter({
       where: { userID: req.ctx.session.user.id },
       select: { eventID: true },
     });
-    //fetch event from eventID
     const event = await prisma.event.findMany({
       where: { id: { in: eventID.map((e) => e.eventID) } },
       select: {
@@ -61,6 +71,7 @@ export const participateRouter = createTRPCRouter({
         occuringDays: true,
         type: true,
         ownerID: true,
+        partCount: true,
       },
       orderBy: { begins: "asc" },
     });
@@ -127,11 +138,51 @@ export const participateRouter = createTRPCRouter({
           participateUserID: { in: req.input.userIDs },
         },
       });
-      return await prisma.participate.deleteMany({
+      const evetId =  req.input.eventID;
+      const deletedParticipate = await prisma.participate.deleteMany({
         where: {
           eventID: req.input.eventID,
           userID: { in: req.input.userIDs },
         },
       });
+      await prisma.event.update({
+        where: {
+          id: evetId,
+        },
+        data: {
+          partCount: {
+            decrement: 1,
+          },
+        },
+      });
+      return deletedParticipate;
     }),
+  getNumParticipants: protectedProcedure
+    .input(z.object({ eventID: z.string() }))
+    .query(async (req) => {
+      return await prisma.participate.count({
+        where: {
+          eventID: req.input.eventID,
+        },
+      });
+    }),
+
+  getParticipateEventsNew: protectedProcedure.query(async (req) => {
+    const eventIDs = await prisma.participate.findMany({
+      where: { userID: req.ctx.session.user.id },
+      select: { eventID: true },
+    });
+
+    const participantCounts: { [key: string]: number } = {};
+
+    for (const { eventID } of eventIDs) {
+      const count = await prisma.participate.count({
+        where: { eventID: eventID },
+      });
+      participantCounts[eventID] = count;
+    }
+    return participantCounts;
+  }),
+
+
 });
