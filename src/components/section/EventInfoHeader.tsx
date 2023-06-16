@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import {
   useAllTimeslotsOf,
   useDeleteEvent,
+  useLeaveEvent,
   useDeleteParticipantsOf,
   useEditNameOf,
   useEvent,
@@ -18,7 +19,7 @@ import {
 } from "../../utils/utils";
 import { IoEarthSharp } from "react-icons/io5";
 import { EventTypeTag } from "../ui/Tag";
-import { DeleteDialog, EditDialog } from "./Dialog";
+import { DeleteDialog, EditDialog, LeaveDialog } from "./Dialog";
 
 export const EventInfoHeader: React.FC = () => {
   const router = useRouter();
@@ -32,13 +33,16 @@ export const EventInfoHeader: React.FC = () => {
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
 
   const editEventName = useEditNameOf(eventId);
   const deleteParticipants = useDeleteParticipantsOf(eventId);
   const deleteEvent = useDeleteEvent(eventId);
+  const leaveEvent = useLeaveEvent(eventId);
 
   const { data: session } = useSession();
-  const isOwner = event?.ownerID === session?.user.id;
+  const userId = session?.user.id;
+  const isOwner = event?.ownerID === userId;
 
   const occurringDaysArray = event?.occuringDays
     .split(",")
@@ -90,7 +94,7 @@ export const EventInfoHeader: React.FC = () => {
         </div>
 
         <div className="flex w-[200px] flex-col gap-3 text-sm font-light">
-          {isOwner && (
+          {event && isOwner && (
             <button
               className="rounded-button"
               onClick={() => setIsEditDialogOpen(true)}
@@ -98,12 +102,20 @@ export const EventInfoHeader: React.FC = () => {
               Edit
             </button>
           )}
-          {isOwner && (
+          {event && isOwner && (
             <button
               className="danger-button"
               onClick={() => setIsDeleteDialogOpen(true)}
             >
               Delete
+            </button>
+          )}
+          {event && !isOwner && (
+            <button
+              className="danger-button"
+              onClick={() => setIsLeaveDialogOpen(true)}
+            >
+              Leave
             </button>
           )}
         </div>
@@ -131,6 +143,16 @@ export const EventInfoHeader: React.FC = () => {
         eventName={event?.name ?? "Loading..."}
         onSubmit={async () => {
           await deleteEvent();
+          await refetchEventList();
+          await router.push("/dashboard");
+        }}
+      />
+      <LeaveDialog
+        isOpen={isLeaveDialogOpen}
+        close={() => setIsLeaveDialogOpen(false)}
+        eventName={event?.name ?? "Loading..."}
+        onSubmit={async () => {
+          await leaveEvent();
           await refetchEventList();
           await router.push("/dashboard");
         }}

@@ -53,11 +53,19 @@ export const useEditNameOf = (eventId: string) => {
   };
 };
 
+export const useLeaveEvent = (eventId: string) => {
+  const { mutateAsync: deleteCurrentUserParticipate } =
+    api.participates.deleteCurrentUserParticipate.useMutation();
+  return async () => {
+    await deleteCurrentUserParticipate({ eventID: eventId });
+  };
+};
+
 export const useDeleteParticipantsOf = (eventId: string) => {
-  const { mutateAsync: editEventParticipants } =
+  const { mutateAsync: deleteParticipants } =
     api.participates.deleteParticipants.useMutation();
   return async (deleteUserIDs: string[]) => {
-    await editEventParticipants({ eventID: eventId, userIDs: deleteUserIDs });
+    await deleteParticipants({ eventID: eventId, userIDs: deleteUserIDs });
   };
 };
 
