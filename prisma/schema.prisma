@@ -51,7 +51,6 @@ model Event {
   type         eventType
   ownerID      String
   timeZone     String
-  partCount    Int           @default(1)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   owner        User          @relation(fields: [ownerID], references: [id])
