@@ -114,6 +114,14 @@ export const formatTimeIdentifier = (time: Date, timeZoneTag = ""): string => {
   return formatWithTimeZoneTag(time, timeZoneTag, "dd:HH:mm");
 };
 
+export const parseTimeIdentifier = (
+  timeIdentifier: string,
+  timeZoneTag = ""
+): Date => {
+  const [day, hour, minute] = timeIdentifier.split(":").map(Number);
+  return makeTime((day ?? 1) - 1, hour ?? 0, minute ?? 0, timeZoneTag);
+};
+
 export const formatTimespan = (
   begins: Date,
   ends: Date,

@@ -1,6 +1,11 @@
 import React, { useCallback, useMemo } from "react";
-import { addMinutes, isAfter, isBefore, parse } from "date-fns";
-import { formatTime, formatTimeIdentifier, makeTime } from "../../utils/utils";
+import { addMinutes, isAfter, isBefore } from "date-fns";
+import {
+  formatTime,
+  formatTimeIdentifier,
+  makeTime,
+  parseTimeIdentifier,
+} from "../../utils/utils";
 import { RoundedListbox } from "./Input";
 
 export interface TimeSelectorProps {
@@ -51,7 +56,7 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
       direction={direction}
       options={options}
       value={valueIdentifier}
-      onChange={(value) => onChange?.(parse(value, "dd:HH:mm", new Date()))}
+      onChange={(value) => onChange?.(parseTimeIdentifier(value, timeZone))}
     />
   );
 };
