@@ -220,13 +220,11 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = ({
               <Dialog.Title className="text-left text-lg font-semibold leading-6 text-gray-900">
                 Confirm Delete Event
               </Dialog.Title>
-              <div className="mt-4 text-left text-2xl font-bold">
-                {eventName}
-              </div>
               <div className="mt-2 text-left text-xs text-gray-500">
-                The event will be permanently deleted, including all
-                availability data. This action is irreversible and can not be
-                undone.
+                The event{" "}
+                <span className="font-bold text-red-500">{eventName}</span> will
+                be permanently deleted, including all availability data. This
+                action is irreversible and can not be undone.
               </div>
               <div className="mt-6 flex justify-center gap-4">
                 <ButtonWithState
