@@ -220,13 +220,11 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = ({
               <Dialog.Title className="text-left text-lg font-semibold leading-6 text-gray-900">
                 Confirm Delete Event
               </Dialog.Title>
-              <div className="mt-4 text-left text-2xl font-bold">
-                {eventName}
-              </div>
               <div className="mt-2 text-left text-xs text-gray-500">
-                The event will be permanently deleted, including all
-                availability data. This action is irreversible and can not be
-                undone.
+                The event{" "}
+                <span className="font-bold text-red-500">{eventName}</span> will
+                be permanently deleted, including all availability data. This
+                action is irreversible and can not be undone.
               </div>
               <div className="mt-6 flex justify-center gap-4">
                 <ButtonWithState
@@ -250,6 +248,101 @@ export const DeleteDialog: React.FC<DeleteDialogProps> = ({
                   }}
                 >
                   Permanently Delete
+                </ButtonWithState>
+              </div>
+            </div>
+          </Transition.Child>
+        </div>
+      </Dialog>
+    </Transition>
+  );
+};
+
+interface LeaveDialogProps {
+  isOpen: boolean;
+  close: () => void;
+  eventName: string;
+  onSubmit: () => Promise<void>;
+}
+
+export const LeaveDialog: React.FC<LeaveDialogProps> = ({
+  isOpen,
+  close,
+  eventName,
+  onSubmit,
+}) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  return (
+    <Transition show={isOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-10 overflow-y-auto"
+        onClose={() => close()}
+      >
+        <div className="min-h-screen px-4 text-center">
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
+          </Transition.Child>
+          <span
+            className="inline-block h-screen align-middle"
+            aria-hidden="true"
+          ></span>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <div className="my-space-x-8 inline-block w-[450px] max-w-lg transform rounded-xl bg-white p-6 shadow-xl transition-all">
+              <Dialog.Title className="text-left text-lg font-semibold leading-6 text-gray-900">
+                Confirm Leaving Event
+              </Dialog.Title>
+
+              <div className="mt-2 text-left text-xs text-gray-500">
+                You will leave{" "}
+                <span className="font-bold text-red-500">{eventName}</span>{" "}
+                permanently, your selected time slots will also be deleted. This
+                action is irreversible and can not be undone.
+              </div>
+              <div className="mt-6 flex justify-center gap-4">
+                <ButtonWithState
+                  className="rounded-button w-[50%] text-sm"
+                  disabledClassName="rounded-button-disabled w-[50%] text-sm"
+                  disabled={isSubmitting}
+                  onClick={() => {
+                    close();
+                  }}
+                >
+                  Cancel
+                </ButtonWithState>
+                <ButtonWithState
+                  className="danger-button w-[50%] text-sm"
+                  loadingClassName="danger-button-loading w-[50%] text-sm"
+                  loading={isSubmitting}
+                  onClick={() => {
+                    setIsSubmitting(true);
+                    onSubmit()
+                      .then(() => {
+                        setIsSubmitting(false);
+                        close();
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                  }}
+                >
+                  Permanently Leave
                 </ButtonWithState>
               </div>
             </div>

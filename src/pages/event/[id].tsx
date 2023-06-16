@@ -20,7 +20,11 @@ import {
 import { currentTimezone } from "../../utils/timezone";
 import { formatOccurring, formatTimespan } from "../../utils/utils";
 import { useState, useEffect } from "react";
-import { DeleteDialog, EditDialog } from "../../components/section/Dialog";
+import {
+  DeleteDialog,
+  EditDialog,
+  LeaveDialog,
+} from "../../components/section/Dialog";
 
 const EventInfoHeader: React.FC = () => {
   const router = useRouter();
@@ -41,16 +45,18 @@ const EventInfoHeader: React.FC = () => {
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
 
   const editEventName = api.events.updateEvent_name.useMutation();
   const deleteEvent = api.events.deleteEvent.useMutation();
+  const deleteParticipate = api.participates.deleteParticipate.useMutation();
   const editEventParticipants =
     api.participates.deleteParticipants.useMutation();
 
   const [email, setEmail] = useState("");
   const { data: session } = useSession();
-
-  const isOwner = event?.ownerID === session?.user.id;
+  const userId = session?.user.id;
+  const isOwner = event?.ownerID === userId;
 
   const occurringDaysArray = event?.occuringDays
     .split(",")
@@ -98,7 +104,7 @@ const EventInfoHeader: React.FC = () => {
         </div>
 
         <div className="flex w-[200px] flex-col gap-3 text-sm font-light">
-          {isOwner && (
+          {event && isOwner && (
             <button
               className="rounded-button"
               onClick={() => setIsEditDialogOpen(true)}
@@ -106,12 +112,20 @@ const EventInfoHeader: React.FC = () => {
               Edit
             </button>
           )}
-          {isOwner && (
+          {event && isOwner && (
             <button
               className="danger-button"
               onClick={() => setIsDeleteDialogOpen(true)}
             >
               Delete
+            </button>
+          )}
+          {event && !isOwner && (
+            <button
+              className="danger-button"
+              onClick={() => setIsLeaveDialogOpen(true)}
+            >
+              Leave
             </button>
           )}
         </div>
@@ -159,6 +173,42 @@ const EventInfoHeader: React.FC = () => {
                   refetchEventList().finally(() => {
                     router.push("/dashboard").finally(resolve);
                   });
+                },
+              }
+            );
+          });
+        }}
+      />
+      <LeaveDialog
+        isOpen={isLeaveDialogOpen}
+        close={() => setIsLeaveDialogOpen(false)}
+        eventName={event?.name ?? "Loading..."}
+        onSubmit={() => {
+          if (!userId) {
+            return Promise.reject();
+          }
+          return new Promise((resolve, reject) => {
+            deleteParticipate.mutate(
+              {
+                userID: userId,
+                eventID: eventId,
+              },
+              {
+                onSuccess: () => {
+                  refetchEventList()
+                    .then(() => {
+                      router
+                        .push("/dashboard")
+                        .then(() => resolve())
+                        .catch(reject);
+                    })
+                    .catch((err) => {
+                      console.error(err);
+                      reject();
+                    });
+                },
+                onError: () => {
+                  reject();
                 },
               }
             );
