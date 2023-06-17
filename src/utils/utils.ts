@@ -102,6 +102,16 @@ export const makeTime = (
   return new Date(utcTime - offsetFromTimeZoneTag(timeZoneTag));
 };
 
+export const moveTime = (
+  time: Date,
+  oldTimeZoneTag: string,
+  newTimeZoneTag: string
+) => {
+  const oldOffset = offsetFromTimeZoneTag(oldTimeZoneTag);
+  const newOffset = offsetFromTimeZoneTag(newTimeZoneTag);
+  return addMilliseconds(time, oldOffset - newOffset);
+};
+
 export const formatTime = (time: Date, timeZoneTag = ""): string => {
   const plusDay = toPlusDay(time, timeZoneTag);
   return (

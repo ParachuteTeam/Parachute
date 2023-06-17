@@ -2,7 +2,7 @@ import type { ListboxOption } from "../ui/Input";
 import { RoundedListbox, Selector } from "../ui/Input";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { getCurrentTimeZoneTag, makeTime } from "../../utils/utils";
+import { getCurrentTimeZoneTag, makeTime, moveTime } from "../../utils/utils";
 import { RoundedTimezoneInput } from "../ui/TimezoneInput";
 import { DateSelect } from "../ui/DateSelect";
 import { TimespanSelector } from "../ui/TimeSelector";
@@ -36,6 +36,9 @@ const StartNewEventSection = () => {
   const [endTime, setEndTime] = React.useState<Date>(
     makeTime(0, 22, 0, timeZoneTag)
   );
+
+  console.log(startTime, endTime);
+
   // <<< Form values <<<
 
   const canSubmit = eventName.length > 0 && selectedDays.length > 0;
@@ -69,7 +72,11 @@ const StartNewEventSection = () => {
         <RoundedTimezoneInput
           className="px-0 text-sm"
           value={timeZoneTag}
-          onChange={setTimeZoneTag}
+          onChange={(newTimeZoneTag) => {
+            setStartTime(moveTime(startTime, timeZoneTag, newTimeZoneTag));
+            setEndTime(moveTime(endTime, timeZoneTag, newTimeZoneTag));
+            setTimeZoneTag(newTimeZoneTag);
+          }}
         />
       </div>
       <div className="input-field text-sm">
