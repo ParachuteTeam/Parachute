@@ -147,20 +147,55 @@ export const participateRouter = createTRPCRouter({
       }),
 
   getParticipateEventsNew: protectedProcedure.query(async (req) => {
-    const eventIDs = await prisma.participate.findMany({
-      where: { userID: req.ctx.session.user.id },
-      select: { eventID: true },
+    const userEvents = await prisma.participate.findMany({
+      where: {
+        userID: req.ctx.session.user.id,
+      },
+      select: {
+        eventID: true,
+      },
     });
 
-    const participantCounts: { [key: string]: number } = {};
+    const participantCounts = await Promise.all(
+      userEvents.map(async (userEvent) => {
+        const count = await prisma.participate.count({
+          where: {
+            eventID: userEvent.eventID,
+          },
+        });
+        return {
+          eventID: userEvent.eventID,
+          count,
+        };
+      })
+    );
 
-    for (const { eventID } of eventIDs) {
-      const count = await prisma.participate.count({
-        where: { eventID: eventID },
-      });
-      participantCounts[eventID] = count;
-    }
-    return participantCounts;
+    const events = await prisma.event.findMany({
+      where: { id: { in: participantCounts.map((e) => e.eventID) } },
+      select: {
+        id: true,
+        name: true,
+        begins: true,
+        ends: true,
+        joinCode: true,
+        occuringDays: true,
+        type: true,
+        ownerID: true,
+      },
+      orderBy: { begins: "asc" },
+    });
+
+    const eventsWithCounts = events.map((event) => {
+      const countData = participantCounts.find((count) => count.eventID === event.id);
+      return {
+        ...event,
+        count: countData ? countData.count : 0,
+      };
+    });
+
+    return eventsWithCounts;
   }),
+
+
 
 });
