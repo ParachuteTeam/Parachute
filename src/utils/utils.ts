@@ -2,6 +2,8 @@ import { add, addMilliseconds, compareAsc, isEqual } from "date-fns";
 import { format, formatInTimeZone, getTimezoneOffset } from "date-fns-tz";
 import { currentTimezone } from "./timezone";
 
+// >>> Date Manipulation >>>
+
 export const isBetween = (date: Date, start: Date, end: Date): boolean => {
   return (
     isEqual(date, start) || isEqual(date, end) || (date > start && date < end)
@@ -20,6 +22,21 @@ export const dateArraysEqual = (a: Date[], b: Date[]): boolean => {
 export const csvToDateArray = (csv: string): Date[] => {
   return csv.split(",").map((s) => new Date(s));
 };
+
+export const formatShortDate = (
+  date: Date,
+  weekOnly = false,
+  timeZoneTag = ""
+) => {
+  if (weekOnly) {
+    return formatWithTimeZoneTag(date, timeZoneTag, "EEE");
+  }
+  return formatWithTimeZoneTag(date, timeZoneTag, "MMM d");
+};
+
+// <<< Date Manipulation <<<
+
+// >>> Timezone Manipulation >>>
 
 const cachedToday = new Date();
 
@@ -75,21 +92,14 @@ export const formatWithTimeZoneTag = (
   return format(toZonedTime(time, timeZoneTag), formatStr, { timeZone });
 };
 
-export const toPlusDay = (date: Date, timeZoneTag = ""): number => {
-  const zonedTime = toZonedTime(date, timeZoneTag);
-  const dateValue = zonedTime.getDate();
-  return dateValue === 31 ? -1 : dateValue - 1;
-};
-
-export const toHourDecimal = (date: Date, timeZoneTag = ""): number => {
-  const zonedTime = toZonedTime(date, timeZoneTag);
-  return zonedTime.getHours() + zonedTime.getMinutes() / 60;
-};
-
 export const formatTimeZoneTag = (timeZoneTag: string) => {
   const { timeZone, gmt } = getInfoFromTimeZoneTag(timeZoneTag);
   return `${timeZone ?? ""} (${gmt ?? ""})`;
 };
+
+// <<< Timezone Manipulation <<<
+
+// >>> Time Manipulation >>>
 
 export const makeTime = (
   plusDay: number,
@@ -112,12 +122,31 @@ export const moveTime = (
   return addMilliseconds(time, oldOffset - newOffset);
 };
 
+export const toPlusDay = (date: Date, timeZoneTag = ""): number => {
+  const zonedTime = toZonedTime(date, timeZoneTag);
+  const dateValue = zonedTime.getDate();
+  return dateValue === 31 ? -1 : dateValue - 1;
+};
+
+export const toHourDecimal = (date: Date, timeZoneTag = ""): number => {
+  const zonedTime = toZonedTime(date, timeZoneTag);
+  return zonedTime.getHours() + zonedTime.getMinutes() / 60;
+};
+
 export const formatTime = (time: Date, timeZoneTag = ""): string => {
   const plusDay = toPlusDay(time, timeZoneTag);
   return (
     formatWithTimeZoneTag(time, timeZoneTag, "hh:mm aa") +
     (plusDay === 1 ? " (+1d)" : plusDay === -1 ? " (-1d)" : "")
   );
+};
+
+export const formatTimespan = (
+  begins: Date,
+  ends: Date,
+  timeZoneTag?: string
+): string => {
+  return `${formatTime(begins, timeZoneTag)}-${formatTime(ends, timeZoneTag)}`;
 };
 
 export const formatTimeIdentifier = (time: Date, timeZoneTag = ""): string => {
@@ -132,24 +161,9 @@ export const parseTimeIdentifier = (
   return makeTime((day ?? 1) - 1, hour ?? 0, minute ?? 0, timeZoneTag);
 };
 
-export const formatTimespan = (
-  begins: Date,
-  ends: Date,
-  timeZoneTag?: string
-): string => {
-  return `${formatTime(begins, timeZoneTag)}-${formatTime(ends, timeZoneTag)}`;
-};
+// <<< Time Manipulation <<<
 
-export const formatShortDate = (
-  date: Date,
-  weekOnly = false,
-  timeZoneTag = ""
-) => {
-  if (weekOnly) {
-    return formatWithTimeZoneTag(date, timeZoneTag, "EEE");
-  }
-  return formatWithTimeZoneTag(date, timeZoneTag, "MMM d");
-};
+// >>> Interval Manipulation >>>
 
 export interface DatetimeInterval {
   start: Date;
@@ -235,3 +249,5 @@ export const formatOccurring = (
     })
     .join(", ");
 };
+
+// <<< Interval Manipulation <<<
