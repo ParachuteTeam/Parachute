@@ -22,7 +22,6 @@ import { DateSelect } from "../components/ui/DateSelect";
 import { currentTimezone } from "../utils/timezone";
 import { formatOccurring, formatTime } from "../utils/utils";
 import { ButtonWithState } from "../components/ui/Button";
-import { AiOutlineClose } from "react-icons/ai";
 
 interface Event {
   id: string;
@@ -32,8 +31,8 @@ interface Event {
   begins: Date;
   ends: Date;
   type?: string;
-
   ownerID?: string;
+  participantCount?: number;
   // Add other properties as needed
 }
 interface EventCardProps {
@@ -47,6 +46,10 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
   const occurringDaysArray = event.occuringDays
     ?.split(",")
     .map((s) => new Date(s));
+  // const num_participant = api.participates.getNumParticipants.useQuery({
+  //   eventID: eventId,
+  // });
+  const num_participant = event.participantCount;
 
   return (
     <Link
@@ -73,7 +76,11 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         {myEvent && <EventTypeTag>My Event</EventTypeTag>}
-        <div>Click to see detail</div>
+        {num_participant === 1 ? (
+          <div>{num_participant} person filled including host</div>
+        ) : (
+          <div>{num_participant} people filled including host</div>
+        )}
       </div>
     </Link>
   );
@@ -81,7 +88,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
 
 const EventList = () => {
   const { data: participatedEvents } =
-    api.participates.getParticipateEvents.useQuery();
+    api.participates.getParticipateEventsNew.useQuery();
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const filteredEvents = participatedEvents?.filter((event) =>
