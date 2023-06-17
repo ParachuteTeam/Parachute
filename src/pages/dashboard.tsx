@@ -33,15 +33,15 @@ interface Event {
   ends: Date;
   type?: string;
   ownerID?: string;
+  count?: number;
   // Add other properties as needed
 }
 interface EventCardProps {
   event: Event;
   myEvent: boolean;
-  countList?: { [key: string]: number };
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, myEvent , countList}) => {
+const EventCard: React.FC<EventCardProps> = ({ event, myEvent}) => {
   const eventId = event.id;
   const eventName = event.name;
   const occurringDaysArray = event.occuringDays
@@ -50,7 +50,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent , countList}) => {
   // const num_participant = api.participates.getNumParticipants.useQuery({
   //   eventID: eventId,
   // });
-  const num_participant = countList ? countList[eventId] : 0;
+  const num_participant = event.count;
 
 
   return (
@@ -86,14 +86,12 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent , countList}) => {
 
 const EventList = () => {
   const { data: participatedEvents } =
-      api.participates.getParticipateEvents.useQuery();
+      api.participates.getParticipateEventsNew.useQuery();
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const filteredEvents = participatedEvents?.filter((event) =>
       event.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const { data: countList } =
-      api.participates.getParticipateEventsNew.useQuery();
 
   return (
       <div className="event-list-container">
@@ -111,7 +109,6 @@ const EventList = () => {
                 key={event.id}
                 event={event}
                 myEvent={event.ownerID === session?.user.id}
-                countList={countList}
             />
         ))}
       </div>
