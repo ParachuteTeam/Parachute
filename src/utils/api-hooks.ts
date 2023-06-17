@@ -16,7 +16,7 @@ export const useEventWithJoinCode = (joinCode: string) => {
 };
 
 export const useParticipatedEvents = () => {
-  return api.participates.getParticipateEvents.useQuery();
+  return api.participates.getParticipateEventsNew.useQuery();
 };
 
 export const useParticipantsOf = (eventId: string) => {

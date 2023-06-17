@@ -49,8 +49,7 @@ export const participateRouter = createTRPCRouter({
       where: { userID: req.ctx.session.user.id },
       select: { eventID: true },
     });
-    //fetch event from eventID
-    const event = await prisma.event.findMany({
+    return await prisma.event.findMany({
       where: { id: { in: eventID.map((e) => e.eventID) } },
       select: {
         id: true,
@@ -65,7 +64,6 @@ export const participateRouter = createTRPCRouter({
       },
       orderBy: { begins: "asc" },
     });
-    return event;
   }),
 
   /**
@@ -165,4 +163,48 @@ export const participateRouter = createTRPCRouter({
         },
       });
     }),
+
+  getNumParticipants: protectedProcedure
+    .input(z.object({ eventID: z.string() }))
+    .query(async (req) => {
+      return await prisma.participate.count({
+        where: {
+          eventID: req.input.eventID,
+        },
+      });
+    }),
+
+  getParticipateEventsNew: protectedProcedure.query(async (req) => {
+    const selectResult = await prisma.participate.findMany({
+      where: {
+        userID: req.ctx.session.user.id,
+      },
+      select: {
+        event: {
+          select: {
+            id: true,
+            name: true,
+            begins: true,
+            ends: true,
+            joinCode: true,
+            timeZone: true,
+            occuringDays: true,
+            type: true,
+            ownerID: true,
+            _count: {
+              select: {
+                participant: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { event: { createdAt: "desc" } },
+    });
+
+    return selectResult.map((result) => ({
+      ...result.event,
+      participantCount: result.event._count.participant,
+    }));
+  }),
 });

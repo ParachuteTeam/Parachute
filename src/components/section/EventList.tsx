@@ -25,6 +25,7 @@ interface Event {
   type?: string;
   timeZone?: string;
   ownerID?: string;
+  participantCount?: number;
   // Add other properties as needed
 }
 interface EventCardProps {
@@ -70,7 +71,11 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
       <div className="mb-0.5 text-xl font-semibold">{eventName}</div>
       <div className="flex flex-row items-center gap-2 text-sm">
         {myEvent && <EventTypeTag>My Event</EventTypeTag>}
-        <div>Click to see detail</div>
+        {event.participantCount === 1 ? (
+          <div>{event.participantCount} person filled including host</div>
+        ) : (
+          <div>{event.participantCount} people filled including host</div>
+        )}
       </div>
     </Link>
   );
