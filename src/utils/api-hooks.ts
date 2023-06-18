@@ -10,9 +10,12 @@ export const useEvent = (eventId: string) => {
 };
 
 export const useEventWithJoinCode = (joinCode: string) => {
-  return api.events.getEventjoinCode.useQuery({
-    joinCode,
-  });
+  return api.events.getEventjoinCode.useQuery(
+    {
+      joinCode,
+    },
+    { enabled: joinCode.length > 0 }
+  );
 };
 
 export const useParticipatedEvents = () => {
