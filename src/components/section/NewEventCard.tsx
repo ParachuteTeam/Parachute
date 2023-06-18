@@ -37,18 +37,16 @@ const StartNewEventSection = () => {
     makeTime(0, 22, 0, timeZoneTag)
   );
 
-  console.log(startTime, endTime);
-
   // <<< Form values <<<
 
-  const canSubmit = eventName.length > 0 && selectedDays.length > 0;
+  const canSubmit = eventName.trim().length > 0 && selectedDays.length > 0;
 
   const { mutateAsync: createEvent, isLoading: creatingEvent } =
     useCreateEvent();
   const handleCreateEvent = async () => {
     const { id: eventId } = await createEvent({
       occuringDays: selectedDays.toString(),
-      name: eventName,
+      name: eventName.trim(),
       begins: startTime.toISOString(),
       ends: endTime.toISOString(),
       type: selectDaysType,
