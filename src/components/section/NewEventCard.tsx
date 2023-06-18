@@ -8,6 +8,7 @@ import { DateSelect } from "../ui/DateSelect";
 import { TimespanSelector } from "../ui/TimeSelector";
 import { ButtonWithState } from "../ui/Button";
 import { useCreateEvent, useEventWithJoinCode } from "../../utils/api-hooks";
+import { useDebouncedValue } from "../../utils/hooks";
 
 const selectDaysOptions: ListboxOption[] = [
   {
@@ -138,7 +139,11 @@ const StartNewEventSection = () => {
 const JoinExistingEventSection = () => {
   const router = useRouter();
   const [joinCode, setJoinCode] = useState("");
-  const { data: event, isLoading } = useEventWithJoinCode(joinCode);
+
+  const debouncedJoinCode = useDebouncedValue(joinCode, 100);
+  const joinCodeToQuery =
+    debouncedJoinCode.length === 6 ? debouncedJoinCode : "";
+  const { data: event, isLoading } = useEventWithJoinCode(joinCodeToQuery);
 
   const handleJoinEvent = () => {
     const eventId = event?.id;
@@ -151,13 +156,23 @@ const JoinExistingEventSection = () => {
     <>
       <div className="input-field">
         <label>Event code</label>
-        <text>Ask the host to provide the 6-digit event code</text>
+        <text>
+          {debouncedJoinCode.length === 6 && !isLoading && !event
+            ? "Event not found!"
+            : "Ask the host to provide the 6-digit event code"}
+        </text>
         <input
           className="rounded-input"
+          inputMode="numeric"
           placeholder="xxxxxx"
           maxLength={6}
           value={joinCode}
-          onChange={(e) => setJoinCode(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^\d*$/.test(value)) {
+              setJoinCode(value);
+            }
+          }}
         />
       </div>
       <ButtonWithState
