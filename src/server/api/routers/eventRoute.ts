@@ -51,23 +51,12 @@ export const eventRouter = createTRPCRouter({
         begins: z.string().datetime(),
         ends: z.string().datetime(),
         type: z.enum(VALUES),
-        email: z.string().email(),
-        address: z.string(),
         timeZone: z.string(),
       })
     )
     .mutation(async (req) => {
-      const userCheck = await prisma.user.findUnique({
-        where: {
-          email: req.input.email,
-        },
-      });
-      if (!userCheck) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User does not exist",
-        });
-      }
+      const userId = req.ctx.session.user.id;
+
       const randomSixDigitString: string = await generateUniqueJoinCode();
       const newEvent = await prisma.event.create({
         data: {
@@ -77,14 +66,14 @@ export const eventRouter = createTRPCRouter({
           begins: req.input.begins,
           ends: req.input.ends,
           type: req.input.type,
-          ownerID: userCheck.id,
+          ownerID: userId,
           timeZone: req.input.timeZone,
         },
       });
       await prisma.participate.create({
         data: {
           eventID: newEvent.id,
-          userID: userCheck.id,
+          userID: userId,
           timeZone: req.input.timeZone,
           timeSlots: ({} = {}),
         },
@@ -118,6 +107,7 @@ export const eventRouter = createTRPCRouter({
           begins: true,
           ends: true,
           joinCode: true,
+          timeZone: true,
           occuringDays: true,
           type: true,
         },
@@ -158,6 +148,17 @@ export const eventRouter = createTRPCRouter({
         where: {
           id: req.input.eventId,
         },
+        select: {
+          id: true,
+          name: true,
+          begins: true,
+          ends: true,
+          joinCode: true,
+          timeZone: true,
+          occuringDays: true,
+          ownerID: true,
+          type: true,
+        },
       });
       // if (!eventCheck) {
       //     throw new TRPCError({
@@ -176,57 +177,7 @@ export const eventRouter = createTRPCRouter({
   updateEvent_name: protectedProcedure
     .input(
       z.object({
-        host_email: z.string().email(),
         name: z.string(),
-        eventId: z.string(),
-      })
-    )
-    .mutation(async (req) => {
-      const eventCheck = await prisma.event.findUnique({
-        where: {
-          id: req.input.eventId,
-        },
-      });
-      if (!eventCheck) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Event does not exist",
-        });
-      }
-      const userCheck = await prisma.user.findUnique({
-        where: {
-          email: req.input.host_email,
-        },
-      });
-      if (!userCheck) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User does not exist",
-        });
-      }
-      if (userCheck.id != eventCheck.ownerID) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "User is not event holder",
-        });
-      }
-      return await prisma.event.update({
-        where: {
-          id: req.input.eventId,
-        },
-        data: {
-          name: req.input.name,
-        },
-      });
-    }),
-
-  /**
-   * Delete the event. The email should be email address of the eventOwner.
-   */
-  deleteEvent: protectedProcedure
-    .input(
-      z.object({
-        host_email: z.string().email(),
         eventId: z.string(),
       })
     )
@@ -250,6 +201,47 @@ export const eventRouter = createTRPCRouter({
           message: "User is not event holder",
         });
       }
+
+      return await prisma.event.update({
+        where: {
+          id: req.input.eventId,
+        },
+        data: {
+          name: req.input.name,
+        },
+      });
+    }),
+
+  /**
+   * Delete the event. The email should be email address of the eventOwner.
+   */
+  deleteEvent: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+      })
+    )
+    .mutation(async (req) => {
+      const userId = req.ctx.session.user.id;
+
+      const eventCheck = await prisma.event.findUnique({
+        where: {
+          id: req.input.eventId,
+        },
+      });
+      if (!eventCheck) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Event does not exist",
+        });
+      }
+      if (userId != eventCheck.ownerID) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "User is not event holder",
+        });
+      }
+
       await prisma.timeSlots.deleteMany({
         where: {
           participateEventID: req.input.eventId,
@@ -286,6 +278,7 @@ export const eventRouter = createTRPCRouter({
           userID: true,
           user: { select: { name: true } },
           timeZone: true,
+          timeSlots: true,
         },
       });
     }),

@@ -1,9 +1,6 @@
-import React, { Fragment, useCallback, useMemo, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 import { Combobox, Listbox, Transition } from "@headlessui/react";
 import { HiCheck, HiChevronUpDown } from "react-icons/hi2";
-import { availableTimezones } from "../../utils/timezone";
-import { addMinutes, format, isAfter, isBefore, parse } from "date-fns";
-import { formatTime } from "../../utils/utils";
 
 interface SelectorProps {
   className?: string;
@@ -169,7 +166,7 @@ export const RoundedCombobox: React.FC<RoundedComboboxProps> = ({
         <div className="relative">
           <div className="rounded-input relative pl-3">
             <Combobox.Input
-              className="border-none focus:outline-none"
+              className="w-full border-none focus:outline-none"
               displayValue={() => selected?.label ?? ""}
               onChange={(event) => setQuery(event.target.value)}
             />
@@ -233,130 +230,5 @@ export const RoundedCombobox: React.FC<RoundedComboboxProps> = ({
         </div>
       </div>
     </Combobox>
-  );
-};
-
-interface TimezoneInputProps {
-  className?: string;
-  direction?: "up" | "down";
-  value: string;
-  onChange: (value: string) => void;
-}
-
-const timezoneOptions: ComboboxOption[] = availableTimezones.map(
-  (tz: string) => ({ label: tz, value: tz })
-);
-
-export const RoundedTimezoneInput: React.FC<TimezoneInputProps> = ({
-  className,
-  direction,
-  value,
-  onChange,
-}) => {
-  return (
-    <RoundedCombobox
-      className={className}
-      direction={direction}
-      options={timezoneOptions}
-      value={value}
-      onChange={onChange}
-    />
-  );
-};
-
-export interface TimeSelectorProps {
-  className?: string;
-  direction?: "up" | "down";
-  timeGapMinutes?: number;
-  timeStart?: Date;
-  timeEnd?: Date;
-  value: Date;
-  onChange?: (value: Date) => void;
-}
-
-export const TimeSelector: React.FC<TimeSelectorProps> = ({
-  className,
-  direction,
-  timeGapMinutes,
-  timeStart,
-  timeEnd,
-  value,
-  onChange,
-}) => {
-  const availableTimes = useMemo(() => {
-    const times = [];
-    const start = timeStart ?? new Date(0, 0, 1, 0, 0, 0);
-    const end = timeEnd ?? new Date(0, 0, 2, 0, 0, 0);
-    const gap = timeGapMinutes ?? 30;
-    for (let time = start; time <= end; time = addMinutes(time, gap)) {
-      times.push(time);
-    }
-    return times;
-  }, [timeGapMinutes, timeStart, timeEnd]);
-
-  return (
-    <RoundedListbox
-      className={className}
-      direction={direction}
-      options={availableTimes.map((time) => ({
-        label: formatTime(time),
-        value: format(time, "dd:HH:mm"),
-      }))}
-      value={format(value, "dd:HH:mm")}
-      onChange={(value) => onChange?.(parse(value, "dd:HH:mm", new Date()))}
-    />
-  );
-};
-
-export interface TimespanSelectorProps {
-  className?: string;
-  direction?: "up" | "down";
-  start: Date;
-  end: Date;
-  onChangeStart?: (start: Date) => void;
-  onChangeEnd?: (end: Date) => void;
-}
-
-export const TimespanSelector: React.FC<TimespanSelectorProps> = ({
-  className,
-  direction,
-  start,
-  end,
-  onChangeStart,
-  onChangeEnd,
-}) => {
-  const onChangeStartInternal = useCallback(
-    (newStart: Date) => {
-      onChangeStart?.(newStart);
-      if (isAfter(newStart, end)) {
-        onChangeEnd?.(newStart);
-      }
-    },
-    [end, onChangeStart, onChangeEnd]
-  );
-  const onChangeEndInternal = useCallback(
-    (newEnd: Date) => {
-      onChangeEnd?.(newEnd);
-      if (isBefore(newEnd, start)) {
-        onChangeStart?.(newEnd);
-      }
-    },
-    [start, onChangeStart, onChangeEnd]
-  );
-  return (
-    <div className={`flex flex-row gap-2 text-sm ${className ?? ""}`}>
-      <TimeSelector
-        className="w-[50%]"
-        direction={direction}
-        value={start}
-        onChange={onChangeStartInternal}
-      />
-      <TimeSelector
-        className="w-[50%]"
-        direction={direction}
-        value={end}
-        onChange={onChangeEndInternal}
-      />
-    </div>
   );
 };
