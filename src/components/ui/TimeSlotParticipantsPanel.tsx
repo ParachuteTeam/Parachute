@@ -1,12 +1,14 @@
 import React, { useMemo } from "react";
 import { add, format } from "date-fns";
 import { IoEarthSharp } from "react-icons/io5";
+import { formatTimeZoneTag } from "../../utils/utils";
 
 const AvailablePerson: React.FC<{
   id?: string;
   name: string;
+  timeZoneTag: string;
   setHoveredPerson?: (id: string | null) => void;
-}> = ({ id, name, setHoveredPerson }) => {
+}> = ({ id, name, timeZoneTag, setHoveredPerson }) => {
   return (
     <div
       className="flex flex-row items-center gap-1"
@@ -15,7 +17,7 @@ const AvailablePerson: React.FC<{
     >
       <div className="font-semibold">{name}</div>
       <IoEarthSharp className="text-md ml-2 text-gray-500" />
-      <div className="text-gray-500">Chicago (GMT-8)</div>
+      <div className="text-gray-500">{formatTimeZoneTag(timeZoneTag)}</div>
     </div>
   );
 };
@@ -63,6 +65,7 @@ export const TimeSlotParticipantsPanel: React.FC<
               key={participant.userID}
               id={participant.userID}
               name={participant.user.name}
+              timeZoneTag={participant.timeZone}
               setHoveredPerson={(id) => {
                 setHoveredPerson(id);
                 onHoverPersonChange?.(id);
@@ -82,6 +85,7 @@ export const TimeSlotParticipantsPanel: React.FC<
               key={participant.userID}
               id={participant.userID}
               name={participant.user.name}
+              timeZoneTag={participant.timeZone}
             />
           ))}
         </>
