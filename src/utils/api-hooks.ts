@@ -22,6 +22,12 @@ export const useParticipatedEvents = () => {
   return api.participates.getParticipateEvents.useQuery();
 };
 
+export const useUserParticipateOf = (eventId: string) => {
+  return api.events.getCurrentUserParticipate.useQuery({
+    eventId,
+  });
+};
+
 export const useParticipantsOf = (eventId: string) => {
   return api.events.getAllParticipants.useQuery({
     eventId,
@@ -29,9 +35,13 @@ export const useParticipantsOf = (eventId: string) => {
 };
 
 export const useUserTimeslotsIn = (eventId: string) => {
-  return api.timeslots.getAllTimeSlots.useQuery({
-    eventID: eventId,
+  const result = api.events.getCurrentUserParticipate.useQuery({
+    eventId,
   });
+  return {
+    ...result,
+    data: result.data?.timeSlots,
+  };
 };
 
 export const useAllTimeslotsOf = (eventId: string) => {
