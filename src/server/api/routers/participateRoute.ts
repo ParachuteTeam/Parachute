@@ -66,6 +66,28 @@ export const participateRouter = createTRPCRouter({
       });
     }),
 
+  updateCurrentUserTimeZone: protectedProcedure
+    .input(
+      z.object({
+        eventID: z.string(),
+        timeZone: z.string(),
+      })
+    )
+    .mutation(async (req) => {
+      const userId = req.ctx.session.user.id;
+      return await prisma.participate.update({
+        where: {
+          eventID_userID: {
+            eventID: req.input.eventID,
+            userID: userId,
+          },
+        },
+        data: {
+          timeZone: req.input.timeZone,
+        },
+      });
+    }),
+
   /**
    Delete a participate according to userID and eventID
    */

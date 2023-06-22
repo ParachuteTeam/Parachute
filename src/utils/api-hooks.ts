@@ -105,4 +105,12 @@ export const useReplaceUserTimeslotsIn = (eventId: string) => {
   };
 };
 
+export const useUpdateUserTimeZoneIn = (eventId: string) => {
+  const { mutateAsync: updateUserTimeZone } =
+    api.participates.updateCurrentUserTimeZone.useMutation();
+  return async (timeZone: string) => {
+    await updateUserTimeZone({ eventID: eventId, timeZone });
+  };
+};
+
 // <<< Mutation Hooks <<<
