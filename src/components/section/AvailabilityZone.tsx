@@ -60,10 +60,16 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
   // Save schedule callback
   const scheduleReplace = useReplaceUserTimeslotsIn(eventID);
   const saveTimeSlots = useCallback(async () => {
-    await scheduleReplace(schedule);
+    await scheduleReplace(schedule, timeZoneTag);
     await Promise.all([refetchSchedule(), refetchAllSchedules()]);
     setChanged(false);
-  }, [scheduleReplace, schedule, refetchSchedule, refetchAllSchedules]);
+  }, [
+    scheduleReplace,
+    schedule,
+    timeZoneTag,
+    refetchSchedule,
+    refetchAllSchedules,
+  ]);
 
   // Reset schedule callback
   const resetSchedule = useCallback(() => {

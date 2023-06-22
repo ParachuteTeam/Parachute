@@ -92,10 +92,11 @@ export const useDeleteEvent = (eventId: string) => {
 export const useReplaceUserTimeslotsIn = (eventId: string) => {
   const { mutateAsync: replaceMyTimeslots } =
     api.timeslots.timeslotsReplace.useMutation();
-  return async (schedule: Date[]) => {
+  return async (schedule: Date[], defaultTimeZone: string) => {
     const intervals = toDatetimeIntervals(schedule, { minutes: 15 }, true);
     await replaceMyTimeslots({
       eventID: eventId,
+      defaultTimeZone,
       timeslots: intervals.map((itv) => ({
         begins: itv.start.toJSON(),
         ends: itv.end.toJSON(),
