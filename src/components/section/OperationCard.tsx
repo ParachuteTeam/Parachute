@@ -40,6 +40,7 @@ const TimeZoneSelectionZone: React.FC<{
   setTimeZoneTag: (tag: string) => void;
 }> = ({ eventId, timeZoneTag, setTimeZoneTag }) => {
   // We need an extra state to store the user's existing timezone, so that auto-refetch doesn't cause the timezone input to reset
+  // We don't simply turn off auto-refetch because we want to update the timezone input when the user changes their timezone elsewhere
   const [existingUserTimeZone, setExistingUserTimeZone] = useState("");
 
   const {
@@ -48,14 +49,16 @@ const TimeZoneSelectionZone: React.FC<{
     isLoading: participateLoading,
   } = useUserParticipateOf(eventId);
   useEffect(() => {
-    if (
-      participate?.timeZone &&
-      participate.timeZone !== existingUserTimeZone
-    ) {
-      setExistingUserTimeZone(participate.timeZone);
-      setTimeZoneTag(participate.timeZone);
+    if (participate) {
+      if (participate.timeZone !== existingUserTimeZone) {
+        setExistingUserTimeZone(participate.timeZone);
+        setTimeZoneTag(participate.timeZone);
+      }
+    } else {
+      setExistingUserTimeZone("");
+      setTimeZoneTag(getCurrentTimeZoneTag());
     }
-  }, [participate?.timeZone, existingUserTimeZone, setTimeZoneTag]);
+  }, [existingUserTimeZone, setTimeZoneTag, participate]);
 
   const [loading, setLoading] = useState(false);
   const updateUserTimeZone = useUpdateUserTimeZoneIn(eventId);
@@ -82,25 +85,27 @@ const TimeZoneSelectionZone: React.FC<{
             value={timeZoneTag}
             onChange={setTimeZoneTag}
           />
-          {participate && timeZoneTag !== participate.timeZone && (
-            <>
-              <ButtonWithState
-                className="primary-button-with-hover py-3 text-sm"
-                loadingClassName="primary-button-loading py-3 text-sm"
-                onClick={handleSaveTimeZone}
-              >
-                Save
-              </ButtonWithState>
-              <ButtonWithState
-                className="rounded-button py-3 text-sm"
-                disabledClassName="rounded-button-disabled py-3 text-sm"
-                disabled={loading}
-                onClick={() => setTimeZoneTag(existingUserTimeZone)}
-              >
-                Reset
-              </ButtonWithState>
-            </>
-          )}
+          {participate &&
+            existingUserTimeZone !== "" &&
+            timeZoneTag !== participate.timeZone && (
+              <>
+                <ButtonWithState
+                  className="primary-button-with-hover py-3 text-sm"
+                  loadingClassName="primary-button-loading py-3 text-sm"
+                  onClick={handleSaveTimeZone}
+                >
+                  Save
+                </ButtonWithState>
+                <ButtonWithState
+                  className="rounded-button py-3 text-sm"
+                  disabledClassName="rounded-button-disabled py-3 text-sm"
+                  disabled={loading}
+                  onClick={() => setTimeZoneTag(existingUserTimeZone)}
+                >
+                  Reset
+                </ButtonWithState>
+              </>
+            )}
         </>
       )}
     </div>
@@ -110,7 +115,7 @@ const TimeZoneSelectionZone: React.FC<{
 export const OperationCard: React.FC = () => {
   const router = useRouter();
   const eventId = router.query.id as string;
-  const [timeZoneTag, setTimeZoneTag] = useState(getCurrentTimeZoneTag());
+  const [timeZoneTag, setTimeZoneTag] = useState("");
   return (
     <div className="flex flex-row justify-center p-6">
       <div className="card max-w-[1248px] flex-1 p-0">
