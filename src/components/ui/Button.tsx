@@ -7,7 +7,7 @@ interface LoadableButtonProps extends React.PropsWithChildren {
   loading?: boolean;
   disabledClassName?: string;
   disabled?: boolean;
-  onClick: () => void;
+  onClick: () => void | Promise<void>;
 }
 
 export const ButtonWithState: React.FC<LoadableButtonProps> = ({
@@ -19,19 +19,28 @@ export const ButtonWithState: React.FC<LoadableButtonProps> = ({
   onClick,
   children,
 }) => {
+  const [internalLoading, setInternalLoading] = React.useState(false);
   return (
     <button
       disabled={disabled || loading}
       className={`flex flex-row items-center justify-center gap-2 ${
-        (loading
+        (loading || internalLoading
           ? loadingClassName
           : disabled
           ? disabledClassName
           : className) ?? ""
       } ${loading || disabled ? "cursor-not-allowed" : ""}`}
-      onClick={onClick}
+      onClick={() => {
+        const result = onClick?.();
+        if (result instanceof Promise) {
+          setInternalLoading(true);
+          result.finally(() => setInternalLoading(false));
+        }
+      }}
     >
-      {loading && <AiOutlineLoading className="animate-spin" />}
+      {(loading || internalLoading) && (
+        <AiOutlineLoading className="animate-spin" />
+      )}
       {children}
     </button>
   );
