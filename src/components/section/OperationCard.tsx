@@ -1,9 +1,10 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { Tab } from "@headlessui/react";
 import { useRouter } from "next/router";
 import { GroupAvailabilityZone, MyAvailabilityZone } from "./AvailabilityZone";
 import { RoundedTimezoneInput } from "../ui/TimezoneInput";
 import { getCurrentTimeZoneTag } from "../../utils/utils";
+import { useUserParticipateOf } from "../../utils/api-hooks";
 
 const OperationCardTab: React.FC<
   React.PropsWithChildren<{ className?: string }>
@@ -31,7 +32,17 @@ const OperationCardTab: React.FC<
 
 export const OperationCard: React.FC = () => {
   const router = useRouter();
+  const eventId = router.query.id as string;
+
   const [timeZoneTag, setTimeZoneTag] = React.useState(getCurrentTimeZoneTag());
+
+  const { data: participate } = useUserParticipateOf(eventId);
+  useEffect(() => {
+    if (participate?.timeZone) {
+      setTimeZoneTag(participate.timeZone);
+    }
+  }, [participate?.timeZone]);
+
   return (
     <div className="flex flex-row justify-center p-6">
       <div className="card max-w-[1248px] flex-1 p-0">
@@ -46,14 +57,11 @@ export const OperationCard: React.FC = () => {
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel>
-              <MyAvailabilityZone
-                eventID={router.query.id as string}
-                timeZoneTag={timeZoneTag}
-              />
+              <MyAvailabilityZone eventID={eventId} timeZoneTag={timeZoneTag} />
             </Tab.Panel>
             <Tab.Panel>
               <GroupAvailabilityZone
-                eventID={router.query.id as string}
+                eventID={eventId}
                 timeZoneTag={timeZoneTag}
               />
             </Tab.Panel>
