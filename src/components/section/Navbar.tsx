@@ -1,26 +1,69 @@
-import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import OnHover from "../ui/OnHover";
 import Link from "next/link";
+import React, { useState } from "react";
+
+interface NavLinkProps {
+  href: string;
+  linkName: string;
+}
+const NavLink: React.FC<NavLinkProps> = ({ href, linkName }) => {
+  return (
+    <li>
+      <Link
+        href={href}
+        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+      >
+        {linkName}
+      </Link>
+    </li>
+  );
+};
+
+interface NavButtonProps {
+  onClick: () => void;
+  disabled: boolean;
+  buttonText: string;
+}
+
+const NavButton: React.FC<NavButtonProps> = ({
+  onClick,
+  disabled,
+  buttonText,
+}) => {
+  return (
+    <li>
+      <button
+        className="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+        disabled={disabled}
+        onClick={onClick}
+      >
+        {buttonText}
+      </button>
+    </li>
+  );
+};
 
 const Navbar = () => {
-  const router = useRouter();
   const { data: session } = useSession();
   const image = session?.user.image as string;
   const name = session?.user.name;
   const email = session?.user.email;
 
-  const onClickSignOut = async () => {
-    await signOut({
-      redirect: false,
+  const [signingOut, setSigningOut] = useState(false);
+
+  const onClickSignOut = () => {
+    setSigningOut(true);
+    void signOut({
+      redirect: true,
+      callbackUrl: "/",
     });
-    await router.push("/");
   };
 
   return (
     <div className="sticky top-0 flex w-full justify-center bg-white px-4 py-3 md:px-12 md:py-4">
-      <div className="mx-auto flex max-w-[1200px] grow text-3xl font-bold">
+      <div className="mx-auto flex max-w-[1200px] grow items-center font-bold">
         <div className="grow">
           <Link
             className="max-w-[140px] grow cursor-pointer text-2xl font-bold md:text-3xl"
@@ -43,11 +86,16 @@ const Navbar = () => {
                 >
                   <NavLink href="/dashboard" linkName="Dashboard" />
                 </ul>
-                <div onClick={() => void onClickSignOut()} className="py-1">
-                  <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-                    Sign out
-                  </a>
-                </div>
+                <ul
+                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                  aria-labelledby="avatarButton"
+                >
+                  <NavButton
+                    onClick={onClickSignOut}
+                    disabled={signingOut}
+                    buttonText={signingOut ? "Signing out..." : "Sign out"}
+                  />
+                </ul>
               </div>
             }
           >
@@ -66,20 +114,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-interface NavLinkProps {
-  href: string;
-  linkName: string;
-}
-const NavLink: React.FC<NavLinkProps> = ({ href, linkName }) => {
-  return (
-    <li>
-      <a
-        href={href}
-        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-      >
-        {linkName}
-      </a>
-    </li>
-  );
-};
