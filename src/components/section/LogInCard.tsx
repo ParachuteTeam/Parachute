@@ -56,9 +56,7 @@ export const LogInCard: React.FC = () => {
             <div className="text-sm font-normal text-black">
               {event &&
                 (event._count.participant === 1 ? (
-                  <div>
-                    {event._count.participant} person filled including host
-                  </div>
+                  <div>No one except host has filled yet</div>
                 ) : (
                   <div>
                     {event._count.participant} people filled including host
