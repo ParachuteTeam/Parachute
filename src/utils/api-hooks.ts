@@ -14,7 +14,7 @@ export const useEventWithJoinCode = (joinCode: string) => {
     {
       joinCode,
     },
-    { enabled: joinCode.length > 0 }
+    { enabled: joinCode.length === 6 }
   );
 };
 
