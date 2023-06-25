@@ -38,7 +38,7 @@ const OnHover: React.FC<OnHoverProps> = ({ children, content }) => {
       {children}
       {(containerHovered || contentHovered) && (
         <div
-          className="absolute right-0 bottom-2 z-10 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-gray-600 dark:bg-gray-700"
+          className="absolute bottom-0 right-0 z-10 origin-top-right"
           ref={contentRef}
           onMouseEnter={handleContentMouseEnter}
           onMouseLeave={handleContentMouseLeave}

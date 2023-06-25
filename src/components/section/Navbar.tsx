@@ -75,27 +75,29 @@ const Navbar = () => {
         {session && (
           <OnHover
             content={
-              <div className="w-50 absolute right-0 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-gray-600 dark:bg-gray-700">
-                <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                  <div>{name}</div>
-                  <div className="truncate font-medium">{email}</div>
+              <div className="w-50 absolute right-0 origin-top-right pt-1">
+                <div className="divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-gray-600 dark:bg-gray-700">
+                  <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                    <div>{name}</div>
+                    <div className="truncate font-medium">{email}</div>
+                  </div>
+                  <ul
+                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                    aria-labelledby="avatarButton"
+                  >
+                    <NavLink href="/dashboard" linkName="Dashboard" />
+                  </ul>
+                  <ul
+                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                    aria-labelledby="avatarButton"
+                  >
+                    <NavButton
+                      onClick={onClickSignOut}
+                      disabled={signingOut}
+                      buttonText={signingOut ? "Signing out..." : "Sign out"}
+                    />
+                  </ul>
                 </div>
-                <ul
-                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                  aria-labelledby="avatarButton"
-                >
-                  <NavLink href="/dashboard" linkName="Dashboard" />
-                </ul>
-                <ul
-                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                  aria-labelledby="avatarButton"
-                >
-                  <NavButton
-                    onClick={onClickSignOut}
-                    disabled={signingOut}
-                    buttonText={signingOut ? "Signing out..." : "Sign out"}
-                  />
-                </ul>
               </div>
             }
           >
