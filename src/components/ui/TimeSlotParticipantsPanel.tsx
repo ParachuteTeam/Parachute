@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { add, format } from "date-fns";
 import { IoEarthSharp } from "react-icons/io5";
-import { formatTimeZoneTag } from "../../utils/utils";
+import { formatTimeZoneTag } from "../../utils/date-utils";
 
 const AvailablePerson: React.FC<{
   id?: string;

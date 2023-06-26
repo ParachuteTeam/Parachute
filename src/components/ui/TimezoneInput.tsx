@@ -2,7 +2,7 @@ import { availableTimezones } from "../../utils/timezone";
 import React from "react";
 import type { ComboboxOption } from "./Input";
 import { RoundedCombobox } from "./Input";
-import { getCurrentGMT, getCurrentTimeZoneTag } from "../../utils/utils";
+import { getCurrentGMT, getCurrentTimeZoneTag } from "../../utils/date-utils";
 
 interface TimezoneInputProps {
   className?: string;

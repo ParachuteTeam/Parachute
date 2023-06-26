@@ -3,7 +3,7 @@ import { Tab } from "@headlessui/react";
 import { useRouter } from "next/router";
 import { GroupAvailabilityZone, MyAvailabilityZone } from "./AvailabilityZone";
 import { RoundedTimezoneInput } from "../ui/TimezoneInput";
-import { getCurrentTimeZoneTag } from "../../utils/utils";
+import { getCurrentTimeZoneTag } from "../../utils/date-utils";
 import {
   useUpdateUserTimeZoneIn,
   useUserParticipateOf,

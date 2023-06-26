@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { MdOutlineEditCalendar, MdOutlineMouse } from "react-icons/md";
 import { TimeslotSelector, TimeslotView } from "../ui/TimeslotGrid";
-import type { DatetimeInterval } from "../../utils/utils";
+import type { DatetimeInterval } from "../../utils/date-utils";
 import {
   csvToDateArray,
   dateArraysEqual,
   isBetween,
   toIndividualDates,
   toZonedTime,
-} from "../../utils/utils";
+} from "../../utils/date-utils";
 import {
   useAllTimeslotsOf,
   useEvent,

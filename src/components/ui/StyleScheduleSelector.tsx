@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { format } from "date-fns";
 import ScheduleSelector from "react-schedule-selector";
-import { formatTime } from "../../utils/utils";
+import { formatTime } from "../../utils/date-utils";
 
 const TimeslotBlock: React.FC<{
   selected: boolean;

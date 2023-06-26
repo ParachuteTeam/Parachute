@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { toDatetimeIntervals } from "./utils";
+import { toDatetimeIntervals } from "./date-utils";
 
 // >>> Query Hooks >>>
 
