@@ -1,5 +1,5 @@
 import { api } from "./api";
-import { toDatetimeIntervals } from "./utils";
+import { toDatetimeIntervals } from "./date-utils";
 
 // >>> Query Hooks >>>
 
@@ -14,12 +14,18 @@ export const useEventWithJoinCode = (joinCode: string) => {
     {
       joinCode,
     },
-    { enabled: joinCode.length > 0 }
+    { enabled: joinCode.length === 6 }
   );
 };
 
 export const useParticipatedEvents = () => {
   return api.participates.getParticipateEvents.useQuery();
+};
+
+export const useUserParticipateOf = (eventId: string) => {
+  return api.events.getCurrentUserParticipate.useQuery({
+    eventId,
+  });
 };
 
 export const useParticipantsOf = (eventId: string) => {
@@ -29,9 +35,13 @@ export const useParticipantsOf = (eventId: string) => {
 };
 
 export const useUserTimeslotsIn = (eventId: string) => {
-  return api.timeslots.getAllTimeSlots.useQuery({
-    eventID: eventId,
+  const result = api.events.getCurrentUserParticipate.useQuery({
+    eventId,
   });
+  return {
+    ...result,
+    data: result.data?.timeSlots,
+  };
 };
 
 export const useAllTimeslotsOf = (eventId: string) => {
@@ -82,15 +92,24 @@ export const useDeleteEvent = (eventId: string) => {
 export const useReplaceUserTimeslotsIn = (eventId: string) => {
   const { mutateAsync: replaceMyTimeslots } =
     api.timeslots.timeslotsReplace.useMutation();
-  return async (schedule: Date[]) => {
+  return async (schedule: Date[], defaultTimeZone: string) => {
     const intervals = toDatetimeIntervals(schedule, { minutes: 15 }, true);
     await replaceMyTimeslots({
       eventID: eventId,
+      defaultTimeZone,
       timeslots: intervals.map((itv) => ({
         begins: itv.start.toJSON(),
         ends: itv.end.toJSON(),
       })),
     });
+  };
+};
+
+export const useUpdateUserTimeZoneIn = (eventId: string) => {
+  const { mutateAsync: updateUserTimeZone } =
+    api.participates.updateCurrentUserTimeZone.useMutation();
+  return async (timeZone: string) => {
+    await updateUserTimeZone({ eventID: eventId, timeZone });
   };
 };
 

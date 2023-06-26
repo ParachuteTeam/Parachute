@@ -2,7 +2,11 @@ import type { ListboxOption } from "../ui/Input";
 import { RoundedListbox, Selector } from "../ui/Input";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { getCurrentTimeZoneTag, makeTime, moveTime } from "../../utils/utils";
+import {
+  getCurrentTimeZoneTag,
+  makeTime,
+  moveTime,
+} from "../../utils/date-utils";
 import { RoundedTimezoneInput } from "../ui/TimezoneInput";
 import { DateSelect } from "../ui/DateSelect";
 import { TimespanSelector } from "../ui/TimeSelector";
@@ -141,9 +145,7 @@ const JoinExistingEventSection = () => {
   const [joinCode, setJoinCode] = useState("");
 
   const debouncedJoinCode = useDebouncedValue(joinCode, 100);
-  const joinCodeToQuery =
-    debouncedJoinCode.length === 6 ? debouncedJoinCode : "";
-  const { data: event, isLoading } = useEventWithJoinCode(joinCodeToQuery);
+  const { data: event, isLoading } = useEventWithJoinCode(debouncedJoinCode);
 
   const handleJoinEvent = () => {
     const eventId = event?.id;
@@ -179,7 +181,7 @@ const JoinExistingEventSection = () => {
         className="primary-button mt-3 py-3 text-sm"
         loadingClassName="primary-button-loading mt-3 py-3 text-sm"
         disabledClassName="rounded-button-disabled mt-3 py-3 text-sm"
-        loading={joinCode.length > 0 && isLoading}
+        loading={joinCode.length === 6 && isLoading}
         disabled={!event}
         onClick={handleJoinEvent}
       >

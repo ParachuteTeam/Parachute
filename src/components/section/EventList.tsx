@@ -9,7 +9,7 @@ import {
   formatOccurring,
   formatTime,
   formatTimeZoneTag,
-} from "../../utils/utils";
+} from "../../utils/date-utils";
 import { IoEarthSharp } from "react-icons/io5";
 import { EventTypeTag } from "../ui/Tag";
 import { useSession } from "next-auth/react";

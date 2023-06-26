@@ -8,7 +8,7 @@ import {
   formatOccurring,
   formatTimespan,
   formatTimeZoneTag,
-} from "../../utils/utils";
+} from "../../utils/date-utils";
 
 export const LogInCard: React.FC = () => {
   const router = useRouter();

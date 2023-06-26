@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { MdOutlineEditCalendar, MdOutlineMouse } from "react-icons/md";
 import { TimeslotSelector, TimeslotView } from "../ui/TimeslotGrid";
-import type { DatetimeInterval } from "../../utils/utils";
+import type { DatetimeInterval } from "../../utils/date-utils";
 import {
   csvToDateArray,
   dateArraysEqual,
   isBetween,
   toIndividualDates,
   toZonedTime,
-} from "../../utils/utils";
+} from "../../utils/date-utils";
 import {
   useAllTimeslotsOf,
   useEvent,
@@ -60,10 +60,16 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
   // Save schedule callback
   const scheduleReplace = useReplaceUserTimeslotsIn(eventID);
   const saveTimeSlots = useCallback(async () => {
-    await scheduleReplace(schedule);
+    await scheduleReplace(schedule, timeZoneTag);
     await Promise.all([refetchSchedule(), refetchAllSchedules()]);
     setChanged(false);
-  }, [scheduleReplace, schedule, refetchSchedule, refetchAllSchedules]);
+  }, [
+    scheduleReplace,
+    schedule,
+    timeZoneTag,
+    refetchSchedule,
+    refetchAllSchedules,
+  ]);
 
   // Reset schedule callback
   const resetSchedule = useCallback(() => {

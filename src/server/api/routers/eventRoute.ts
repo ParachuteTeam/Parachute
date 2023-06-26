@@ -288,6 +288,30 @@ export const eventRouter = createTRPCRouter({
       });
     }),
 
+  getCurrentUserParticipate: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+      })
+    )
+    .query((req) => {
+      const userId = req.ctx.session.user.id;
+      return prisma.participate.findUnique({
+        where: {
+          eventID_userID: {
+            eventID: req.input.eventId,
+            userID: userId,
+          },
+        },
+        select: {
+          userID: true,
+          user: { select: { name: true } },
+          timeZone: true,
+          timeSlots: true,
+        },
+      });
+    }),
+
   /**
    * This function returns all available timeslots of given event.
    *
