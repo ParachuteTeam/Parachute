@@ -5,7 +5,7 @@ import {
   formatTimeIdentifier,
   makeTime,
   parseTimeIdentifier,
-} from "../../utils/utils";
+} from "../../utils/date-utils";
 import { RoundedListbox } from "./Input";
 
 export interface TimeSelectorProps {

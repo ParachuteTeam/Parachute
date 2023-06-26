@@ -77,6 +77,7 @@ export const timesloteRouter = createTRPCRouter({
     .input(
       z.object({
         eventID: z.string(),
+        defaultTimeZone: z.string(),
         timeslots: z.array(
           z.object({
             begins: z.string().datetime(),
@@ -100,7 +101,7 @@ export const timesloteRouter = createTRPCRouter({
           data: {
             eventID: req.input.eventID,
             userID: userId,
-            timeZone: "UTC",
+            timeZone: req.input.defaultTimeZone,
           },
         });
       }

@@ -6,7 +6,7 @@ import {
   toPlusDay,
   toUTCTime,
   toZonedTime,
-} from "../../utils/utils";
+} from "../../utils/date-utils";
 import { StyledScheduleSelector } from "./StyleScheduleSelector";
 
 const VerticalEllipsis: React.FC = () => (
