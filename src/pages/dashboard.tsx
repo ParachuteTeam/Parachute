@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { EventList } from "../components/section/EventList";
 import { NewEventCard } from "../components/section/NewEventCard";
 import { useIsMobile } from "../utils/hooks";
+import { ScreenLoading } from "../components/ui/ScreenLoading";
 
 const Dashboard: NextPage = () => {
   const { data: session, status } = useSession();
@@ -15,12 +16,12 @@ const Dashboard: NextPage = () => {
   const router = useRouter();
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <ScreenLoading />;
   }
 
   if (!session) {
     void router.push("/");
-    return <div>Redirecting...</div>;
+    return <ScreenLoading />;
   }
 
   return (
