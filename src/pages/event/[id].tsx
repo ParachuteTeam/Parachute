@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { LogInCard } from "../../components/section/LogInCard";
 import { EventInfoHeader } from "../../components/section/EventInfoHeader";
 import { OperationCard } from "../../components/section/OperationCard";
+import { ScreenLoading } from "../../components/ui/ScreenLoading";
 
 const EventPage: NextPage = () => {
   const router = useRouter();
@@ -15,7 +16,7 @@ const EventPage: NextPage = () => {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    return <></>;
+    return <ScreenLoading />;
   }
 
   if (!session) {
