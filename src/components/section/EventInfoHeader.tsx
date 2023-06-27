@@ -53,9 +53,13 @@ export const EventInfoHeader: React.FC = () => {
       <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
         <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
           <div className="flex flex-1 flex-col gap-2">
-            <div className="h-5 w-full max-w-[400px] animate-pulse rounded-md bg-gray-200" />
-            <div className="h-9 w-full max-w-[600px] animate-pulse rounded-md bg-gray-200" />
-            <div className="h-5 w-full max-w-[300px] animate-pulse rounded-md bg-gray-200" />
+            <div className="skeleton h-5 max-w-[400px]" />
+            <div className="skeleton h-9 max-w-[600px]" />
+            <div className="skeleton h-5 max-w-[300px]" />
+          </div>
+          <div className="flex w-[200px] flex-col gap-3 text-sm font-light">
+            <div className="skeleton h-9" />
+            <div className="skeleton h-9" />
           </div>
         </div>
       </div>
