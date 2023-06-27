@@ -48,6 +48,20 @@ export const EventInfoHeader: React.FC = () => {
     .split(",")
     .map((s: string) => new Date(s));
 
+  if (!event) {
+    return (
+      <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
+        <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
+          <div className="flex flex-1 flex-col gap-2">
+            <div className="h-5 w-full max-w-[400px] animate-pulse rounded-md bg-gray-200" />
+            <div className="h-9 w-full max-w-[600px] animate-pulse rounded-md bg-gray-200" />
+            <div className="h-5 w-full max-w-[300px] animate-pulse rounded-md bg-gray-200" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
       <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
@@ -55,36 +69,33 @@ export const EventInfoHeader: React.FC = () => {
           <div className="flex flex-row items-center gap-1 text-sm text-gray-500">
             <MdOutlineCalendarToday />
             <div>
-              {event
-                ? formatOccurring(
-                    occurringDaysArray ?? [],
-                    event.type === "DAYSOFWEEK",
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    event.timeZone
-                  )
-                : "Loading..."}
+              {formatOccurring(
+                occurringDaysArray ?? [],
+                event.type === "DAYSOFWEEK",
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                event.timeZone
+              )}
             </div>
             <MdOutlineAccessTime className="ml-1" />
             <div>
-              {event
-                ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                  formatTimespan(event.begins, event.ends, event.timeZone)
-                : "Loading..."}
+              {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                formatTimespan(event.begins, event.ends, event.timeZone)
+              }
             </div>
             <IoEarthSharp className="ml-1" />
             <div>
-              {/* eslint-disable-next-line @typescript-eslint/no-unsafe-argument */}
-              {event ? formatTimeZoneTag(event.timeZone) : "Loading..."}
+              {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                formatTimeZoneTag(event.timeZone)
+              }
             </div>
           </div>
-          <div className="text-3xl font-semibold">
-            {event?.name ?? "Loading..."}
-          </div>
+          <div className="text-3xl font-semibold">{event.name}</div>
           <div className="flex flex-row items-center gap-2 text-sm">
             {isOwner && <EventTypeTag>My Event</EventTypeTag>}
             <p>
-              <span className="font-bold">Event ID:</span>{" "}
-              {event?.joinCode ?? ""}
+              <span className="font-bold">Event ID:</span> {event.joinCode}
             </p>
             <p>
               <span className="font-bold">Link:</span>{" "}
@@ -94,7 +105,7 @@ export const EventInfoHeader: React.FC = () => {
         </div>
 
         <div className="flex w-[200px] flex-col gap-3 text-sm font-light">
-          {event && isOwner && (
+          {isOwner && (
             <button
               className="rounded-button"
               onClick={() => setIsEditDialogOpen(true)}
@@ -102,7 +113,7 @@ export const EventInfoHeader: React.FC = () => {
               Edit
             </button>
           )}
-          {event && isOwner && (
+          {isOwner && (
             <button
               className="danger-button"
               onClick={() => setIsDeleteDialogOpen(true)}
@@ -110,7 +121,7 @@ export const EventInfoHeader: React.FC = () => {
               Delete
             </button>
           )}
-          {event && !isOwner && (
+          {!isOwner && (
             <button
               className="danger-button"
               onClick={() => setIsLeaveDialogOpen(true)}
