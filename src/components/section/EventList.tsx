@@ -84,9 +84,9 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
 const EventCardSkeleton: React.FC = () => {
   return (
     <div className="card mb-4 flex flex-col items-start gap-2.5 bg-gray-50 p-5">
-      <div className="h-4 w-full max-w-[300px] animate-pulse rounded-md bg-gray-200" />
-      <div className="h-7 w-full max-w-[400px] animate-pulse rounded-md bg-gray-200" />
-      <div className="h-4 w-full max-w-[210px] animate-pulse rounded-md bg-gray-200" />
+      <div className="skeleton h-4 max-w-[300px]" />
+      <div className="skeleton h-7 max-w-[400px]" />
+      <div className="skeleton h-4 max-w-[210px]" />
     </div>
   );
 };
