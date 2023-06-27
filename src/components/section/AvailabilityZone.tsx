@@ -97,11 +97,11 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
   // Guard event loading
   if (!event) {
     return (
-      <div className="relative h-[500px]">
+      <div className="relative h-[calc(100vh-420px)]">
         <div className="absolute right-8 flex h-full flex-row items-center">
           <TimeslotSavePanelSkeleton />
         </div>
-        <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
+        <div className="h-full w-full flex-row items-center overflow-clip px-32 py-20">
           <TimeslotGridSkeleton />
         </div>
       </div>
@@ -109,7 +109,7 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
   }
 
   return (
-    <div className="relative h-[500px]">
+    <div className="relative h-[calc(100vh-420px)]">
       <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineEditCalendar className="text-md" />
         Click or drag to select available time slots
@@ -189,11 +189,11 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
   // Guard event loading
   if (!event) {
     return (
-      <div className="relative h-[500px]">
+      <div className="relative h-[calc(100vh-420px)]">
         <div className="absolute right-8 flex h-full flex-row items-center">
           <TimeSlotParticipantsPanelSkeleton />
         </div>
-        <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
+        <div className="h-full w-full flex-row items-center overflow-clip px-32 py-20">
           <TimeslotGridSkeleton />
         </div>
       </div>
@@ -201,7 +201,7 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
   }
 
   return (
-    <div className="relative h-[500px]">
+    <div className="relative h-[calc(100vh-420px)]">
       <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineMouse className="text-md" />
         Hover on slots to see who is available
