@@ -30,7 +30,7 @@ const Dashboard: NextPage = () => {
       <div className="flex justify-center px-4 py-8 md:px-12">
         <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
           <div className="flex h-full flex-grow flex-col">
-            <div className="mb-6 flex flex-row items-center justify-between">
+            <div className="mb-4 flex flex-row items-center justify-between">
               <div className="text-2xl font-bold">Recent Events</div>
               <div
                 className="primary-button cursor-pointer text-sm md:hidden"
@@ -43,7 +43,7 @@ const Dashboard: NextPage = () => {
           </div>
           {!isMobile ? (
             <div className="flex h-full flex-col">
-              <div className="mb-6 text-2xl font-bold">Add Event</div>
+              <div className="mb-4 text-2xl font-bold">Add Event</div>
               <NewEventCard />
             </div>
           ) : (
