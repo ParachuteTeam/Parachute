@@ -55,3 +55,7 @@ export const TimeslotSavePanel: React.FC<TimeslotSavePanelProps> = ({
     </div>
   );
 };
+
+export const TimeslotSavePanelSkeleton: React.FC = () => {
+  return <div className="skeleton h-36 w-64" />;
+};

@@ -93,3 +93,7 @@ export const TimeSlotParticipantsPanel: React.FC<
     </div>
   );
 };
+
+export const TimeSlotParticipantsPanelSkeleton: React.FC = () => {
+  return <div className="skeleton h-96 w-96" />;
+};
