@@ -54,7 +54,7 @@ export const EventInfoHeader: React.FC = () => {
         <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
           <div className="flex flex-1 flex-col gap-2">
             <div className="skeleton h-5 max-w-[400px]" />
-            <div className="skeleton h-9 max-w-[600px]" />
+            <div className="skeleton h-[38px] max-w-[600px]" />
             <div className="skeleton h-5 max-w-[300px]" />
           </div>
           <div className="flex w-[200px] flex-col gap-3 text-sm font-light">
