@@ -81,6 +81,16 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
   );
 };
 
+const EventCardSkeleton: React.FC = () => {
+  return (
+    <div className="card mb-4 flex flex-col items-start gap-2.5 bg-gray-50 p-5">
+      <div className="h-4 w-full max-w-[300px] animate-pulse rounded-md bg-gray-200" />
+      <div className="h-7 w-full max-w-[400px] animate-pulse rounded-md bg-gray-200" />
+      <div className="h-4 w-full max-w-[210px] animate-pulse rounded-md bg-gray-200" />
+    </div>
+  );
+};
+
 export const EventList = () => {
   const { data: participatedEvents } = useParticipatedEvents();
   const { data: session } = useSession();
@@ -101,6 +111,18 @@ export const EventList = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
+      {!participatedEvents &&
+        [1, 2, 3, 4].map((i) => <EventCardSkeleton key={i} />)}
+      {participatedEvents?.length === 0 && (
+        <div className="flex h-[220px] w-full flex-col items-center justify-center gap-1">
+          <div className="text-lg font-semibold text-gray-500">
+            No events found!
+          </div>
+          <div className="text-sm text-gray-400">
+            Create or join some events to get started.
+          </div>
+        </div>
+      )}
       {filteredEvents?.map((event) => (
         <EventCard
           key={event.id}
