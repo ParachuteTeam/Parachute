@@ -117,8 +117,8 @@ export const OperationCard: React.FC = () => {
   const eventId = router.query.id as string;
   const [timeZoneTag, setTimeZoneTag] = useState("");
   return (
-    <div className="flex flex-row justify-center p-6">
-      <div className="card max-w-[1248px] flex-1 p-0">
+    <div className="flex grow flex-row justify-center p-6">
+      <div className="card h-fit max-w-[1248px] flex-1 p-0">
         <Tab.Group>
           <Tab.List className="flex w-full flex-row gap-4 border-b border-gray-300 px-6 pt-4">
             <OperationCardTab className="w-[120px]">
