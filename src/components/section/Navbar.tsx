@@ -3,6 +3,9 @@ import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
 import OnHover from "../ui/OnHover";
 import Link from "next/link";
+import appData from "../../app-data";
+import { HiOutlineExternalLink } from "react-icons/hi";
+import React from "react";
 
 const Navbar = () => {
   const router = useRouter();
@@ -20,7 +23,7 @@ const Navbar = () => {
 
   return (
     <div className="sticky top-0 flex w-full justify-center bg-white px-4 py-3 md:px-12 md:py-4">
-      <div className="mx-auto flex max-w-[1200px] grow text-3xl font-bold">
+      <div className="mx-auto flex max-w-[1200px] grow items-center gap-4 font-bold md:gap-8">
         <div className="grow">
           <Link
             className="max-w-[140px] grow cursor-pointer text-2xl font-bold md:text-3xl"
@@ -29,6 +32,15 @@ const Navbar = () => {
             Parachute
           </Link>
         </div>
+        <a
+          className="flex flex-row items-center gap-0.5 font-normal text-gray-500"
+          href={appData.GITHUB_REPOSITORY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Github
+          <HiOutlineExternalLink />
+        </a>
         {session && (
           <OnHover
             content={
