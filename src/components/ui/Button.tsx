@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AiOutlineLoading } from "react-icons/ai";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface LoadableButtonProps extends React.PropsWithChildren {
   className?: string;
@@ -39,7 +39,7 @@ export const ButtonWithState: React.FC<LoadableButtonProps> = ({
       }}
     >
       {(loading || internalLoading) && (
-        <AiOutlineLoading className="animate-spin" />
+        <AiOutlineLoading3Quarters className="animate-spin" />
       )}
       {children}
     </button>

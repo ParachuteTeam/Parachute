@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { MdOutlineEditCalendar, MdOutlineMouse } from "react-icons/md";
-import { TimeslotSelector, TimeslotView } from "../ui/TimeslotGrid";
+import {
+  TimeslotGridSkeleton,
+  TimeslotSelector,
+  TimeslotView,
+} from "../ui/TimeslotGrid";
 import type { DatetimeInterval } from "../../utils/date-utils";
 import {
   csvToDateArray,
@@ -16,8 +20,14 @@ import {
   useParticipantsOf,
   useReplaceUserTimeslotsIn,
 } from "../../utils/api-hooks";
-import { TimeslotSavePanel } from "../ui/TimeslotSavePanel";
-import { TimeSlotParticipantsPanel } from "../ui/TimeSlotParticipantsPanel";
+import {
+  TimeslotSavePanel,
+  TimeslotSavePanelSkeleton,
+} from "../ui/TimeslotSavePanel";
+import {
+  TimeSlotParticipantsPanel,
+  TimeSlotParticipantsPanelSkeleton,
+} from "../ui/TimeSlotParticipantsPanel";
 
 interface MyAvailabilityZoneProps {
   eventID: string;
@@ -85,10 +95,21 @@ export const MyAvailabilityZone: React.FC<MyAvailabilityZoneProps> = ({
   }, [changed, resetSchedule]);
 
   // Guard event loading
-  if (!event) return null;
+  if (!event) {
+    return (
+      <div className="relative h-[calc(100vh-420px)]">
+        <div className="absolute right-8 flex h-full flex-row items-center">
+          <TimeslotSavePanelSkeleton />
+        </div>
+        <div className="h-full w-full flex-row items-center overflow-clip px-32 py-20">
+          <TimeslotGridSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative h-[500px]">
+    <div className="relative h-[calc(100vh-420px)]">
       <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineEditCalendar className="text-md" />
         Click or drag to select available time slots
@@ -166,10 +187,21 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
   }, [allTimeSlots, hoveredPerson]);
 
   // Guard event loading
-  if (!event) return null;
+  if (!event) {
+    return (
+      <div className="relative h-[calc(100vh-420px)]">
+        <div className="absolute right-8 flex h-full flex-row items-center">
+          <TimeSlotParticipantsPanelSkeleton />
+        </div>
+        <div className="h-full w-full flex-row items-center overflow-clip px-32 py-20">
+          <TimeslotGridSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative h-[500px]">
+    <div className="relative h-[calc(100vh-420px)]">
       <div className="absolute left-8 top-4 flex flex-row items-center gap-1 bg-white text-sm text-gray-500">
         <MdOutlineMouse className="text-md" />
         Hover on slots to see who is available

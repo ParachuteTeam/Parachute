@@ -306,3 +306,21 @@ export const TimeslotView: React.FC<TimeslotViewProps> = ({
     />
   );
 };
+
+export const TimeslotGridSkeleton: React.FC = () => {
+  return (
+    <div className="flex w-fit flex-row gap-4">
+      <div className="flex w-20 flex-col items-center gap-2 pt-9">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+          <div key={i} className="skeleton h-6" />
+        ))}
+      </div>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="flex w-20 flex-col items-center gap-2">
+          <div className="skeleton h-7" />
+          <div className="skeleton h-[328px]" />
+        </div>
+      ))}
+    </div>
+  );
+};
