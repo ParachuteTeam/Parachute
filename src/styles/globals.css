@@ -65,4 +65,8 @@
     .primary-button-loading {
         @apply primary-button bg-gray-500 cursor-not-allowed;
     }
+
+    .skeleton {
+        @apply w-full animate-pulse rounded-md bg-gray-200;
+    }
 }

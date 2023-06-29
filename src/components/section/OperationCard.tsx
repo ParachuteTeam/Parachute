@@ -25,7 +25,7 @@ const OperationCardTab: React.FC<
                 : "border-transparent text-center font-light text-gray-500 hover:border-b-2 hover:border-gray-300 hover:text-gray-700"
             }
             ${className ?? ""}
-            `}
+          `}
         >
           {children}
         </div>
@@ -77,7 +77,9 @@ const TimeZoneSelectionZone: React.FC<{
           All time and availability information are displayed for this timezone
         </p>
       </div>
-      {!participateLoading && (
+      {participateLoading ? (
+        <div className="skeleton h-[46px] max-w-[300px]" />
+      ) : (
         <>
           <RoundedTimezoneInput
             className="w-[300px] px-0"

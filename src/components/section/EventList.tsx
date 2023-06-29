@@ -72,12 +72,22 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
       <div className="flex flex-row items-center gap-2 text-sm">
         {myEvent && <EventTypeTag>My Event</EventTypeTag>}
         {event.participantCount === 1 ? (
-          <div>{event.participantCount} person filled including host</div>
+          <div>No one except host has filled yet</div>
         ) : (
           <div>{event.participantCount} people filled including host</div>
         )}
       </div>
     </Link>
+  );
+};
+
+const EventCardSkeleton: React.FC = () => {
+  return (
+    <div className="card mb-4 flex flex-col items-start gap-2.5 bg-gray-50 p-5">
+      <div className="skeleton h-4 max-w-[300px]" />
+      <div className="skeleton h-7 max-w-[400px]" />
+      <div className="skeleton h-4 max-w-[210px]" />
+    </div>
   );
 };
 
@@ -101,6 +111,18 @@ export const EventList = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
+      {!participatedEvents &&
+        [1, 2, 3, 4].map((i) => <EventCardSkeleton key={i} />)}
+      {participatedEvents?.length === 0 && (
+        <div className="flex h-[220px] w-full flex-col items-center justify-center gap-1">
+          <div className="text-lg font-semibold text-gray-500">
+            No events found!
+          </div>
+          <div className="text-sm text-gray-400">
+            Create or join some events to get started.
+          </div>
+        </div>
+      )}
       {filteredEvents?.map((event) => (
         <EventCard
           key={event.id}
