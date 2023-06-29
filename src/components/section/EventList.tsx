@@ -72,7 +72,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
       <div className="flex flex-row items-center gap-2 text-sm">
         {myEvent && <EventTypeTag>My Event</EventTypeTag>}
         {event.participantCount === 1 ? (
-          <div>{event.participantCount} person filled including host</div>
+          <div>No one except host has filled yet</div>
         ) : (
           <div>{event.participantCount} people filled including host</div>
         )}
