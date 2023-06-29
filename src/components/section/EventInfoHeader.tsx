@@ -67,7 +67,7 @@ export const EventInfoHeader: React.FC = () => {
   }
 
   return (
-    <div className="flex w-full flex-row justify-center border-t border-gray-200 bg-white px-12 py-6">
+    <div className="flex w-full flex-row justify-center bg-white px-12 py-6">
       <div className="flex max-w-[1200px] flex-1 flex-row items-center gap-2">
         <div className="flex flex-1 flex-col gap-2">
           <div className="flex flex-row items-center gap-1 text-sm text-gray-500">

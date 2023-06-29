@@ -62,7 +62,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="sticky top-0 flex w-full justify-center bg-white px-4 py-3 md:px-12 md:py-4">
+    <div className="sticky top-0 flex w-full justify-center border-b border-gray-200 bg-white px-4 py-3 md:px-12 md:py-4">
       <div className="mx-auto flex max-w-[1200px] grow items-center font-bold">
         <div className="grow">
           <Link

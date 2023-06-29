@@ -7,6 +7,7 @@ import {
   Auth0LoginButton,
   GoogleLoginButton,
 } from "../components/ui/LoginButton";
+import Footer from "../components/section/Footer";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../server/auth";
 
@@ -31,9 +32,9 @@ const Home: NextPage = () => {
   const { angle, ref } = useElementMouseRelativeAngle();
 
   return (
-    <>
+    <div className="flex h-screen w-screen flex-col">
       <Navbar />
-      <div className="flex h-[calc(100vh-68px)] w-screen flex-col items-center justify-center gap-16 p-12 md:flex-row xl:gap-32">
+      <div className="flex w-screen grow flex-col items-center justify-center gap-16 p-12 md:flex-row xl:gap-32">
         <div className="flex w-full flex-col items-center justify-center gap-4 md:w-[300px] md:items-start">
           <div className="text-5xl font-bold">🪂</div>
           <div className="text-5xl font-bold">when2meet</div>
@@ -62,7 +63,8 @@ const Home: NextPage = () => {
           </div>
         </div>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 };
 

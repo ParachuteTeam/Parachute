@@ -7,6 +7,7 @@ import { EventList } from "../components/section/EventList";
 import { NewEventCard } from "../components/section/NewEventCard";
 import { useIsMobile } from "../utils/hooks";
 import { ScreenLoading } from "../components/ui/ScreenLoading";
+import Footer from "../components/section/Footer";
 
 const Dashboard: NextPage = () => {
   const { data: session, status } = useSession();
@@ -25,9 +26,9 @@ const Dashboard: NextPage = () => {
   }
 
   return (
-    <div className="min-h-screen w-screen bg-gray-100">
+    <div className="flex min-h-screen w-screen flex-col bg-gray-100">
       <Navbar />
-      <div className="flex justify-center px-4 py-8 md:px-12">
+      <div className="flex grow justify-center px-4 py-8 md:px-12">
         <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
           <div className="flex h-full flex-grow flex-col">
             <div className="mb-4 flex flex-row items-center justify-between">
@@ -58,6 +59,7 @@ const Dashboard: NextPage = () => {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
