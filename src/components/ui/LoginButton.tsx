@@ -39,7 +39,10 @@ export const GoogleLoginButton = () => {
     <LoginButton
       onClick={() =>
         void signIn("google", {
-          callbackUrl: `${window.location.origin}/dashboard`,
+          callbackUrl:
+            window.location.pathname === "/"
+              ? `${window.location.origin}/dashboard`
+              : window.location.href,
         })
       }
       buttonText="Sign in with Google"
@@ -53,7 +56,10 @@ export const Auth0LoginButton = () => {
     <LoginButton
       onClick={() =>
         void signIn("auth0", {
-          callbackUrl: `${window.location.origin}/dashboard`,
+          callbackUrl:
+            window.location.pathname === "/"
+              ? `${window.location.origin}/dashboard`
+              : window.location.href,
         })
       }
       buttonText="Sign in with Auth0"

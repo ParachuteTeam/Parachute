@@ -137,14 +137,14 @@ export const eventRouter = createTRPCRouter({
         This function get all information of a event.
         You need to use eventId as input.
     */
-  getEvent: protectedProcedure
+  getEvent: publicProcedure
     .input(
       z.object({
         eventId: z.string(),
       })
     )
-    .query((req) => {
-      return prisma.event.findUnique({
+    .query(async (req) => {
+      return await prisma.event.findUnique({
         where: {
           id: req.input.eventId,
         },
@@ -158,6 +158,11 @@ export const eventRouter = createTRPCRouter({
           occuringDays: true,
           ownerID: true,
           type: true,
+          _count: {
+            select: {
+              participant: true,
+            },
+          },
         },
       });
       // if (!eventCheck) {
