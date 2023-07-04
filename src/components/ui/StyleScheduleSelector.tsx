@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { format } from "date-fns";
 import ScheduleSelector from "react-schedule-selector";
-import { formatTime } from "../../utils/date-utils";
+import { formatTimeWithoutDay } from "../../utils/date-utils";
 
 const TimeslotBlock: React.FC<{
   selected: boolean;
@@ -54,7 +54,7 @@ const TimeLabel: React.FC<{
 }> = ({ time }) => {
   return (
     <div className="relative bottom-[9px] w-16 text-right text-xs text-gray-500">
-      {time.getMinutes() % 30 == 0 ? formatTime(time) : ""}
+      {time.getMinutes() % 30 == 0 ? formatTimeWithoutDay(time) : ""}
     </div>
   );
 };

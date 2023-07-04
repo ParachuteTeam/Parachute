@@ -141,6 +141,10 @@ export const formatTime = (time: Date, timeZoneTag = ""): string => {
   );
 };
 
+export const formatTimeWithoutDay = (time: Date, timeZoneTag = ""): string => {
+  return formatWithTimeZoneTag(time, timeZoneTag, "hh:mm aa");
+};
+
 export const formatTimespan = (
   begins: Date,
   ends: Date,
