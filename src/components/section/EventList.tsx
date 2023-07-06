@@ -7,7 +7,7 @@ import {
 } from "react-icons/md";
 import {
   formatOccurring,
-  formatTime,
+  formatTimeWithDay,
   formatTimeZoneTag,
 } from "../../utils/date-utils";
 import { IoEarthSharp } from "react-icons/io5";
@@ -59,8 +59,8 @@ const EventCard: React.FC<EventCardProps> = ({ event, myEvent }) => {
         <div className="flex flex-row items-center gap-1">
           <MdOutlineAccessTime className="ml-1" />
           <div>
-            {formatTime(event.begins, event.timeZone)} -{" "}
-            {formatTime(event.ends, event.timeZone)}
+            {formatTimeWithDay(event.begins, event.timeZone)} -{" "}
+            {formatTimeWithDay(event.ends, event.timeZone)}
           </div>
         </div>
         <div className="flex flex-row items-center gap-1">
