@@ -33,7 +33,6 @@ export const LogInCard: React.FC = () => {
                     ? formatOccurring(
                         occurringDaysArray ?? [],
                         event.type === "DAYSOFWEEK",
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                         event.timeZone
                       )
                     : "Loading..."}
@@ -41,13 +40,11 @@ export const LogInCard: React.FC = () => {
                 <MdOutlineAccessTime className="ml-1" />
                 <div>
                   {event
-                    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                      formatTimespan(event.begins, event.ends, event.timeZone)
+                    ? formatTimespan(event.begins, event.ends, event.timeZone)
                     : "Loading..."}
                 </div>
                 <HiOutlineGlobe className="ml-1" />
                 <div>
-                  {/* eslint-disable-next-line @typescript-eslint/no-unsafe-argument */}
                   {event ? formatTimeZoneTag(event.timeZone) : "Loading..."}
                 </div>
               </div>
