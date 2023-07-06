@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { addMinutes, isAfter, isBefore } from "date-fns";
 import {
-  formatTime,
+  formatTimeWithDay,
   formatTimeIdentifier,
   makeTime,
   parseTimeIdentifier,
@@ -39,7 +39,7 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({
   const options = useMemo(
     () =>
       availableTimes.map((time) => ({
-        label: formatTime(time, timeZone),
+        label: formatTimeWithDay(time, timeZone),
         value: formatTimeIdentifier(time, timeZone),
       })),
     [availableTimes, timeZone]

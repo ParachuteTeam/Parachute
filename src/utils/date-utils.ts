@@ -134,6 +134,10 @@ export const toHourDecimal = (date: Date, timeZoneTag = ""): number => {
 };
 
 export const formatTime = (time: Date, timeZoneTag = ""): string => {
+  return formatWithTimeZoneTag(time, timeZoneTag, "hh:mm aa");
+};
+
+export const formatTimeWithDay = (time: Date, timeZoneTag = ""): string => {
   const plusDay = toPlusDay(time, timeZoneTag);
   return (
     formatWithTimeZoneTag(time, timeZoneTag, "hh:mm aa") +
@@ -146,7 +150,10 @@ export const formatTimespan = (
   ends: Date,
   timeZoneTag?: string
 ): string => {
-  return `${formatTime(begins, timeZoneTag)}-${formatTime(ends, timeZoneTag)}`;
+  return `${formatTimeWithDay(begins, timeZoneTag)}-${formatTimeWithDay(
+    ends,
+    timeZoneTag
+  )}`;
 };
 
 export const formatTimeIdentifier = (time: Date, timeZoneTag = ""): string => {
