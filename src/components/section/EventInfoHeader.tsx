@@ -76,24 +76,15 @@ export const EventInfoHeader: React.FC = () => {
               {formatOccurring(
                 occurringDaysArray ?? [],
                 event.type === "DAYSOFWEEK",
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 event.timeZone
               )}
             </div>
             <MdOutlineAccessTime className="ml-1" />
             <div>
-              {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                formatTimespan(event.begins, event.ends, event.timeZone)
-              }
+              {formatTimespan(event.begins, event.ends, event.timeZone)}
             </div>
             <IoEarthSharp className="ml-1" />
-            <div>
-              {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                formatTimeZoneTag(event.timeZone)
-              }
-            </div>
+            <div>{formatTimeZoneTag(event.timeZone)}</div>
           </div>
           <div className="text-3xl font-semibold">{event.name}</div>
           <div className="flex flex-row items-center gap-2 text-sm">

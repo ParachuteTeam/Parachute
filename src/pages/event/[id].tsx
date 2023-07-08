@@ -46,7 +46,7 @@ const EventPage: NextPage = () => {
 
   if (!session) {
     return (
-      <div className="min-h-screen w-screen">
+      <div className="flex min-h-screen w-screen flex-col">
         <Navbar />
         <LogInCard />
         <Footer />
