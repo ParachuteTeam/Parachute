@@ -66,8 +66,6 @@ It is recommended to deply using [Vercel](https://vercel.com), simply select Nex
 
 ## Contributors
 
-<a href="https://github.com/ParachuteTeam/Parachute/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ParachuteTeam/Parachute" />
-</a>
+[![Contributors](https://contrib.rocks/image?repo=ParachuteTeam/Parachute)](https://github.com/ParachuteTeam/Parachute/graphs/contributors)
 
 Made with [contrib.rocks](https://contrib.rocks).
