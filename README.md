@@ -60,10 +60,12 @@
 
 It is recommended to deply using [Vercel](https://vercel.com), simply select Next.js project and fill-in all environment variables will do. Remember to also create a production-ready MySQL database for data persistence. Here is our deployed web [Parachute](https://parachute.fyi).
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ParachuteTeam/Parachute&type=Date)](https://star-history.com/#ParachuteTeam/Parachute&Date)
+
 ## Contributors
 
-<a href="https://github.com/ParachuteTeam/Parachute/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ParachuteTeam/Parachute" />
-</a>
+[![Contributors](https://contrib.rocks/image?repo=ParachuteTeam/Parachute)](https://github.com/ParachuteTeam/Parachute/graphs/contributors)
 
 Made with [contrib.rocks](https://contrib.rocks).
