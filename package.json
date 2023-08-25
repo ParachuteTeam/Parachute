@@ -12,6 +12,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.23.2",
     "@headlessui/react": "^1.7.14",
     "@next-auth/prisma-adapter": "^1.0.6",
     "@next/font": "13.1.6",
