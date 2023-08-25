@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Navbar from "../components/section/Navbar";
 import React, { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useUser } from "@clerk/nextjs";
 import { EventList } from "../components/section/EventList";
 import { NewEventCard } from "../components/section/NewEventCard";
 import { useIsMobile } from "../utils/hooks";
@@ -10,17 +10,17 @@ import { ScreenLoading } from "../components/ui/ScreenLoading";
 import Footer from "../components/section/Footer";
 
 const Dashboard: NextPage = () => {
-  const { data: session, status } = useSession();
+  const { isLoaded, isSignedIn, user } = useUser();
   const [showWizard, setShowWizard] = useState(false);
   const isMobile = useIsMobile();
 
   const router = useRouter();
 
-  if (status === "loading") {
+  if (!isLoaded) {
     return <ScreenLoading />;
   }
 
-  if (!session) {
+  if (!isSignedIn) {
     void router.push("/");
     return <ScreenLoading />;
   }
@@ -40,7 +40,7 @@ const Dashboard: NextPage = () => {
                 New / Join
               </div>
             </div>
-            <EventList />
+            {/* <EventList /> */}
           </div>
           {!isMobile ? (
             <div className="flex h-full flex-col">

@@ -3,18 +3,17 @@ import { type NextPage } from "next";
 import Navbar from "../components/section/Navbar";
 import React from "react";
 import { useElementMouseRelativeAngle } from "../utils/hooks";
-import {
-  Auth0LoginButton,
-  GoogleLoginButton,
-} from "../components/ui/LoginButton";
+import { ClerkLoginButton } from "../components/ui/LoginButton";
 import Footer from "../components/section/Footer";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../server/auth";
+import { clerkClient } from "@clerk/nextjs";
+import { getAuth } from "@clerk/nextjs/server";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getServerSession(ctx.req, ctx.res, authOptions);
+  const { userId } = getAuth(ctx.req);
 
-  if (session) {
+  const user = userId ? await clerkClient.users.getUser(userId) : undefined;
+
+  if (user) {
     return {
       redirect: {
         destination: "/dashboard",
@@ -58,8 +57,7 @@ const Home: NextPage = () => {
             <div className="mb-2 text-sm text-gray-500">
               Try Parachute right now
             </div>
-            <GoogleLoginButton />
-            <Auth0LoginButton />
+            <ClerkLoginButton />
           </div>
         </div>
       </div>

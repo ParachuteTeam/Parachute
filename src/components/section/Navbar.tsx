@@ -1,4 +1,4 @@
-import { useSession, signOut } from "next-auth/react";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import OnHover from "../ui/OnHover";
 import Link from "next/link";
@@ -46,19 +46,19 @@ const NavButton: React.FC<NavButtonProps> = ({
 };
 
 const Navbar = () => {
-  const { data: session } = useSession();
-  const image = session?.user.image as string;
-  const name = session?.user.name;
-  const email = session?.user.email;
-
+  const { isLoaded, isSignedIn, user } = useUser();
   const [signingOut, setSigningOut] = useState(false);
+
+  if (!isLoaded || !isSignedIn) {
+    return null;
+  }
+
+  const image = user?.imageUrl;
+  const name = user?.fullName;
+  const email = user?.primaryEmailAddress?.emailAddress;
 
   const onClickSignOut = () => {
     setSigningOut(true);
-    void signOut({
-      redirect: true,
-      callbackUrl: "/",
-    });
   };
 
   return (
@@ -67,12 +67,12 @@ const Navbar = () => {
         <div className="grow">
           <Link
             className="max-w-[140px] grow cursor-pointer text-2xl font-bold md:text-3xl"
-            href={session ? "/dashboard" : "/"}
+            href={user ? "/dashboard" : "/"}
           >
             Parachute
           </Link>
         </div>
-        {session && (
+        {user && (
           <OnHover
             content={
               <div className="w-50 absolute right-0 origin-top-right pt-1">
@@ -91,11 +91,13 @@ const Navbar = () => {
                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
                     aria-labelledby="avatarButton"
                   >
-                    <NavButton
-                      onClick={onClickSignOut}
-                      disabled={signingOut}
-                      buttonText={signingOut ? "Signing out..." : "Sign out"}
-                    />
+                    <SignOutButton>
+                      <NavButton
+                        onClick={onClickSignOut}
+                        disabled={signingOut}
+                        buttonText={signingOut ? "Signing out..." : "Sign out"}
+                      />
+                    </SignOutButton>
                   </ul>
                 </div>
               </div>
