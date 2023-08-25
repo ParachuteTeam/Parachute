@@ -2,6 +2,8 @@ import React from "react";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { SiAuth0 } from "react-icons/si";
+import { SignInButton } from "@clerk/nextjs";
+import { BsArrowRight } from "react-icons/bs";
 
 interface ButtonProps {
   onClick: () => void;
@@ -65,5 +67,19 @@ export const Auth0LoginButton = () => {
       buttonText="Sign in with Auth0"
       isBlack={false}
     />
+  );
+};
+
+export const ClerkLoginButton = () => {
+  return (
+    <SignInButton>
+      <button
+        className="flex w-full flex-row items-center justify-center gap-5 rounded-lg border-2 border-gray-300 bg-gradient-to-br from-[#ffba24] to-[#ff9646] p-3 text-left font-semibold text-white
+      "
+      >
+        <div>Get Started</div>
+        <BsArrowRight className="h-6 w-6" />
+      </button>
+    </SignInButton>
   );
 };
