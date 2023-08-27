@@ -10,7 +10,7 @@ import { ScreenLoading } from "../components/ui/ScreenLoading";
 import Footer from "../components/section/Footer";
 
 const Dashboard: NextPage = () => {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
   const [showWizard, setShowWizard] = useState(false);
   const isMobile = useIsMobile();
 
@@ -40,7 +40,7 @@ const Dashboard: NextPage = () => {
                 New / Join
               </div>
             </div>
-            {/* <EventList /> */}
+            <EventList />
           </div>
           {!isMobile ? (
             <div className="flex h-full flex-col">

@@ -1,7 +1,6 @@
 import React from "react";
 import { MdOutlineAccessTime, MdOutlineCalendarToday } from "react-icons/md";
 import { HiOutlineGlobe } from "react-icons/hi";
-import { Auth0LoginButton, GoogleLoginButton } from "../ui/LoginButton";
 import { useRouter } from "next/router";
 import { useEvent } from "../../utils/api-hooks";
 import {
@@ -9,6 +8,7 @@ import {
   formatTimespan,
   formatTimeZoneTag,
 } from "../../utils/date-utils";
+import { ClerkLoginButton } from "../ui/LoginButton";
 
 export const LogInCard: React.FC = () => {
   const router = useRouter();
@@ -75,8 +75,7 @@ export const LogInCard: React.FC = () => {
               <div className="mb-2 text-sm text-gray-500">
                 Sign in to join event
               </div>
-              <GoogleLoginButton />
-              <Auth0LoginButton />
+              <ClerkLoginButton />
             </div>
           </div>
         </div>

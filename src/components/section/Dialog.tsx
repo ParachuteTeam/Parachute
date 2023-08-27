@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ButtonWithState } from "../ui/Button";
 import { AiOutlineUserAdd, AiOutlineUserDelete } from "react-icons/ai";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@clerk/nextjs";
 
 interface EditDialogProps {
   isOpen: boolean;
@@ -27,11 +27,15 @@ export const EditDialog: React.FC<EditDialogProps> = ({
   const [newEventName, setNewEventName] = useState("");
   const [deletedUserIDs, setDeletedUserIDs] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: session } = useSession();
+  const { isLoaded, userId } = useAuth();
 
   useEffect(() => {
     setNewEventName(eventName);
   }, [eventName]);
+
+  if (!isLoaded || !userId) {
+    return null;
+  }
 
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -104,7 +108,7 @@ export const EditDialog: React.FC<EditDialogProps> = ({
                           {participant.userID}
                         </div>
                       </div>
-                      {participant.userID !== session?.user.id && (
+                      {participant.userID !== userId && (
                         <button
                           className="ml-auto text-xl"
                           onClick={() => {

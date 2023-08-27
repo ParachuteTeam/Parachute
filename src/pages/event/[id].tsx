@@ -1,13 +1,13 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Navbar from "../../components/section/Navbar";
 import React from "react";
-import { useSession } from "next-auth/react";
 import { LogInCard } from "../../components/section/LogInCard";
 import { EventInfoHeader } from "../../components/section/EventInfoHeader";
 import { OperationCard } from "../../components/section/OperationCard";
 import Footer from "../../components/section/Footer";
 import { ScreenLoading } from "../../components/ui/ScreenLoading";
 import { PrismaClient } from "@prisma/client";
+import { useAuth } from "@clerk/nextjs";
 
 export const getStaticPaths: GetStaticPaths = () => {
   return {
@@ -38,13 +38,13 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
 };
 
 const EventPage: NextPage = () => {
-  const { data: session, status } = useSession();
+  const { isLoaded, sessionId } = useAuth();
 
-  if (status === "loading") {
+  if (!isLoaded) {
     return <ScreenLoading />;
   }
 
-  if (!session) {
+  if (!sessionId) {
     return (
       <div className="flex min-h-screen w-screen flex-col">
         <Navbar />
