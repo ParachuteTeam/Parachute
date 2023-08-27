@@ -16,12 +16,11 @@
  * database, the session, etc.
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { getAuth } from "@clerk/nextjs/dist/types/server-helpers.server";
-import type { User } from "@clerk/nextjs/dist/types/server";
+import { getAuth } from "@clerk/nextjs/server";
 import { prisma } from "../db";
 
 type CreateContextOptions = {
-  user: User | null | undefined;
+  userId: string | null;
 };
 
 /**
@@ -36,7 +35,7 @@ type CreateContextOptions = {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
-    currentUser: opts.user,
+    userId: opts.userId,
     prisma,
   };
 };
@@ -53,10 +52,13 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
   // Get the user from the server using the getAuth wrapper function from clerk
   const session = getAuth(req);
   // Get the user from the session so the types are better (instead of login / logout state)
-  const user = session.user;
+  const user = session.userId;
+
+  console.log("session: ", session);
+  console.log("user: ", user);
 
   return createInnerTRPCContext({
-    user,
+    userId: user,
   });
 };
 
@@ -104,7 +106,7 @@ export const publicProcedure = t.procedure;
  * procedure.
  */
 const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
-  if (!ctx.currentUser) {
+  if (!ctx.userId) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "You must be logged in to do this.",
@@ -115,7 +117,7 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
   return next({
     ctx: {
       ...ctx,
-      currentUser: ctx.currentUser,
+      userId: ctx.userId,
     },
   });
 });
