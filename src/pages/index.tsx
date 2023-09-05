@@ -2,10 +2,8 @@ import type { GetServerSideProps } from "next";
 import { type NextPage } from "next";
 import Navbar from "../components/section/Navbar";
 import React from "react";
-import { useElementMouseRelativeAngle } from "../utils/hooks";
-import { ClerkLoginButton } from "../components/ui/LoginButton";
 import Footer from "../components/section/Footer";
-import { clerkClient } from "@clerk/nextjs";
+import { clerkClient, SignIn } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -28,8 +26,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 const Home: NextPage = () => {
-  const { angle, ref } = useElementMouseRelativeAngle();
-
   return (
     <div className="flex h-screen w-screen flex-col">
       <Navbar />
@@ -44,22 +40,7 @@ const Home: NextPage = () => {
             Open-source, easy-to-use, free forever
           </div>
         </div>
-        <div
-          ref={ref}
-          className="bg-colorful drop-shadow-pink h-[250px] w-full rounded-[8px] p-[2px] sm:max-w-[350px]"
-          style={
-            {
-              "--colorful-bg-degree": `${angle - 90}deg`,
-            } as React.CSSProperties
-          }
-        >
-          <div className="flex h-full w-full flex-col items-center justify-center gap-4 rounded-[6px] bg-white p-8">
-            <div className="mb-2 text-sm text-gray-500">
-              Try Parachute right now
-            </div>
-            <ClerkLoginButton />
-          </div>
-        </div>
+        <SignIn signUpUrl={"/sign-up"} />
       </div>
       <Footer />
     </div>
