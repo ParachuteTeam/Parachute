@@ -46,16 +46,8 @@ const NavButton: React.FC<NavButtonProps> = ({
 };
 
 const Navbar = () => {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user } = useUser();
   const [signingOut, setSigningOut] = useState(false);
-
-  if (!isLoaded || !isSignedIn) {
-    return null;
-  }
-
-  const image = user?.imageUrl;
-  const name = user?.fullName;
-  const email = user?.primaryEmailAddress?.emailAddress;
 
   const onClickSignOut = () => {
     setSigningOut(true);
@@ -78,8 +70,10 @@ const Navbar = () => {
               <div className="w-50 absolute right-0 origin-top-right pt-1">
                 <div className="divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-gray-600 dark:bg-gray-700">
                   <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                    <div>{name}</div>
-                    <div className="truncate font-medium">{email}</div>
+                    <div>{user.fullName}</div>
+                    <div className="truncate font-medium">
+                      {user.primaryEmailAddress?.emailAddress}
+                    </div>
                   </div>
                   <ul
                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -105,7 +99,7 @@ const Navbar = () => {
           >
             <Image
               className="cursor-pointer rounded-full"
-              src={image}
+              src={user.imageUrl}
               alt="User dropdown"
               width={40}
               height={40}
