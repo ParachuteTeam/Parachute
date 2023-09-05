@@ -60,6 +60,10 @@ export const offsetFromTimeZoneTag = (timeZoneTag?: string) => {
   return (Number(hours ?? 0) * 60 + Number(minutes ?? 0)) * 60 * 1000;
 };
 
+export const timeOriginalOffset = (time: Date) => {
+  return getTimezoneOffset(currentTimezone, time);
+};
+
 export const getInfoFromTimeZoneTag = (timeZoneTag: string) => {
   const [timeZone, gmt] = timeZoneTag.split(",");
   const offsetString = timeZoneTag.split("GMT")[1] ?? "";
@@ -73,13 +77,13 @@ export const getInfoFromTimeZoneTag = (timeZoneTag: string) => {
 
 export const toZonedTime = (time: Date, timeZoneTag: string) => {
   const offset = offsetFromTimeZoneTag(timeZoneTag);
-  const currentTimezoneOffset = offsetFromTimeZoneTag(currentTimezone);
+  const currentTimezoneOffset = timeOriginalOffset(time);
   return addMilliseconds(time, offset - currentTimezoneOffset);
 };
 
 export const toUTCTime = (time: Date, timeZoneTag: string) => {
   const offset = offsetFromTimeZoneTag(timeZoneTag);
-  const currentTimezoneOffset = offsetFromTimeZoneTag(currentTimezone);
+  const currentTimezoneOffset = timeOriginalOffset(time);
   return addMilliseconds(time, currentTimezoneOffset - offset);
 };
 
