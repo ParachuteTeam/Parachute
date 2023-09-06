@@ -46,8 +46,7 @@ const StartNewEventSection = () => {
 
   const canSubmit = eventName.trim().length > 0 && selectedDays.length > 0;
 
-  const { mutateAsync: createEvent, isLoading: creatingEvent } =
-    useCreateEvent();
+  const { mutateAsync: createEvent } = useCreateEvent();
   const handleCreateEvent = async () => {
     const { id: eventId } = await createEvent({
       occuringDays: selectedDays.toString(),
@@ -126,9 +125,8 @@ const StartNewEventSection = () => {
         className="primary-button mt-3 py-3 text-sm"
         loadingClassName="primary-button-loading mt-3 py-3 text-sm"
         disabledClassName="rounded-button-disabled mt-3 py-3 text-sm"
-        loading={creatingEvent}
         disabled={!canSubmit}
-        onClick={() => void handleCreateEvent()}
+        onClick={handleCreateEvent}
       >
         Create Event
       </ButtonWithState>
