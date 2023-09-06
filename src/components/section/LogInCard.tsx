@@ -1,7 +1,7 @@
 import React from "react";
 import { MdOutlineAccessTime, MdOutlineCalendarToday } from "react-icons/md";
 import { HiOutlineGlobe } from "react-icons/hi";
-import { Auth0LoginButton, GoogleLoginButton } from "../ui/LoginButton";
+import { Auth0LoginButton, ContinueButton, GoogleLoginButton } from "../ui/LoginButton";
 import { useRouter } from "next/router";
 import { useEvent } from "../../utils/api-hooks";
 import {
@@ -31,10 +31,10 @@ export const LogInCard: React.FC = () => {
                 <div>
                   {event
                     ? formatOccurring(
-                        occurringDaysArray ?? [],
-                        event.type === "DAYSOFWEEK",
-                        event.timeZone
-                      )
+                      occurringDaysArray ?? [],
+                      event.type === "DAYSOFWEEK",
+                      event.timeZone
+                    )
                     : "Loading..."}
                 </div>
                 <MdOutlineAccessTime className="ml-1" />
@@ -72,11 +72,14 @@ export const LogInCard: React.FC = () => {
           )}
           <div className="flex h-full w-full flex-row items-center justify-center pb-7">
             <div className="flex w-full max-w-[350px] flex-col items-center justify-center gap-3 p-8">
-              <div className="mb-2 text-sm text-gray-500">
+              {!event?.is_anon && <div className="mb-2 text-sm text-gray-500">
                 Sign in to join event
-              </div>
-              <GoogleLoginButton />
-              <Auth0LoginButton />
+              </div>}
+              {!event?.is_anon && <>
+                <GoogleLoginButton />
+                <Auth0LoginButton />
+              </>}
+              {event?.is_anon && <ContinueButton />}
             </div>
           </div>
         </div>

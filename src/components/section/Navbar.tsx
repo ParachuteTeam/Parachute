@@ -47,7 +47,7 @@ const NavButton: React.FC<NavButtonProps> = ({
 
 const Navbar = () => {
   const { data: session } = useSession();
-  const image = session?.user.image as string;
+  const image = (session?.user.image ?? "/user.png") as string;
   const name = session?.user.name;
   const email = session?.user.email;
 
