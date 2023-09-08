@@ -1,7 +1,7 @@
 import type { ListboxOption } from "../ui/Input";
 import { RoundedListbox, Selector } from "../ui/Input";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import {
   getCurrentTimeZoneTag,
   makeTime,
@@ -13,6 +13,7 @@ import { TimespanSelector } from "../ui/TimeSelector";
 import { ButtonWithState } from "../ui/Button";
 import { useCreateEvent, useEventWithJoinCode } from "../../utils/api-hooks";
 import { useDebouncedValue } from "../../utils/hooks";
+import { Tab } from "@headlessui/react";
 
 const selectDaysOptions: ListboxOption[] = [
   {
@@ -60,7 +61,7 @@ const StartNewEventSection = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <div className="input-field text-sm">
         <label>Event name</label>
         <input
@@ -134,7 +135,7 @@ const StartNewEventSection = () => {
         Timezone, days and time span cannot be <br />
         changed after the event is created
       </div>
-    </>
+    </div>
   );
 };
 
@@ -153,7 +154,7 @@ const JoinExistingEventSection = () => {
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <div className="input-field">
         <label>Event code</label>
         <text>
@@ -185,27 +186,48 @@ const JoinExistingEventSection = () => {
       >
         Join Event
       </ButtonWithState>
-    </>
+    </div>
   );
 };
 
-const eventOptions = ["Start New", "Join Existing"];
+const TabButton: React.FC<React.PropsWithChildren> = ({ children }) => {
+  return (
+    <Tab as={Fragment}>
+      {({ selected }) => (
+        <div
+          className={`w-full cursor-pointer text-center focus:outline-none ${
+            selected ? "primary-button" : "px-4 py-2 font-medium"
+          }`}
+        >
+          {children}
+        </div>
+      )}
+    </Tab>
+  );
+};
 
 export const NewEventCard = () => {
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
   return (
-    <div
-      className="card flex w-[400px] flex-col gap-3 px-8 py-6"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <Selector
-        className="mb-2"
-        options={eventOptions}
-        selectedIndex={selectedIndex}
-        onChange={setSelectedIndex}
-      />
-      {selectedIndex === 0 && <StartNewEventSection />}
-      {selectedIndex === 1 && <JoinExistingEventSection />}
-    </div>
+    <Tab.Group>
+      <div
+        className="card flex w-[400px] flex-col gap-3 px-8 py-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Tab.List
+          className={`rounded-input mb-2 flex flex-row justify-stretch gap-1 rounded-lg p-0.5 text-sm`}
+        >
+          <TabButton>Start New</TabButton>
+          <TabButton>Join Existing</TabButton>
+        </Tab.List>
+        <Tab.Panels>
+          <Tab.Panel unmount={false}>
+            <StartNewEventSection />
+          </Tab.Panel>
+          <Tab.Panel unmount={false}>
+            <JoinExistingEventSection />
+          </Tab.Panel>
+        </Tab.Panels>
+      </div>
+    </Tab.Group>
   );
 };

@@ -131,10 +131,10 @@ export const OperationCard: React.FC = () => {
             </OperationCardTab>
           </Tab.List>
           <Tab.Panels>
-            <Tab.Panel>
+            <Tab.Panel unmount={false}>
               <MyAvailabilityZone eventID={eventId} timeZoneTag={timeZoneTag} />
             </Tab.Panel>
-            <Tab.Panel>
+            <Tab.Panel unmount={false}>
               <GroupAvailabilityZone
                 eventID={eventId}
                 timeZoneTag={timeZoneTag}
