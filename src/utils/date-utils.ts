@@ -4,10 +4,12 @@ import { currentTimezone } from "./timezone";
 
 // >>> Date Manipulation >>>
 
-export const isBetween = (date: Date, start: Date, end: Date): boolean => {
-  return (
-    isEqual(date, start) || isEqual(date, end) || (date > start && date < end)
-  );
+export const isBetweenExcludeEnd = (
+  date: Date,
+  start: Date,
+  end: Date
+): boolean => {
+  return isEqual(date, start) || (date > start && date < end);
 };
 
 export const dateArraysEqual = (a: Date[], b: Date[]): boolean => {

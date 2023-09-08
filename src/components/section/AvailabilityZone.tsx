@@ -9,7 +9,7 @@ import type { DatetimeInterval } from "../../utils/date-utils";
 import {
   csvToDateArray,
   dateArraysEqual,
-  isBetween,
+  isBetweenExcludeEnd,
   toIndividualDates,
   toZonedTime,
 } from "../../utils/date-utils";
@@ -164,7 +164,7 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
         (participant) =>
           !hoveredTime ||
           participant.timeSlots.some((ts) =>
-            isBetween(hoveredTime, ts.begins, ts.ends)
+            isBetweenExcludeEnd(hoveredTime, ts.begins, ts.ends)
           )
       ) ?? []
     );
