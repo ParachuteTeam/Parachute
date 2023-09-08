@@ -29,8 +29,8 @@ const Home: NextPage = () => {
   return (
     <div className="flex h-screen w-screen flex-col">
       <Navbar />
-      <div className="flex w-screen grow flex-col items-center justify-center gap-16 p-12 md:flex-row xl:gap-32">
-        <div className="flex w-full flex-col items-center justify-center gap-4 md:w-[300px] md:items-start">
+      <div className="flex w-screen grow flex-col items-center justify-center gap-16 p-12 lg:flex-row xl:gap-32">
+        <div className="flex w-full flex-col items-center justify-center gap-4 lg:w-[300px] lg:items-start">
           <div className="text-5xl font-bold">🪂</div>
           <div className="text-5xl font-bold">when2meet</div>
           <div className="text-orange-elevated mt-[-4px] text-6xl font-bold">
