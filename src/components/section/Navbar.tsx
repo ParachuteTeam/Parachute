@@ -1,4 +1,4 @@
-import { SignOutButton, useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import OnHover from "../ui/OnHover";
 import Link from "next/link";
@@ -47,14 +47,16 @@ const NavButton: React.FC<NavButtonProps> = ({
 
 const Navbar = () => {
   const { user } = useUser();
+  const clerk = useClerk();
   const [signingOut, setSigningOut] = useState(false);
 
   const onClickSignOut = () => {
     setSigningOut(true);
+    void clerk.signOut();
   };
 
   return (
-    <div className="sticky top-0 flex w-full justify-center border-b border-gray-200 bg-white px-4 py-3 md:px-12 md:py-4">
+    <div className="sticky top-0 z-50 flex w-full justify-center border-b border-gray-200 bg-white px-4 py-3 md:px-12 md:py-4">
       <div className="mx-auto flex max-w-[1200px] grow items-center font-bold">
         <div className="grow">
           <Link
@@ -79,19 +81,18 @@ const Navbar = () => {
                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
                     aria-labelledby="avatarButton"
                   >
+                    <NavLink href="/account" linkName="Account" />
                     <NavLink href="/dashboard" linkName="Dashboard" />
                   </ul>
                   <ul
                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
                     aria-labelledby="avatarButton"
                   >
-                    <SignOutButton>
-                      <NavButton
-                        onClick={onClickSignOut}
-                        disabled={signingOut}
-                        buttonText={signingOut ? "Signing out..." : "Sign out"}
-                      />
-                    </SignOutButton>
+                    <NavButton
+                      onClick={onClickSignOut}
+                      disabled={signingOut}
+                      buttonText={signingOut ? "Signing out..." : "Sign out"}
+                    />
                   </ul>
                 </div>
               </div>
