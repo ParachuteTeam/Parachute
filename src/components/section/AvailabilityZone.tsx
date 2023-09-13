@@ -211,6 +211,8 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
           participants={filteredParticipants}
           hoveredTime={hoveredTime}
           onHoverPersonChange={setHoveredPerson}
+          weekOnly={event.type === "DAYSOFWEEK"}
+          timeZoneTag={timeZoneTag}
         />
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
