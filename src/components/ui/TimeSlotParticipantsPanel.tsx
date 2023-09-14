@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { add, format } from "date-fns";
 import { IoEarthSharp } from "react-icons/io5";
-import { formatTimeZoneTag } from "../../utils/date-utils";
+import { formatTimeZoneTag, toZonedTime } from "../../utils/date-utils";
 
 const AvailablePerson: React.FC<{
   id?: string;
@@ -31,14 +31,28 @@ interface TimeSlotParticipantsPanelProps {
     };
   }[];
   onHoverPersonChange?: (id: string | null) => void;
-  hoveredTime?: Date | null;
+  hoveredTime: Date | null;
+  weekOnly: boolean;
+  timeZoneTag: string;
 }
 
 export const TimeSlotParticipantsPanel: React.FC<
   TimeSlotParticipantsPanelProps
-> = ({ participants, onHoverPersonChange, hoveredTime }) => {
+> = ({
+  participants,
+  onHoverPersonChange,
+  hoveredTime,
+  weekOnly,
+  timeZoneTag,
+}) => {
   // States
   const [hoveredPerson, setHoveredPerson] = React.useState<string | null>(null);
+
+  // Cached converted hovered time
+  const convertedHoveredTime = useMemo(
+    () => (hoveredTime ? toZonedTime(hoveredTime, timeZoneTag) : null),
+    [hoveredTime, timeZoneTag]
+  );
 
   // Cached participants map to find who is available
   const participantsMap = useMemo(() => {
@@ -51,7 +65,7 @@ export const TimeSlotParticipantsPanel: React.FC<
 
   return (
     <div className="card flex h-96 w-96 flex-col items-start justify-start gap-3 p-6 text-sm shadow-lg">
-      {hoveredPerson || !hoveredTime ? (
+      {hoveredPerson || !convertedHoveredTime ? (
         <>
           <div className="mb-6 text-xs text-gray-500">
             {hoveredPerson
@@ -76,9 +90,13 @@ export const TimeSlotParticipantsPanel: React.FC<
       ) : (
         <>
           <div className="mb-6 text-xs text-gray-500">
-            People available on {format(hoveredTime, "EEEEEEE")} from{" "}
-            {format(hoveredTime, "p")} to{" "}
-            {format(add(hoveredTime, { minutes: 15 }), "p")}:
+            People available on{" "}
+            {format(
+              convertedHoveredTime,
+              weekOnly ? "EEEEEEE" : "EEEEEEE, MMM dd"
+            )}{" "}
+            from {format(convertedHoveredTime, "p")} to{" "}
+            {format(add(convertedHoveredTime, { minutes: 15 }), "p")}:
           </div>
           {participants?.map((participant) => (
             <AvailablePerson

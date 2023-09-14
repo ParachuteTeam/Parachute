@@ -27,7 +27,10 @@ const TimeslotBlock: React.FC<{
           <div className="h-full w-full bg-gray-500" />
         ) : (
           selected && (
-            <div className="h-full w-full bg-[#79ffe1]" style={{ opacity }} />
+            <div
+              className="h-full w-full bg-primary-green"
+              style={{ opacity }}
+            />
           )
         )}
       </div>
