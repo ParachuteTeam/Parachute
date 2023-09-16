@@ -144,7 +144,7 @@ export const eventRouter = createTRPCRouter({
       })
     )
     .query(async (req) => {
-      return await prisma.event.findUnique({
+      const prismaResponse = await prisma.event.findUnique({
         where: {
           id: req.input.eventId,
         },
@@ -165,6 +165,7 @@ export const eventRouter = createTRPCRouter({
           },
         },
       });
+      return {...prismaResponse!, is_anon: process.env.JOIN_ANONYMOUSLY === "true"} 
       // if (!eventCheck) {
       //     throw new TRPCError({
       //         code: 'NOT_FOUND',

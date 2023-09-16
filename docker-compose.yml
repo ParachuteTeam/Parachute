@@ -1,0 +1,25 @@
+version: "3"
+services:
+  meetpostgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  parachute:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - meetpostgres
+
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@meetpostgres:5432/postgres
+      - NEXTAUTH_SECRET= # DO  openssl rand -base64 172 | tr -d '\n'
+      - JOIN_ANONYMOUSLY=true
+      - NEXTAUTH_URL=http://localhost:3000
+      - PROVIDER=postgresql
+    ports:
+      - "3000:3000"

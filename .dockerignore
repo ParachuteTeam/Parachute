@@ -1,0 +1,6 @@
+.github
+.next
+.husky
+node_modules
+postgres-data
+.env

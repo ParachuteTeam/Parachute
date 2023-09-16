@@ -1,18 +1,20 @@
 import React from "react";
 import { signIn } from "next-auth/react";
-import { FcGoogle } from "react-icons/fc";
+import { FcGoogle, FcNext } from "react-icons/fc";
 import { SiAuth0 } from "react-icons/si";
 
 interface ButtonProps {
   onClick: () => void;
   buttonText: string;
   isBlack: boolean;
+  isContinue?: boolean;
 }
 
 const LoginButton: React.FC<ButtonProps> = ({
   onClick,
   buttonText,
   isBlack,
+  isContinue
 }) => {
   return (
     <button
@@ -26,8 +28,10 @@ const LoginButton: React.FC<ButtonProps> = ({
     >
       {isBlack ? (
         <FcGoogle className="h-8 w-8" />
-      ) : (
+      ) : !isContinue ? (
         <SiAuth0 className="h-8 w-8" />
+      ) : (
+        <FcNext className="h-8 w-8" />
       )}
       <div className="w-[150px]">{buttonText}</div>
     </button>
@@ -64,6 +68,23 @@ export const Auth0LoginButton = () => {
       }
       buttonText="Sign in with Auth0"
       isBlack={false}
+    />
+  );
+};
+export const ContinueButton = () => {
+  return (
+    <LoginButton
+      onClick={() =>
+        void signIn("auth0", {
+          callbackUrl:
+            window.location.pathname === "/"
+              ? `${window.location.origin}/dashboard`
+              : window.location.href,
+        })
+      }
+      buttonText="Continue to event"
+      isBlack={false}
+      isContinue={true}
     />
   );
 };

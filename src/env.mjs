@@ -7,6 +7,7 @@ import { z } from "zod";
  */
 const server = z.object({
   DATABASE_URL: z.string().url(),
+  JOIN_ANONYMOUSLY: z.boolean().optional(),
   NODE_ENV: z.enum(["development", "test", "production"]),
   NEXTAUTH_SECRET:
     process.env.NODE_ENV === "production"
@@ -20,16 +21,16 @@ const server = z.object({
     process.env.VERCEL ? z.string().min(1) : z.string().url()
   ),
   // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
-  GOOGLE_ID: z.string(),
-  GOOGLE_SECRET: z.string(),
-  AUTH0_CLIENT_ID: z.string(),
-  AUTH0_CLIENT_SECRET: z.string(),
-  AUTH0_ISSUER: z.string(),
-  EMAIL_SERVER_USER: z.string(),
-  EMAIL_SERVER_PASSWORD: z.string(),
-  EMAIL_SERVER_HOST: z.string(),
-  EMAIL_SERVER_PORT: z.string(),
-  EMAIL_FROM: z.string()
+  GOOGLE_ID: z.string().optional(),
+  GOOGLE_SECRET: z.string().optional(),
+  AUTH0_CLIENT_ID: z.string().optional(),
+  AUTH0_CLIENT_SECRET: z.string().optional(),
+  AUTH0_ISSUER: z.string().optional(),
+  EMAIL_SERVER_USER: z.string().optional(),
+  EMAIL_SERVER_PASSWORD: z.string().optional(),
+  EMAIL_SERVER_HOST: z.string().optional(),
+  EMAIL_SERVER_PORT: z.string().optional(),
+  EMAIL_FROM: z.string().optional()
 });
 
 /**
