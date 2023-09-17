@@ -9,7 +9,7 @@ import type { DatetimeInterval } from "../../utils/date-utils";
 import {
   csvToDateArray,
   dateArraysEqual,
-  isBetween,
+  isBetweenExcludeEnd,
   toIndividualDates,
   toZonedTime,
 } from "../../utils/date-utils";
@@ -164,7 +164,7 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
         (participant) =>
           !hoveredTime ||
           participant.timeSlots.some((ts) =>
-            isBetween(hoveredTime, ts.begins, ts.ends)
+            isBetweenExcludeEnd(hoveredTime, ts.begins, ts.ends)
           )
       ) ?? []
     );
@@ -211,6 +211,8 @@ export const GroupAvailabilityZone: React.FC<GroupAvailabilityZoneProps> = ({
           participants={filteredParticipants}
           hoveredTime={hoveredTime}
           onHoverPersonChange={setHoveredPerson}
+          weekOnly={event.type === "DAYSOFWEEK"}
+          timeZoneTag={timeZoneTag}
         />
       </div>
       <div className="h-full w-full flex-row items-center overflow-auto px-32 py-20">
