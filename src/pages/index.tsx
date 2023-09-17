@@ -11,6 +11,7 @@ import Footer from "../components/section/Footer";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../server/auth";
 import { NextSeo } from "next-seo";
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerSession(ctx.req, ctx.res, authOptions);
@@ -34,22 +35,31 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no" />
+        <meta property="twitter: image" content="https://parachute.fyi/public/og-image-icon.png" />
+        <meta property="twitter: title" content="Parachute" />
+        <meta property="twitter: description" 
+        content="A multi-user scheduling platform with enhanced features, providing an unparalleled experience compared to traditional web apps." />
+      </Head>
       <NextSeo
-        title="Parachute | An Elevated When2Meet"
+        title="Parachute"
         description="A modern multi-user scheduling web application that is open-source, easy-to-use, and free forever. 
         Achieved effortless retrieval of all previous activity records, secured login with single sign-on services, 
         enhanced data privacy, and elevated user experience compared with original when2meet." 
+        canonical = "https://parachute.fyi"
+        themeColor="#ffa36d"
         openGraph={{
           url: "https://parachute.fyi",
-          title: "Parachute | An Elevated When2Meet",
+          title: "Parachute",
           description:
             "A modern multi-user scheduling web application that is open-source, easy-to-use, and free forever.",
           images: [
             {
-              url: "para_og1.png",
+              url: "https://parachute.fyi/public/og-image-icon.png",
               width: 1200,
               height: 630,
-              alt: "Parachute",
+              alt: "Parachute SEO Image",
             },
           ],
           site_name: "Parachute",
