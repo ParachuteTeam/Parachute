@@ -20,7 +20,7 @@ export const timesloteRouter = createTRPCRouter({
     .query(async (req) => {
       return await prisma.timeSlots.findMany({
         where: {
-          participateUserID: req.ctx.session.user.id,
+          participateUserID: req.ctx.userId,
           participateEventID: req.input.eventID,
         },
         orderBy: { begins: "asc" },
@@ -87,7 +87,7 @@ export const timesloteRouter = createTRPCRouter({
       })
     )
     .mutation(async (req) => {
-      const userId = req.ctx.session.user.id;
+      const userId = req.ctx.userId;
 
       if (
         (await prisma.participate.count({

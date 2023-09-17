@@ -10,7 +10,6 @@ import {
   useParticipantsOf,
   useParticipatedEvents,
 } from "../../utils/api-hooks";
-import { useSession } from "next-auth/react";
 import { MdOutlineAccessTime, MdOutlineCalendarToday } from "react-icons/md";
 import {
   formatOccurring,
@@ -20,6 +19,7 @@ import {
 import { IoEarthSharp } from "react-icons/io5";
 import { EventTypeTag } from "../ui/Tag";
 import { DeleteDialog, EditDialog, LeaveDialog } from "./Dialog";
+import { useAuth } from "@clerk/nextjs";
 
 export const EventInfoHeader: React.FC = () => {
   const router = useRouter();
@@ -40,8 +40,8 @@ export const EventInfoHeader: React.FC = () => {
   const deleteEvent = useDeleteEvent(eventId);
   const leaveEvent = useLeaveEvent(eventId);
 
-  const { data: session } = useSession();
-  const userId = session?.user.id;
+  const { isLoaded, userId } = useAuth();
+  if (!isLoaded) return null;
   const isOwner = event?.ownerID === userId;
 
   const occurringDaysArray = event?.occuringDays

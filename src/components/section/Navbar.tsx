@@ -1,4 +1,4 @@
-import { useSession, signOut } from "next-auth/react";
+import { useClerk, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import OnHover from "../ui/OnHover";
 import Link from "next/link";
@@ -46,45 +46,42 @@ const NavButton: React.FC<NavButtonProps> = ({
 };
 
 const Navbar = () => {
-  const { data: session } = useSession();
-  const image = session?.user.image as string;
-  const name = session?.user.name;
-  const email = session?.user.email;
-
+  const { user } = useUser();
+  const clerk = useClerk();
   const [signingOut, setSigningOut] = useState(false);
 
   const onClickSignOut = () => {
     setSigningOut(true);
-    void signOut({
-      redirect: true,
-      callbackUrl: "/",
-    });
+    void clerk.signOut();
   };
 
   return (
-    <div className="sticky top-0 flex w-full justify-center border-b border-gray-200 bg-white px-4 py-3 md:px-12 md:py-4">
+    <div className="sticky top-0 z-50 flex w-full justify-center border-b border-gray-200 bg-white px-4 py-3 md:px-12 md:py-4">
       <div className="mx-auto flex max-w-[1200px] grow items-center font-bold">
         <div className="grow">
           <Link
             className="max-w-[140px] grow cursor-pointer text-2xl font-bold md:text-3xl"
-            href={session ? "/dashboard" : "/"}
+            href={user ? "/dashboard" : "/"}
           >
             Parachute
           </Link>
         </div>
-        {session && (
+        {user && (
           <OnHover
             content={
               <div className="w-50 absolute right-0 origin-top-right pt-1">
                 <div className="divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 dark:divide-gray-600 dark:bg-gray-700">
                   <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
-                    <div>{name}</div>
-                    <div className="truncate font-medium">{email}</div>
+                    <div>{user.fullName}</div>
+                    <div className="truncate font-medium">
+                      {user.primaryEmailAddress?.emailAddress}
+                    </div>
                   </div>
                   <ul
                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
                     aria-labelledby="avatarButton"
                   >
+                    <NavLink href="/account" linkName="Account" />
                     <NavLink href="/dashboard" linkName="Dashboard" />
                   </ul>
                   <ul
@@ -103,7 +100,7 @@ const Navbar = () => {
           >
             <Image
               className="cursor-pointer rounded-full"
-              src={image}
+              src={user.imageUrl}
               alt="User dropdown"
               width={40}
               height={40}

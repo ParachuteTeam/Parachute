@@ -12,8 +12,8 @@ import {
 } from "../../utils/date-utils";
 import { IoEarthSharp } from "react-icons/io5";
 import { EventTypeTag } from "../ui/Tag";
-import { useSession } from "next-auth/react";
 import { useParticipatedEvents } from "../../utils/api-hooks";
+import { useAuth } from "@clerk/nextjs";
 
 interface Event {
   id: string;
@@ -93,12 +93,13 @@ const EventCardSkeleton: React.FC = () => {
 
 export const EventList = () => {
   const { data: participatedEvents } = useParticipatedEvents();
-  const { data: session } = useSession();
+  const { isLoaded, userId } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState("");
   const filteredEvents = participatedEvents?.filter((event) =>
     event.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  if (!isLoaded) return null;
 
   return (
     <div className="event-list-container">
@@ -127,7 +128,7 @@ export const EventList = () => {
         <EventCard
           key={event.id}
           event={event}
-          myEvent={event.ownerID === session?.user.id}
+          myEvent={event.ownerID === userId}
         />
       ))}
     </div>
