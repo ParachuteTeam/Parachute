@@ -36,10 +36,11 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
+        <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no" />
-        <meta property="twitter: image" content="https://parachute.fyi/public/og-image-icon.png" />
-        <meta property="twitter: title" content="Parachute" />
-        <meta property="twitter: description" 
+        <meta property="twitter:image" content="https://parachute.fyi/public/og-image-icon.png" />
+        <meta property="twitter:title" content="Parachute" />
+        <meta property="twitter:description" 
         content="A multi-user scheduling platform with enhanced features, providing an unparalleled experience compared to traditional web apps." />
       </Head>
       <NextSeo
@@ -56,7 +57,7 @@ const Home: NextPage = () => {
             "A modern multi-user scheduling web application that is open-source, easy-to-use, and free forever.",
           images: [
             {
-              url: "https://parachute.fyi/public/og-image-icon.png",
+              url: "https://parachute.fyi/og-image-1.png",
               width: 1200,
               height: 630,
               alt: "Parachute SEO Image",
