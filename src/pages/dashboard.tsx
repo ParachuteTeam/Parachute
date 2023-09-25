@@ -8,6 +8,7 @@ import { NewEventCard } from "../components/section/NewEventCard";
 import { useIsMobile } from "../utils/hooks";
 import { ScreenLoading } from "../components/ui/ScreenLoading";
 import Footer from "../components/section/Footer";
+import { NextSeo } from "next-seo";
 
 const Dashboard: NextPage = () => {
   const { data: session, status } = useSession();
@@ -26,41 +27,44 @@ const Dashboard: NextPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen w-screen flex-col bg-gray-100">
-      <Navbar />
-      <div className="flex grow justify-center px-4 py-8 md:px-12">
-        <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
-          <div className="flex h-full flex-grow flex-col">
-            <div className="mb-4 flex flex-row items-center justify-between">
-              <div className="text-2xl font-bold">Recent Events</div>
-              <div
-                className="primary-button cursor-pointer text-sm md:hidden"
-                onClick={() => setShowWizard(!showWizard)}
-              >
-                New / Join
+    <>
+      <NextSeo title="Dashboard | Parachute" /> 
+      <div className="flex min-h-screen w-screen flex-col bg-gray-100">
+        <Navbar />
+        <div className="flex grow justify-center px-4 py-8 md:px-12">
+          <div className="flex h-full w-full max-w-[1200px] flex-row gap-8">
+            <div className="flex h-full flex-grow flex-col">
+              <div className="mb-4 flex flex-row items-center justify-between">
+                <div className="text-2xl font-bold">Recent Events</div>
+                <div
+                  className="primary-button cursor-pointer text-sm md:hidden"
+                  onClick={() => setShowWizard(!showWizard)}
+                >
+                  New / Join
+                </div>
               </div>
+              <EventList />
             </div>
-            <EventList />
-          </div>
-          {!isMobile ? (
-            <div className="flex h-full flex-col">
-              <div className="mb-4 text-2xl font-bold">Add Event</div>
-              <NewEventCard />
-            </div>
-          ) : (
-            showWizard && (
-              <div
-                className="fixed left-0 top-0 z-50 flex h-screen w-screen flex-row items-start justify-center bg-black bg-opacity-50 p-4 pt-20"
-                onClick={() => setShowWizard(false)}
-              >
+            {!isMobile ? (
+              <div className="flex h-full flex-col">
+                <div className="mb-4 text-2xl font-bold">Add Event</div>
                 <NewEventCard />
               </div>
-            )
-          )}
+            ) : (
+              showWizard && (
+                <div
+                  className="fixed left-0 top-0 z-50 flex h-screen w-screen flex-row items-start justify-center bg-black bg-opacity-50 p-4 pt-20"
+                  onClick={() => setShowWizard(false)}
+                >
+                  <NewEventCard />
+                </div>
+              )
+            )}
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 };
 
