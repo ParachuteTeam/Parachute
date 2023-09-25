@@ -36,7 +36,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/public/fav_icon.png" />
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no" />
         <meta property="twitter:image" content="https://parachute.fyi/public/og-image-icon.png" />
         <meta property="twitter:title" content="Parachute" />
