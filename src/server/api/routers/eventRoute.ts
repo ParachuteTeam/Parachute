@@ -55,7 +55,7 @@ export const eventRouter = createTRPCRouter({
       })
     )
     .mutation(async (req) => {
-      const userId = req.ctx.session.user.id;
+      const userId = req.ctx.userId;
 
       const randomSixDigitString: string = await generateUniqueJoinCode();
       const newEvent = await prisma.event.create({
@@ -187,7 +187,7 @@ export const eventRouter = createTRPCRouter({
       })
     )
     .mutation(async (req) => {
-      const userId = req.ctx.session.user.id;
+      const userId = req.ctx.userId;
 
       const eventCheck = await prisma.event.findUnique({
         where: {
@@ -227,7 +227,7 @@ export const eventRouter = createTRPCRouter({
       })
     )
     .mutation(async (req) => {
-      const userId = req.ctx.session.user.id;
+      const userId = req.ctx.userId;
 
       const eventCheck = await prisma.event.findUnique({
         where: {
@@ -295,7 +295,7 @@ export const eventRouter = createTRPCRouter({
       })
     )
     .query((req) => {
-      const userId = req.ctx.session.user.id;
+      const userId = req.ctx.userId;
       return prisma.participate.findUnique({
         where: {
           eventID_userID: {

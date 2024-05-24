@@ -16,13 +16,11 @@
  * database, the session, etc.
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type Session } from "next-auth";
-
-import { getServerAuthSession } from "../auth";
+import { getAuth } from "@clerk/nextjs/server";
 import { prisma } from "../db";
 
 type CreateContextOptions = {
-  session: Session | null;
+  userId: string | null;
 };
 
 /**
@@ -37,7 +35,7 @@ type CreateContextOptions = {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
-    session: opts.session,
+    userId: opts.userId,
     prisma,
   };
 };
@@ -48,14 +46,19 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
+  const { req } = opts;
 
-  // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerAuthSession({ req, res });
+  // Get the user from the server using the getAuth wrapper function from clerk
+  const session = getAuth(req);
+  // Get the user from the session so the types are better (instead of login / logout state)
+  const user = session.userId;
+
+  console.log("session: ", session);
+  console.log("user: ", user);
 
   return createInnerTRPCContext({
-    session,
+    userId: user,
   });
 };
 
@@ -102,14 +105,19 @@ export const publicProcedure = t.procedure;
  * Reusable middleware that enforces users are logged in before running the
  * procedure.
  */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You must be logged in to do this.",
+    });
   }
+
+  // unwrap the context and pass it to the next procedure
   return next({
     ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      ...ctx,
+      userId: ctx.userId,
     },
   });
 });

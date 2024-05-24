@@ -74,7 +74,7 @@ export const participateRouter = createTRPCRouter({
       })
     )
     .mutation(async (req) => {
-      const userId = req.ctx.session.user.id;
+      const userId = req.ctx.userId;
       return await prisma.participate.update({
         where: {
           eventID_userID: {
@@ -122,7 +122,7 @@ export const participateRouter = createTRPCRouter({
       })
     )
     .mutation(async (req) => {
-      const userId = req.ctx.session.user.id;
+      const userId = req.ctx.userId;
       await prisma.timeSlots.deleteMany({
         where: {
           participateEventID: req.input.eventID,
@@ -164,7 +164,7 @@ export const participateRouter = createTRPCRouter({
   getParticipateEvents: protectedProcedure.query(async (req) => {
     const selectResult = await prisma.participate.findMany({
       where: {
-        userID: req.ctx.session.user.id,
+        userID: req.ctx.userId,
       },
       select: {
         event: {
