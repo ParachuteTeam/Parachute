@@ -106,7 +106,6 @@ export const DateSelect: React.FC<DateSelectProps> = ({
         }
       });
       onChange?.(valueCopy);
-      console.log(valueCopy);
     }
     setSelectionStart(null);
     setSelectionEnd(null);
