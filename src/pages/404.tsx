@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Navbar from "../components/section/Navbar";
 import Footer from "../components/section/Footer";
